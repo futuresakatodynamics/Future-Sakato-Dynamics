@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PT Future Sakato Dynamics – Konstruksi & Pembangunan Modern</title>
-<meta name="description" content="PT Future Sakato Dynamics – Perusahaan konstruksi dan pembangunan modern berbasis di Bekasi. Kami membangun gedung hunian, perkantoran, industri, dan berbagai proyek konstruksi lainnya.">
+<title>Future Sakato Dynamics Studio – Konstruksi & Pembangunan Modern</title>
+<meta name="description" content="Future Sakato Dynamics – Studio konstruksi dan pembangunan modern berbasis di Bekasi. Kami membangun gedung hunian, perkantoran, industri, dan berbagai proyek konstruksi lainnya.">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:wght@300;400;600&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -22,20 +22,89 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 html { scroll-behavior: smooth; }
-
 body {
   font-family: 'Rajdhani', sans-serif;
   color: var(--text);
   background: var(--white);
   overflow-x: hidden;
 }
-
-/* ── SCROLLBAR ── */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--off-white); }
 ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 2px; }
+
+/* ── INTRO SCREEN ── */
+#intro-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0c1628;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Two curtain panels */
+.intro-curtain-left,
+.intro-curtain-right {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 50%;
+  background: #0c1628;
+  z-index: 2;
+  transition: transform 0.9s cubic-bezier(0.77, 0, 0.18, 1);
+}
+.intro-curtain-left  { left: 0; transform-origin: left; }
+.intro-curtain-right { right: 0; transform-origin: right; }
+
+#intro-screen.open .intro-curtain-left  { transform: translateX(-100%); }
+#intro-screen.open .intro-curtain-right { transform: translateX(100%); }
+#intro-screen.gone { display: none; }
+
+/* Logo in intro */
+.intro-logo {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  animation: introLogoIn 0.7s ease both;
+}
+@keyframes introLogoIn {
+  from { opacity: 0; transform: scale(0.85) translateY(16px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.intro-logo.fade-out {
+  animation: introLogoOut 0.5s ease forwards;
+}
+@keyframes introLogoOut {
+  to { opacity: 0; transform: scale(1.06); }
+}
+
+.intro-tagline {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px;
+  letter-spacing: 6px;
+  color: rgba(232,160,48,0.7);
+  text-transform: uppercase;
+  margin-top: 20px;
+  animation: fadeIn 1s 0.5s ease both;
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+
+/* Shimmer line */
+.intro-shimmer {
+  position: absolute;
+  top: 50%; left: -100%;
+  width: 40%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,160,48,0.6), transparent);
+  animation: shimmerSweep 1.2s 0.3s ease forwards;
+}
+@keyframes shimmerSweep {
+  to { left: 200%; }
+}
 
 /* ── NAV ── */
 nav {
@@ -54,36 +123,30 @@ nav {
 }
 nav.scrolled { box-shadow: 0 2px 24px rgba(26,63,110,0.12); }
 
+/* Nav logo – Concept 4 style */
 .nav-logo {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0;
+  align-items: center;
+  gap: 12px;
   text-decoration: none;
 }
-.nav-logo .pt-label {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 9px;
-  letter-spacing: 5px;
-  color: var(--mid-gray);
-  font-weight: 600;
-  line-height: 1;
-}
-.nav-logo .brand-name {
+.nav-logo-svg { flex-shrink: 0; }
+.nav-logo-text { display: flex; flex-direction: column; gap: 0; }
+.nav-logo-text .brand-name {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
+  font-size: 18px;
   letter-spacing: 2px;
   color: var(--navy);
   line-height: 1;
 }
-.nav-logo .brand-sub {
+.nav-logo-text .brand-sub {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 9px;
-  letter-spacing: 4px;
+  font-size: 8px;
+  letter-spacing: 3px;
   color: var(--blue);
   font-weight: 700;
   line-height: 1;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 .nav-links {
@@ -347,33 +410,71 @@ section { padding: 100px 48px; }
   margin: 0 auto;
 }
 
-.tentang-visual {
-  position: relative;
-}
+.tentang-visual { position: relative; }
 
 .tentang-img-wrap {
   width: 100%;
   aspect-ratio: 4/5;
-  background: var(--light-gray);
+  background: var(--navy);
   border-radius: 4px;
   overflow: hidden;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.tentang-img-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.tentang-img-placeholder {
-  width: 100%;
-  height: 100%;
+/* Studio logo display replacing photo */
+.studio-logo-display {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 24px;
+  padding: 40px;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(160deg, #0c1628 0%, #1a3a6e 60%, #0c1628 100%);
+  position: relative;
+  overflow: hidden;
+}
+.studio-logo-display::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(26,95,180,0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,95,180,0.15) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.studio-logo-display .logo-svg-wrap { position: relative; z-index: 1; }
+.studio-logo-display .logo-label {
+  position: relative; z-index: 1;
+  text-align: center;
+}
+.studio-logo-display .logo-label .name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 4px;
+  color: var(--white);
+  line-height: 1;
+}
+.studio-logo-display .logo-label .sub {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px;
+  letter-spacing: 5px;
+  color: var(--gold-light);
+  font-weight: 600;
+  margin-top: 6px;
+}
+.studio-logo-display .logo-label .studio-tag {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: rgba(255,255,255,0.35);
+  margin-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 10px;
 }
 
 .tentang-badge {
@@ -508,69 +609,94 @@ section { padding: 100px 48px; }
   transition: color .3s;
 }
 
-/* ── PROYEK ── */
+/* ── PROYEK / MARQUEE ── */
 #proyek { background: var(--off-white); }
 
-.proyek-header {
-  max-width: 1200px;
-  margin: 0 auto 60px;
-}
-
-.proyek-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 16px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.proyek-card {
-  position: relative;
+.marquee-section {
+  background: var(--dark);
+  padding: 64px 0;
   overflow: hidden;
-  border-radius: 4px;
-  background: var(--light-gray);
 }
-.proyek-card:nth-child(1) { grid-column: span 7; aspect-ratio: 16/10; }
-.proyek-card:nth-child(2) { grid-column: span 5; aspect-ratio: 4/5; }
-.proyek-card:nth-child(3) { grid-column: span 4; aspect-ratio: 4/3; }
-.proyek-card:nth-child(4) { grid-column: span 4; aspect-ratio: 4/3; }
-.proyek-card:nth-child(5) { grid-column: span 4; aspect-ratio: 4/3; }
-
-.proyek-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 20px;
+.marquee-header {
+  padding: 0 48px;
+  margin-bottom: 40px;
 }
-
-.proyek-overlay {
+.marquee-header .section-title { color: var(--white); }
+.marquee-track-wrap {
+  overflow: hidden;
+  position: relative;
+}
+.marquee-track-wrap::before,
+.marquee-track-wrap::after {
+  content: '';
   position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 30%, rgba(10,20,50,0.85));
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 28px;
-  opacity: 0;
-  transition: opacity .3s;
+  top: 0; bottom: 0;
+  width: 120px;
+  z-index: 2;
+  pointer-events: none;
 }
-.proyek-card:hover .proyek-overlay { opacity: 1; }
+.marquee-track-wrap::before { left: 0; background: linear-gradient(90deg, var(--dark), transparent); }
+.marquee-track-wrap::after  { right: 0; background: linear-gradient(-90deg, var(--dark), transparent); }
 
-.proyek-overlay-tag {
-  font-size: 10px;
+.marquee-track {
+  display: flex;
+  gap: 16px;
+  width: max-content;
+  margin-bottom: 16px;
+}
+.marquee-track.row-1 { animation: marquee-ltr 40s linear infinite; }
+.marquee-track.row-2 { animation: marquee-rtl 35s linear infinite; }
+.marquee-track:hover { animation-play-state: paused; }
+
+@keyframes marquee-ltr {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes marquee-rtl {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+.marquee-item {
+  flex-shrink: 0;
+  width: 340px;
+  height: 220px;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  background: #1a1a2e;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.marquee-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+.marquee-item:hover img { transform: scale(1.04); }
+
+.marquee-item-placeholder {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; padding: 16px;
+}
+.marquee-item-caption {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 16px 20px 14px;
+  background: linear-gradient(transparent, rgba(10,15,40,0.9));
+}
+.marquee-item-caption .tag {
+  font-size: 9px;
   letter-spacing: 3px;
   color: var(--gold-light);
   text-transform: uppercase;
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 2px;
 }
-.proyek-overlay-title {
+.marquee-item-caption .title {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px;
+  font-size: 16px;
   color: var(--white);
   letter-spacing: 1px;
 }
@@ -677,9 +803,9 @@ footer {
   flex-wrap: wrap;
   gap: 20px;
 }
-.footer-logo .pt-label { font-size: 9px; letter-spacing: 5px; color: #555; font-weight: 600; }
+.footer-logo { display: flex; flex-direction: column; }
 .footer-logo .brand-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; color: #fff; }
-.footer-logo .brand-sub { font-size: 8px; letter-spacing: 4px; color: var(--blue); font-weight: 700; }
+.footer-logo .brand-sub { font-size: 8px; letter-spacing: 4px; color: var(--blue); font-weight: 700; margin-top: 2px; }
 
 .footer-copy {
   font-size: 12px;
@@ -699,7 +825,6 @@ footer {
 }
 .footer-links a:hover { color: var(--gold); }
 
-/* ── DIVIDER GOLD ── */
 .gold-divider {
   height: 3px;
   background: linear-gradient(90deg, var(--gold), var(--blue), var(--gold));
@@ -758,15 +883,13 @@ footer {
   .tentang-grid { grid-template-columns: 1fr; gap: 40px; }
   .tentang-text { padding-left: 0; }
   .layanan-grid { grid-template-columns: 1fr; }
-  .proyek-card:nth-child(1),
-  .proyek-card:nth-child(2),
-  .proyek-card:nth-child(3),
-  .proyek-card:nth-child(4),
-  .proyek-card:nth-child(5) { grid-column: span 12; }
   .kontak-inner { grid-template-columns: 1fr; gap: 48px; }
   footer { flex-direction: column; align-items: flex-start; }
   .layanan-header { flex-direction: column; align-items: flex-start; gap: 20px; }
   .mobile-menu { padding: 24px; }
+  .marquee-header { padding: 0 24px; }
+  .wa-popup { width: 270px; }
+  .wa-widget { bottom: 20px; right: 16px; }
 }
 
 /* ── PLACEHOLDER SVG STYLE ── */
@@ -789,97 +912,6 @@ footer {
   text-transform: uppercase;
   font-weight: 600;
   text-align: center;
-}
-
-/* ── MARQUEE INFINITE SCROLL ── */
-.marquee-section {
-  background: var(--dark);
-  padding: 64px 0;
-  overflow: hidden;
-}
-.marquee-header {
-  padding: 0 48px;
-  margin-bottom: 40px;
-}
-.marquee-header .section-title { color: var(--white); }
-.marquee-track-wrap {
-  overflow: hidden;
-  position: relative;
-}
-.marquee-track-wrap::before,
-.marquee-track-wrap::after {
-  content: '';
-  position: absolute;
-  top: 0; bottom: 0;
-  width: 120px;
-  z-index: 2;
-  pointer-events: none;
-}
-.marquee-track-wrap::before { left: 0; background: linear-gradient(90deg, var(--dark), transparent); }
-.marquee-track-wrap::after  { right: 0; background: linear-gradient(-90deg, var(--dark), transparent); }
-
-.marquee-track {
-  display: flex;
-  gap: 16px;
-  width: max-content;
-  margin-bottom: 16px;
-}
-.marquee-track.row-1 { animation: marquee-ltr 40s linear infinite; }
-.marquee-track.row-2 { animation: marquee-rtl 35s linear infinite; }
-.marquee-track:hover { animation-play-state: paused; }
-
-@keyframes marquee-ltr {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-@keyframes marquee-rtl {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
-}
-
-.marquee-item {
-  flex-shrink: 0;
-  width: 340px;
-  height: 220px;
-  border-radius: 4px;
-  overflow: hidden;
-  position: relative;
-  background: #1a1a2e;
-  border: 1px solid rgba(255,255,255,0.06);
-}
-.marquee-item img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  transition: transform .5s ease;
-}
-.marquee-item:hover img { transform: scale(1.04); }
-
-.marquee-item-placeholder {
-  width: 100%; height: 100%;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 10px; padding: 16px;
-}
-.marquee-item-placeholder svg { opacity: 0.2; }
-.marquee-item-caption {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  padding: 16px 20px 14px;
-  background: linear-gradient(transparent, rgba(10,15,40,0.9));
-}
-.marquee-item-caption .tag {
-  font-size: 9px;
-  letter-spacing: 3px;
-  color: var(--gold-light);
-  text-transform: uppercase;
-  font-weight: 700;
-  margin-bottom: 2px;
-}
-.marquee-item-caption .title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 16px;
-  color: var(--white);
-  letter-spacing: 1px;
 }
 
 /* ── WHATSAPP LIVE CHAT ── */
@@ -960,9 +992,7 @@ footer {
   padding: 0;
 }
 
-.wa-popup-body {
-  padding: 20px;
-}
+.wa-popup-body { padding: 20px; }
 .wa-bubble {
   background: #f0f4f8;
   border-radius: 0 12px 12px 12px;
@@ -1043,22 +1073,58 @@ footer {
   60%  { transform: scale(1.3); opacity: 1; }
   100% { transform: scale(1); }
 }
-
-@media (max-width: 900px) {
-  .marquee-header { padding: 0 24px; }
-  .wa-popup { width: 270px; }
-  .wa-widget { bottom: 20px; right: 16px; }
-}
 </style>
 </head>
 <body>
 
+<!-- ══ WELCOME / INTRO SCREEN ══ -->
+<div id="intro-screen">
+  <div class="intro-curtain-left"></div>
+  <div class="intro-curtain-right"></div>
+  <div class="intro-shimmer"></div>
+  <div class="intro-logo" id="introLogo">
+    <!-- Concept 4 logo – skyline SVG -->
+    <svg viewBox="0 0 180 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="180" height="100">
+      <rect x="5"  y="42" width="22" height="52" fill="#1a3a6e"/>
+      <rect x="30" y="28" width="22" height="66" fill="#1a5fb4"/>
+      <rect x="55" y="14" width="22" height="80" fill="#1a3a6e"/>
+      <rect x="80" y="30" width="22" height="64" fill="#1a5fb4"/>
+      <rect x="105" y="46" width="22" height="48" fill="#1a3a6e"/>
+      <rect x="130" y="36" width="22" height="58" fill="#1a5fb4"/>
+      <rect x="155" y="52" width="22" height="42" fill="#1a3a6e"/>
+      <!-- Windows -->
+      <rect x="33" y="36" width="7" height="8" fill="#fff" opacity="0.5"/>
+      <rect x="58" y="22" width="7" height="8" fill="#fff" opacity="0.5"/>
+      <rect x="58" y="36" width="7" height="8" fill="#e8a030" opacity="0.8"/>
+      <rect x="83" y="38" width="7" height="8" fill="#fff" opacity="0.5"/>
+      <rect x="133" y="44" width="7" height="8" fill="#fff" opacity="0.4"/>
+      <!-- Ground line -->
+      <line x1="0" y1="94" x2="180" y2="94" stroke="#1a5fb4" stroke-width="2.5"/>
+      <!-- Accent dot top of tallest -->
+      <circle cx="66" cy="10" r="4" fill="#e8a030"/>
+    </svg>
+    <div class="intro-tagline">FUTURE SAKATO DYNAMICS STUDIO</div>
+  </div>
+</div>
+
 <!-- NAV -->
 <nav id="navbar">
   <a href="#hero" class="nav-logo">
-    <span class="pt-label">PT</span>
-    <span class="brand-name">FUTURE SAKATO</span>
-    <span class="brand-sub">DYNAMICS</span>
+    <!-- Concept 4 mini logo in nav -->
+    <svg class="nav-logo-svg" viewBox="0 0 54 36" fill="none" xmlns="http://www.w3.org/2000/svg" width="54" height="36">
+      <rect x="1"  y="14" width="7" height="21" fill="#1a3a6e"/>
+      <rect x="10" y="9"  width="7" height="26" fill="#1a5fb4"/>
+      <rect x="19" y="4"  width="7" height="31" fill="#1a3a6e"/>
+      <rect x="28" y="10" width="7" height="25" fill="#1a5fb4"/>
+      <rect x="37" y="16" width="7" height="19" fill="#1a3a6e"/>
+      <rect x="46" y="12" width="7" height="23" fill="#1a5fb4"/>
+      <line x1="0" y1="35" x2="54" y2="35" stroke="#1a5fb4" stroke-width="1.5"/>
+      <circle cx="22" cy="2" r="2" fill="#e8a030"/>
+    </svg>
+    <div class="nav-logo-text">
+      <span class="brand-name">FUTURE SAKATO</span>
+      <span class="brand-sub">DYNAMICS STUDIO</span>
+    </div>
   </a>
   <ul class="nav-links">
     <li><a href="#tentang">Tentang</a></li>
@@ -1083,26 +1149,24 @@ footer {
   <div class="hero-bg-pattern"></div>
   <div class="hero-accent-line"></div>
 
-  <!-- Skyline SVG decoration -->
   <svg class="hero-skyline" viewBox="0 0 700 500" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <rect x="0" y="180" width="60" height="320" fill="white"/>
-    <rect x="70" y="120" width="80" height="380" fill="white"/>
-    <rect x="100" y="60" width="20" height="440" fill="white"/>
-    <rect x="160" y="200" width="70" height="300" fill="white"/>
-    <rect x="240" y="80" width="100" height="420" fill="white"/>
-    <rect x="260" y="20" width="30" height="60" fill="white"/>
-    <rect x="350" y="150" width="90" height="350" fill="white"/>
+    <rect x="0"   y="180" width="60"  height="320" fill="white"/>
+    <rect x="70"  y="120" width="80"  height="380" fill="white"/>
+    <rect x="100" y="60"  width="20"  height="440" fill="white"/>
+    <rect x="160" y="200" width="70"  height="300" fill="white"/>
+    <rect x="240" y="80"  width="100" height="420" fill="white"/>
+    <rect x="260" y="20"  width="30"  height="60"  fill="white"/>
+    <rect x="350" y="150" width="90"  height="350" fill="white"/>
     <rect x="450" y="100" width="110" height="400" fill="white"/>
-    <rect x="470" y="40" width="40" height="60" fill="white"/>
-    <rect x="570" y="200" width="80" height="300" fill="white"/>
-    <rect x="660" y="240" width="40" height="260" fill="white"/>
-    <!-- windows -->
-    <rect x="85" y="140" width="12" height="16" fill="#1a5fb4" opacity="0.5"/>
-    <rect x="105" y="140" width="12" height="16" fill="#1a5fb4" opacity="0.5"/>
-    <rect x="85" y="170" width="12" height="16" fill="#1a5fb4" opacity="0.5"/>
-    <rect x="250" y="100" width="16" height="20" fill="#d4930e" opacity="0.6"/>
-    <rect x="460" y="120" width="16" height="20" fill="#d4930e" opacity="0.6"/>
-    <rect x="460" y="150" width="16" height="20" fill="#1a5fb4" opacity="0.4"/>
+    <rect x="470" y="40"  width="40"  height="60"  fill="white"/>
+    <rect x="570" y="200" width="80"  height="300" fill="white"/>
+    <rect x="660" y="240" width="40"  height="260" fill="white"/>
+    <rect x="85"  y="140" width="12"  height="16"  fill="#1a5fb4" opacity="0.5"/>
+    <rect x="105" y="140" width="12"  height="16"  fill="#1a5fb4" opacity="0.5"/>
+    <rect x="85"  y="170" width="12"  height="16"  fill="#1a5fb4" opacity="0.5"/>
+    <rect x="250" y="100" width="16"  height="20"  fill="#d4930e" opacity="0.6"/>
+    <rect x="460" y="120" width="16"  height="20"  fill="#d4930e" opacity="0.6"/>
+    <rect x="460" y="150" width="16"  height="20"  fill="#1a5fb4" opacity="0.4"/>
   </svg>
 
   <div class="hero-content">
@@ -1115,7 +1179,7 @@ footer {
       ANDA
     </h1>
     <p class="hero-desc">
-      Solusi konstruksi modern terpercaya untuk gedung hunian, perkantoran, industri, dan berbagai proyek pembangunan skala besar.
+      Solusi konstruksi modern terpercaya untuk gedung hunian, perkantoran, industri, dan berbagai proyek pembangunan.
     </p>
     <div class="hero-buttons">
       <a href="#layanan" class="btn-primary">Lihat Layanan</a>
@@ -1124,8 +1188,6 @@ footer {
   </div>
 
   <div class="hero-stats">
-    <div class="stat">
-    </div>
     <div class="stat">
       <div class="stat-num">100<span>%</span></div>
       <div class="stat-label">Komitmen Kualitas</div>
@@ -1140,15 +1202,35 @@ footer {
   <div class="tentang-grid">
     <div class="tentang-visual reveal">
       <div class="tentang-img-wrap">
-        <div class="placeholder-svg">
-          <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-            <rect x="8" y="20" width="48" height="36" stroke="#1a3a6e" stroke-width="2"/>
-            <polygon points="4,20 32,4 60,20" fill="none" stroke="#1a3a6e" stroke-width="2"/>
-            <rect x="24" y="36" width="16" height="20" fill="#1a3a6e"/>
-            <rect x="14" y="28" width="10" height="10" fill="none" stroke="#1a3a6e" stroke-width="1.5"/>
-            <rect x="40" y="28" width="10" height="10" fill="none" stroke="#1a3a6e" stroke-width="1.5"/>
-          </svg>
-          <p>Foto Perusahaan<br>— Segera Ditambahkan —</p>
+        <!-- Logo studio menggantikan foto perusahaan -->
+        <div class="studio-logo-display">
+          <div class="logo-svg-wrap">
+            <svg viewBox="0 0 200 110" fill="none" xmlns="http://www.w3.org/2000/svg" width="200" height="110">
+              <rect x="5"   y="46" width="24" height="58" fill="#1a3a6e"/>
+              <rect x="32"  y="30" width="24" height="74" fill="#1a5fb4"/>
+              <rect x="59"  y="14" width="24" height="90" fill="#1a3a6e"/>
+              <rect x="86"  y="32" width="24" height="72" fill="#1a5fb4"/>
+              <rect x="113" y="50" width="24" height="54" fill="#1a3a6e"/>
+              <rect x="140" y="38" width="24" height="66" fill="#1a5fb4"/>
+              <rect x="167" y="54" width="24" height="50" fill="#1a3a6e"/>
+              <!-- Windows -->
+              <rect x="35"  y="40" width="8" height="9" fill="#fff" opacity="0.5"/>
+              <rect x="62"  y="22" width="8" height="9" fill="#fff" opacity="0.5"/>
+              <rect x="62"  y="38" width="8" height="9" fill="#e8a030" opacity="0.9"/>
+              <rect x="89"  y="42" width="8" height="9" fill="#fff" opacity="0.5"/>
+              <rect x="143" y="48" width="8" height="9" fill="#fff" opacity="0.4"/>
+              <rect x="170" y="62" width="8" height="9" fill="#e8a030" opacity="0.5"/>
+              <!-- Ground line -->
+              <line x1="0" y1="104" x2="200" y2="104" stroke="#1a5fb4" stroke-width="2.5"/>
+              <!-- Accent dot -->
+              <circle cx="71" cy="10" r="5" fill="#e8a030"/>
+            </svg>
+          </div>
+          <div class="logo-label">
+            <div class="name">FUTURE SAKATO<br>DYNAMICS</div>
+            <div class="sub">KONSTRUKSI · PERENCANAAN · PEMBANGUNAN</div>
+            <div class="studio-tag">STUDIO · BEKASI · EST. 2024</div>
+          </div>
         </div>
       </div>
       <div class="tentang-badge">
@@ -1160,9 +1242,9 @@ footer {
     <div class="tentang-text reveal">
       <div class="section-tag"><span>Tentang Kami</span></div>
       <h2 class="section-title">SIAPA KAMI</h2>
-      <p class="section-lead">Perusahaan konstruksi modern yang berkomitmen pada kualitas, ketepatan waktu, dan inovasi.</p>
+      <p class="section-lead">Studio konstruksi modern yang berkomitmen pada kualitas, ketepatan waktu, dan inovasi.</p>
       <p class="tentang-body" style="margin-top:24px;">
-        PT Future Sakato Dynamics adalah perseroan perorangan yang bergerak di bidang jasa konstruksi dan pembangunan, berkedudukan di Bekasi, Jawa Barat. Kami hadir untuk menjawab kebutuhan konstruksi modern dengan standar tinggi — dari perencanaan hingga serah terima proyek.
+        Future Sakato Dynamics adalah studio konstruksi dan pembangunan modern, berkedudukan di Bekasi, Jawa Barat. Kami hadir untuk menjawab kebutuhan konstruksi modern dengan standar tinggi — dari perencanaan hingga serah terima proyek.
         <br><br>
         Dengan portofolio layanan yang luas mencakup gedung hunian, perkantoran, industri, perbelanjaan, dan fasilitas umum, kami siap menjadi mitra terpercaya dalam setiap proyek pembangunan Anda.
       </p>
@@ -1244,15 +1326,12 @@ footer {
   <div class="marquee-header reveal">
     <div class="section-tag"><span style="color:var(--gold-light);">Portofolio</span></div>
     <h2 class="section-title">PROYEK KAMI</h2>
-    <p class="section-lead" style="color:rgba(255,255,255,0.5);">Setiap proyek mencerminkan komitmen kami terhadap kualitas dan keunggulan konstruksi. Arahkan kursor untuk berhenti.</p>
+    <p class="section-lead" style="color:rgba(255,255,255,0.5);">Setiap proyek mencerminkan komitmen kami terhadap kualitas dan keunggulan konstruksi.</p>
   </div>
 
-  <!-- ROW 1: kiri ke kanan -->
   <div class="marquee-track-wrap" style="margin-bottom:16px;">
     <div class="marquee-track row-1" id="row1"></div>
   </div>
-
-  <!-- ROW 2: kanan ke kiri -->
   <div class="marquee-track-wrap">
     <div class="marquee-track row-2" id="row2"></div>
   </div>
@@ -1275,24 +1354,10 @@ footer {
           </div>
         </div>
         <div class="kontak-item">
-          <div class="kontak-item-icon">📞</div>
-          <div class="kontak-item-text">
-            <div class="kontak-item-label">Telepon / WhatsApp</div>
-            <a href="tel:+6282285754080" class="kontak-item-value">0822 2857 54080</a>
-          </div>
-        </div>
-        <div class="kontak-item">
           <div class="kontak-item-icon">✉️</div>
           <div class="kontak-item-text">
             <div class="kontak-item-label">Email</div>
             <a href="mailto:futuresakatodynamics@gmail.com" class="kontak-item-value">futuresakatodynamics@gmail.com</a>
-          </div>
-        </div>
-        <div class="kontak-item">
-          <div class="kontak-item-icon">🏢</div>
-          <div class="kontak-item-text">
-            <div class="kontak-item-label">Legal</div>
-            <div class="kontak-item-value" style="font-size:13px;">AHU-064852.AH.01.30.Tahun 2024</div>
           </div>
         </div>
       </div>
@@ -1326,12 +1391,11 @@ footer {
 <div class="gold-divider"></div>
 <footer>
   <div class="footer-logo">
-    <div class="pt-label">PT</div>
     <div class="brand-name">FUTURE SAKATO DYNAMICS</div>
-    <div class="brand-sub">KONSTRUKSI · PERENCANAAN · PEMBANGUNAN</div>
+    <div class="brand-sub">STUDIO · KONSTRUKSI · PERENCANAAN · PEMBANGUNAN</div>
   </div>
   <div class="footer-copy">
-    © 2024 PT Future Sakato Dynamics. Semua hak dilindungi.
+    © 2024 Future Sakato Dynamics. Semua hak dilindungi.
   </div>
   <div class="footer-links">
     <a href="#tentang">Tentang</a>
@@ -1341,20 +1405,20 @@ footer {
   </div>
 </footer>
 
-<!-- WHATSAPP LIVE CHAT WIDGET -->
+<!-- WHATSAPP WIDGET -->
 <div class="wa-widget">
   <div class="wa-popup" id="waPopup">
     <div class="wa-popup-header">
       <div class="wa-avatar">🏗️</div>
       <div>
-        <div class="wa-name">PT Future Sakato Dynamics</div>
+        <div class="wa-name">Future Sakato Dynamics</div>
         <div class="wa-status"><span class="wa-dot"></span> Online sekarang</div>
       </div>
       <button class="wa-close" onclick="toggleWA()" aria-label="Tutup">×</button>
     </div>
     <div class="wa-popup-body">
       <div class="wa-bubble">
-        Halo! 👋 Selamat datang di <strong>PT Future Sakato Dynamics</strong>.<br><br>
+        Halo! 👋 Selamat datang di <strong>Future Sakato Dynamics</strong>.<br><br>
         Ada yang bisa kami bantu untuk proyek konstruksi Anda? Ketik pesan Anda dan kami akan segera merespons.
         <div class="wa-time">Balas dalam &lt; 5 menit</div>
       </div>
@@ -1376,6 +1440,26 @@ footer {
 </div>
 
 <script>
+// ── INTRO ANIMATION ──
+window.addEventListener('DOMContentLoaded', () => {
+  const screen = document.getElementById('intro-screen');
+  const logo   = document.getElementById('introLogo');
+
+  // After 1.6s: fade logo out, then open curtains
+  setTimeout(() => {
+    logo.classList.add('fade-out');
+  }, 1600);
+
+  setTimeout(() => {
+    screen.classList.add('open');
+  }, 2000);
+
+  // After curtains clear, remove element
+  setTimeout(() => {
+    screen.classList.add('gone');
+  }, 3100);
+});
+
 // NAV scroll
 const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', () => {
@@ -1408,13 +1492,13 @@ reveals.forEach(el => observer.observe(el));
 function submitForm(e) {
   e.preventDefault();
   const form = e.target;
-  const nama = form.querySelector('input[type=text]').value;
-  const telp = form.querySelector('input[type=tel]').value;
-  const proyek = form.querySelectorAll('input[type=text]')[1]?.value || '';
+  const nama  = form.querySelector('input[type=text]').value;
+  const telp  = form.querySelector('input[type=tel]').value;
+  const proyek= form.querySelectorAll('input[type=text]')[1]?.value || '';
   const pesan = form.querySelector('textarea').value;
   const subject = encodeURIComponent('Permintaan Konsultasi Proyek – ' + proyek);
-  const body = encodeURIComponent(
-    'Halo Tim PT Future Sakato Dynamics,\n\n' +
+  const body    = encodeURIComponent(
+    'Halo Tim Future Sakato Dynamics,\n\n' +
     'Nama: ' + nama + '\n' +
     'Telepon: ' + telp + '\n' +
     'Jenis Proyek: ' + proyek + '\n\n' +
@@ -1450,20 +1534,20 @@ function toggleWA() {
 function sendWA() {
   const input = document.getElementById('waInput');
   const msg = input.value.trim();
-  const defaultMsg = 'Halo PT Future Sakato Dynamics, saya ingin konsultasi mengenai proyek konstruksi.';
+  const defaultMsg = 'Halo Future Sakato Dynamics, saya ingin konsultasi mengenai proyek konstruksi.';
   const text = encodeURIComponent(msg || defaultMsg);
   window.open('https://wa.me/6282285754080?text=' + text, '_blank');
   input.value = '';
 }
 
-// Auto-show popup after 4 seconds
+// Auto-show WA popup after curtain finishes
 setTimeout(() => {
   const popup = document.getElementById('waPopup');
   if (!popup.classList.contains('open')) {
     popup.classList.add('open');
     document.getElementById('waNotif').style.display = 'none';
   }
-}, 4000);
+}, 5500);
 
 // ── MARQUEE BUILDER ──
 const projects = [
@@ -1495,7 +1579,6 @@ function fillRow(rowId, offset) {
   const row = document.getElementById(rowId);
   if (!row) return;
   const items = projects.map((p, i) => buildItem(p, (i + offset) % projects.length)).join('');
-  // duplicate for seamless loop
   row.innerHTML = items + items;
 }
 
