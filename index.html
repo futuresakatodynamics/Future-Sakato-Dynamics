@@ -343,11 +343,11 @@ nav.scrolled { box-shadow: 0 2px 24px rgba(26,63,110,0.12); }
 .stat { text-align: right; }
 .stat-num {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 44px;
+  font-size: 64px;
   color: var(--white);
   line-height: 1;
 }
-.stat-num span { color: var(--gold-light); }
+.stat-num span { color: var(--gold-light); font-size: 52px; }
 .stat-label {
   font-size: 10px;
   letter-spacing: 3px;
@@ -830,6 +830,117 @@ footer {
   background: linear-gradient(90deg, var(--gold), var(--blue), var(--gold));
 }
 
+/* ── TESTIMONI ── */
+#testimoni {
+  background: var(--white);
+  padding: 100px 0;
+  overflow: hidden;
+}
+.testimoni-header {
+  padding: 0 48px;
+  margin-bottom: 60px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 60px;
+}
+.testi-track-wrap {
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 24px;
+}
+.testi-track-wrap::before,
+.testi-track-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 100px;
+  z-index: 2;
+  pointer-events: none;
+}
+.testi-track-wrap::before { left: 0; background: linear-gradient(90deg, var(--white), transparent); }
+.testi-track-wrap::after  { right: 0; background: linear-gradient(-90deg, var(--white), transparent); }
+
+.testi-track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+}
+.testi-track.row-a { animation: marquee-ltr 38s linear infinite; }
+.testi-track.row-b { animation: marquee-rtl 32s linear infinite; }
+.testi-track:hover { animation-play-state: paused; }
+
+.testi-card {
+  flex-shrink: 0;
+  width: 320px;
+  background: var(--off-white);
+  border-radius: 6px;
+  padding: 28px 28px 24px;
+  border: 1px solid var(--light-gray);
+  position: relative;
+  transition: box-shadow .3s, transform .3s;
+}
+.testi-card:hover {
+  box-shadow: 0 8px 32px rgba(26,63,110,0.10);
+  transform: translateY(-3px);
+}
+.testi-quote {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px;
+  color: var(--gold);
+  line-height: 0.6;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+.testi-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  color: var(--text);
+  line-height: 1.65;
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+.testi-stars {
+  color: var(--gold);
+  font-size: 13px;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+.testi-divider {
+  height: 1px;
+  background: var(--light-gray);
+  margin-bottom: 16px;
+}
+.testi-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.testi-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--navy);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  color: var(--gold-light);
+  flex-shrink: 0;
+}
+.testi-info {}
+.testi-name {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--navy);
+  text-transform: uppercase;
+}
+.testi-role {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
 /* ── ANIMATIONS ── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(24px); }
@@ -890,6 +1001,8 @@ footer {
   .marquee-header { padding: 0 24px; }
   .wa-popup { width: 270px; }
   .wa-widget { bottom: 20px; right: 16px; }
+  .testimoni-header { padding: 0 24px; }
+  .testi-card { width: 270px; }
 }
 
 /* ── PLACEHOLDER SVG STYLE ── */
@@ -1337,6 +1450,22 @@ footer {
   </div>
 </section>
 
+<!-- TESTIMONI -->
+<section id="testimoni">
+  <div class="testimoni-header reveal">
+    <div class="section-tag"><span>Testimoni Klien</span></div>
+    <h2 class="section-title">APA KATA<br>KLIEN KAMI</h2>
+    <p class="section-lead">Kepuasan klien adalah ukuran keberhasilan kami di setiap proyek.</p>
+  </div>
+
+  <div class="testi-track-wrap" style="margin-bottom:24px;">
+    <div class="testi-track row-a" id="testiRow1"></div>
+  </div>
+  <div class="testi-track-wrap">
+    <div class="testi-track row-b" id="testiRow2"></div>
+  </div>
+</section>
+
 <!-- KONTAK -->
 <section id="kontak">
   <div class="kontak-inner">
@@ -1540,16 +1669,59 @@ function sendWA() {
   input.value = '';
 }
 
-// Auto-show WA popup after curtain finishes
-setTimeout(() => {
-  const popup = document.getElementById('waPopup');
-  if (!popup.classList.contains('open')) {
-    popup.classList.add('open');
-    document.getElementById('waNotif').style.display = 'none';
+// Auto-show WA popup after scrolling 40% of page
+let waShown = false;
+window.addEventListener('scroll', () => {
+  if (waShown) return;
+  const scrolled = window.scrollY + window.innerHeight;
+  const total = document.body.scrollHeight;
+  if (scrolled / total >= 0.4) {
+    waShown = true;
+    const popup = document.getElementById('waPopup');
+    if (!popup.classList.contains('open')) {
+      popup.classList.add('open');
+      document.getElementById('waNotif').style.display = 'none';
+    }
   }
-}, 5500);
+});
 
-// ── MARQUEE BUILDER ──
+// ── TESTIMONI BUILDER ──
+const testimonials = [
+  { name: 'Budi Santoso', role: 'Pemilik Ruko, Bekasi Timur', text: 'Hasil pembangunan ruko saya sangat memuaskan. Tim Future Sakato sangat profesional dan pengerjaan selesai tepat waktu sesuai perjanjian.', init: 'BS' },
+  { name: 'Hendra Wijaya', role: 'Direktur PT. Maju Bersama', text: 'Gedung kantor kami dibangun dengan standar tinggi. Konsultasi awal sangat membantu kami menentukan desain yang paling efisien dan representatif.', init: 'HW' },
+  { name: 'Siti Rahayu', role: 'Pemilik Rumah, Bekasi Barat', text: 'Renovasi rumah berjalan lancar tanpa gangguan berarti. Hasilnya melebihi ekspektasi — material bagus dan rapih.', init: 'SR' },
+  { name: 'Ahmad Fauzi', role: 'Manager Logistik, Cikarang', text: 'Gudang industri kami selesai lebih cepat dari jadwal. Harga transparan dan tidak ada biaya kejutan di akhir proyek.', init: 'AF' },
+  { name: 'Dewi Kusuma', role: 'Pengelola Klinik, Bekasi Selatan', text: 'Pembangunan klinik kami memenuhi standar kesehatan yang ketat. Future Sakato benar-benar paham kebutuhan fasilitas medis modern.', init: 'DK' },
+  { name: 'Riko Prasetyo', role: 'Pengembang Properti, Tambun', text: 'Sudah dua proyek perumahan saya percayakan ke Future Sakato. Kualitas konsisten, tim komunikatif, dan harga sangat kompetitif.', init: 'RP' },
+  { name: 'Linda Hermawan', role: 'Pemilik Cafe & Restoran', text: 'Interior dan konstruksi cafe saya dikerjakan dengan sentuhan artistik yang luar biasa. Banyak pelanggan memuji desainnya!', init: 'LH' },
+  { name: 'Teguh Prabowo', role: 'Kepala Dinas, Kota Bekasi', text: 'Proyek gedung fasilitas publik berjalan sesuai spesifikasi teknis pemerintah. Kami puas dengan hasil akhir dan profesionalisme timnya.', init: 'TP' },
+];
+
+function buildTestiItem(t) {
+  return `<div class="testi-card">
+    <div class="testi-quote">"</div>
+    <p class="testi-text">${t.text}</p>
+    <div class="testi-stars">★★★★★</div>
+    <div class="testi-divider"></div>
+    <div class="testi-author">
+      <div class="testi-avatar">${t.init}</div>
+      <div class="testi-info">
+        <div class="testi-name">${t.name}</div>
+        <div class="testi-role">${t.role}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function fillTestiRow(rowId, items) {
+  const row = document.getElementById(rowId);
+  if (!row) return;
+  const html = items.map(buildTestiItem).join('');
+  row.innerHTML = html + html;
+}
+
+fillTestiRow('testiRow1', testimonials.slice(0, 4));
+fillTestiRow('testiRow2', testimonials.slice(4));
 const projects = [
   { tag: 'Gedung Perkantoran', title: 'Kantor Modern 5 Lantai', color: '#1a3a6e' },
   { tag: 'Hunian', title: 'Perumahan Residensial', color: '#1a5fb4' },
