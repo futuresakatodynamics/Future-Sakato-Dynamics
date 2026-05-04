@@ -1,0 +1,56 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="630" fill="#080f1e"/>
+
+<defs>
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a5fb4" stroke-width="0.5" opacity="0.4"/>
+  </pattern>
+  <linearGradient id="goldLine" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#d4930e" stop-opacity="0"/>
+    <stop offset="50%" stop-color="#e8a030" stop-opacity="0.8"/>
+    <stop offset="100%" stop-color="#d4930e" stop-opacity="0"/>
+  </linearGradient>
+</defs>
+
+<rect width="1200" height="630" fill="url(#grid)"/>
+
+<!-- Accent lines kanan -->
+<line x1="920" y1="0" x2="1200" y2="330" stroke="#1a5fb4" stroke-width="0.8" opacity="0.3"/>
+<line x1="980" y1="0" x2="1200" y2="215" stroke="#1a5fb4" stroke-width="0.8" opacity="0.2"/>
+<line x1="1040" y1="0" x2="1200" y2="130" stroke="#1a5fb4" stroke-width="0.5" opacity="0.15"/>
+
+<!-- Accent line kiri vertikal -->
+<rect x="80" y="0" width="3" height="630" fill="url(#goldLine)" opacity="0.6"/>
+
+<!-- Bangunan silhouette kanan -->
+<g opacity="0.09" fill="#ffffff">
+  <rect x="810" y="180" width="75" height="450"/>
+  <rect x="895" y="250" width="56" height="380"/>
+  <rect x="960" y="150" width="90" height="480"/>
+  <rect x="1060" y="215" width="66" height="415"/>
+  <rect x="755" y="290" width="46" height="340"/>
+</g>
+
+<!-- Gold horizontal accent atas -->
+<rect x="120" y="100" width="200" height="2.5" fill="#d4930e" opacity="0.7"/>
+
+<!-- Eyebrow text -->
+<text x="120" y="88" font-family="Arial, sans-serif" font-size="18" letter-spacing="8" fill="#e8a030" opacity="0.8">KONSTRUKSI &amp; PEMBANGUNAN</text>
+
+<!-- Brand name besar -->
+<text x="120" y="218" font-family="Arial Black, sans-serif" font-size="78" font-weight="900" letter-spacing="4" fill="#ffffff">FUTURE SAKATO</text>
+<text x="120" y="302" font-family="Arial Black, sans-serif" font-size="78" font-weight="900" letter-spacing="4" fill="#e8a030">DYNAMICS</text>
+
+<!-- Sub brand -->
+<text x="126" y="345" font-family="Arial, sans-serif" font-size="20" letter-spacing="12" fill="rgba(255,255,255,0.35)">S T U D I O</text>
+
+<!-- Divider -->
+<rect x="120" y="370" width="90" height="3" fill="#d4930e"/>
+
+<!-- Deskripsi -->
+<text x="120" y="420" font-family="Arial, sans-serif" font-size="26" fill="rgba(255,255,255,0.8)">Jasa Konstruksi Profesional di Bekasi</text>
+<text x="120" y="460" font-family="Arial, sans-serif" font-size="20" fill="rgba(255,255,255,0.4)">Hunian · Perkantoran · Industri · Fasilitas Publik</text>
+
+<!-- Tagline bawah -->
+<text x="120" y="548" font-family="Arial, sans-serif" font-size="16" letter-spacing="4" fill="rgba(255,255,255,0.25)">KONSULTASI GRATIS  ·  HARGA TRANSPARAN  ·  TEPAT WAKTU</text>
+</svg>
