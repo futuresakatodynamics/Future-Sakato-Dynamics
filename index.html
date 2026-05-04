@@ -1262,25 +1262,9 @@ footer {
   <div class="hero-bg-pattern"></div>
   <div class="hero-accent-line"></div>
 
-  <svg class="hero-skyline" viewBox="0 0 700 500" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <rect x="0"   y="180" width="60"  height="320" fill="white"/>
-    <rect x="70"  y="120" width="80"  height="380" fill="white"/>
-    <rect x="100" y="60"  width="20"  height="440" fill="white"/>
-    <rect x="160" y="200" width="70"  height="300" fill="white"/>
-    <rect x="240" y="80"  width="100" height="420" fill="white"/>
-    <rect x="260" y="20"  width="30"  height="60"  fill="white"/>
-    <rect x="350" y="150" width="90"  height="350" fill="white"/>
-    <rect x="450" y="100" width="110" height="400" fill="white"/>
-    <rect x="470" y="40"  width="40"  height="60"  fill="white"/>
-    <rect x="570" y="200" width="80"  height="300" fill="white"/>
-    <rect x="660" y="240" width="40"  height="260" fill="white"/>
-    <rect x="85"  y="140" width="12"  height="16"  fill="#1a5fb4" opacity="0.5"/>
-    <rect x="105" y="140" width="12"  height="16"  fill="#1a5fb4" opacity="0.5"/>
-    <rect x="85"  y="170" width="12"  height="16"  fill="#1a5fb4" opacity="0.5"/>
-    <rect x="250" y="100" width="16"  height="20"  fill="#d4930e" opacity="0.6"/>
-    <rect x="460" y="120" width="16"  height="20"  fill="#d4930e" opacity="0.6"/>
-    <rect x="460" y="150" width="16"  height="20"  fill="#1a5fb4" opacity="0.4"/>
-  </svg>
+  <!-- Planet Canvas -->
+  <canvas id="planetCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <div class="hero-content">
     <div class="hero-eyebrow">
@@ -1567,6 +1551,135 @@ footer {
     </svg>
   </button>
 </div>
+
+<script>
+// ── PLANET & STARS ANIMATION ──
+(function(){
+  const hero = document.getElementById('hero');
+  const canvas = document.getElementById('planetCanvas');
+  if(!canvas || typeof THREE === 'undefined') return;
+
+  const W = () => hero.offsetWidth;
+  const H = () => hero.offsetHeight;
+
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setSize(W(),H());
+  renderer.setClearColor(0x000000,0);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50,W()/H(),0.1,1000);
+  camera.position.set(0,0,5);
+
+  scene.add(new THREE.AmbientLight(0x1a3a6e,1.2));
+  const sun = new THREE.DirectionalLight(0xffffff,2.2);
+  sun.position.set(-4,3,5); scene.add(sun);
+  const goldLight = new THREE.PointLight(0xe8a030,1.5,12);
+  goldLight.position.set(3,1,3); scene.add(goldLight);
+  const rim = new THREE.DirectionalLight(0x1a5fb4,0.8);
+  rim.position.set(4,-2,-3); scene.add(rim);
+
+  const planet = new THREE.Mesh(
+    new THREE.SphereGeometry(1.35,64,64),
+    new THREE.MeshStandardMaterial({color:0x1a3a6e,roughness:.55,metalness:.35})
+  );
+  planet.position.set(1.6,0,0);
+  scene.add(planet);
+
+  const atm = new THREE.Mesh(
+    new THREE.SphereGeometry(1.48,64,64),
+    new THREE.MeshStandardMaterial({color:0x1a5fb4,transparent:true,opacity:.18})
+  );
+  atm.position.copy(planet.position); scene.add(atm);
+
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(2.0,.045,3,120),
+    new THREE.MeshStandardMaterial({color:0x1a5fb4,transparent:true,opacity:.55,metalness:.6,roughness:.3})
+  );
+  ring.rotation.x=Math.PI*.38; ring.rotation.z=Math.PI*.1;
+  ring.position.copy(planet.position); scene.add(ring);
+
+  const ring2 = new THREE.Mesh(
+    new THREE.TorusGeometry(2.3,.022,3,120),
+    new THREE.MeshStandardMaterial({color:0xd4930e,transparent:true,opacity:.4,metalness:.8})
+  );
+  ring2.rotation.x=Math.PI*.42; ring2.rotation.z=-Math.PI*.08;
+  ring2.position.copy(planet.position); scene.add(ring2);
+
+  /* ── STARS LAYER 1 – putih besar ── */
+  const S1=2000, sp1=new Float32Array(S1*3);
+  for(let i=0;i<S1;i++){sp1[i*3]=(Math.random()-.5)*38;sp1[i*3+1]=(Math.random()-.5)*22;sp1[i*3+2]=(Math.random()-.5)*18-2;}
+  const sg1=new THREE.BufferGeometry(); sg1.setAttribute('position',new THREE.BufferAttribute(sp1,3));
+  const stars1=new THREE.Points(sg1,new THREE.PointsMaterial({color:0xffffff,size:.055,transparent:true,opacity:.85,sizeAttenuation:true}));
+  scene.add(stars1);
+
+  /* ── STARS LAYER 2 – biru muda ── */
+  const S2=800, sp2=new Float32Array(S2*3);
+  for(let i=0;i<S2;i++){sp2[i*3]=(Math.random()-.5)*38;sp2[i*3+1]=(Math.random()-.5)*22;sp2[i*3+2]=(Math.random()-.5)*18-2;}
+  const sg2=new THREE.BufferGeometry(); sg2.setAttribute('position',new THREE.BufferAttribute(sp2,3));
+  scene.add(new THREE.Points(sg2,new THREE.PointsMaterial({color:0xaaccff,size:.035,transparent:true,opacity:.6})));
+
+  /* ── STARS LAYER 3 – kekuningan ── */
+  const S3=500, sp3=new Float32Array(S3*3);
+  for(let i=0;i<S3;i++){sp3[i*3]=(Math.random()-.5)*38;sp3[i*3+1]=(Math.random()-.5)*22;sp3[i*3+2]=(Math.random()-.5)*18-2;}
+  const sg3=new THREE.BufferGeometry(); sg3.setAttribute('position',new THREE.BufferAttribute(sp3,3));
+  scene.add(new THREE.Points(sg3,new THREE.PointsMaterial({color:0xffe8b0,size:.028,transparent:true,opacity:.5})));
+
+  /* ── STARS LAYER 4 – mikro sangat banyak ── */
+  const S4=1500, sp4=new Float32Array(S4*3);
+  for(let i=0;i<S4;i++){sp4[i*3]=(Math.random()-.5)*38;sp4[i*3+1]=(Math.random()-.5)*22;sp4[i*3+2]=(Math.random()-.5)*18-2;}
+  const sg4=new THREE.BufferGeometry(); sg4.setAttribute('position',new THREE.BufferAttribute(sp4,3));
+  scene.add(new THREE.Points(sg4,new THREE.PointsMaterial({color:0xffffff,size:.02,transparent:true,opacity:.4})));
+
+  /* ── DUST RING ── */
+  const dustCount=300, dustPos=new Float32Array(dustCount*3);
+  const dA=[], dR=[];
+  for(let i=0;i<dustCount;i++){
+    const a=Math.random()*Math.PI*2, r=1.7+Math.random()*1.2;
+    dA.push(a); dR.push(r);
+    dustPos[i*3]=planet.position.x+Math.cos(a)*r;
+    dustPos[i*3+1]=(Math.random()-.5)*.3;
+    dustPos[i*3+2]=Math.sin(a)*r*.35;
+  }
+  const dustGeo=new THREE.BufferGeometry();
+  dustGeo.setAttribute('position',new THREE.BufferAttribute(dustPos,3));
+  const dust=new THREE.Points(dustGeo,new THREE.PointsMaterial({color:0xe8a030,size:.038,transparent:true,opacity:.65}));
+  scene.add(dust);
+
+  let mx=0,my=0,t=0;
+  hero.addEventListener('mousemove',e=>{
+    const r=hero.getBoundingClientRect();
+    mx=((e.clientX-r.left)/r.width-.5)*2;
+    my=-((e.clientY-r.top)/r.height-.5)*2;
+  });
+  window.addEventListener('resize',()=>{
+    camera.aspect=W()/H();
+    camera.updateProjectionMatrix();
+    renderer.setSize(W(),H());
+  });
+
+  (function animate(){
+    requestAnimationFrame(animate);
+    t+=.004;
+    planet.rotation.y=t*.4; planet.rotation.x=t*.05;
+    atm.rotation.y=t*.35;
+    ring.rotation.y=t*.15; ring2.rotation.y=-t*.1;
+    stars1.material.opacity=0.75+Math.sin(t*1.1)*.1;
+    const p=dust.geometry.attributes.position.array;
+    for(let i=0;i<dustCount;i++){
+      dA[i]+=.0018+i*.000012;
+      p[i*3]=planet.position.x+Math.cos(dA[i])*dR[i];
+      p[i*3+2]=Math.sin(dA[i])*dR[i]*.35;
+    }
+    dust.geometry.attributes.position.needsUpdate=true;
+    goldLight.intensity=1.2+Math.sin(t*1.5)*.5;
+    camera.position.x+=(mx*.3-camera.position.x)*.04;
+    camera.position.y+=(my*.2-camera.position.y)*.04;
+    camera.lookAt(0,0,0);
+    renderer.render(scene,camera);
+  })();
+})();
+</script>
 
 <script>
 // ── INTRO ANIMATION ──
