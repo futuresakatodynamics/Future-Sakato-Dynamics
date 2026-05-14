@@ -1649,25 +1649,122 @@ setTimeout(() => {
 </footer>
 
 <!-- WHATSAPP WIDGET -->
+<style>
+.wa-messages {
+  padding: 16px;
+  max-height: 260px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #ece5dd url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3C/svg%3E");
+}
+.wa-messages::-webkit-scrollbar { width: 3px; }
+.wa-messages::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+
+.wa-msg {
+  max-width: 82%;
+  padding: 8px 12px 6px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  position: relative;
+  word-break: break-word;
+}
+.wa-msg.bot {
+  background: #fff;
+  align-self: flex-start;
+  border-top-left-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.wa-msg.user {
+  background: #d9fdd3;
+  align-self: flex-end;
+  border-top-right-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.wa-msg-time {
+  font-size: 10px;
+  color: #999;
+  text-align: right;
+  margin-top: 3px;
+}
+.wa-msg.typing {
+  background: #fff;
+  align-self: flex-start;
+  border-top-left-radius: 2px;
+  padding: 10px 14px;
+}
+.wa-typing-dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.wa-typing-dots span {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #999;
+  animation: waBounce 1.2s infinite;
+}
+.wa-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.wa-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes waBounce {
+  0%,60%,100% { transform: translateY(0); opacity:0.5; }
+  30% { transform: translateY(-5px); opacity:1; }
+}
+
+.wa-human-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #25D366;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 0 auto 4px;
+  transition: background 0.2s;
+  letter-spacing: 0.5px;
+}
+.wa-human-btn:hover { background: #1ebe5a; }
+.wa-human-btn svg { flex-shrink: 0; }
+
+.wa-footer-area {
+  padding: 10px 12px 12px;
+  background: #f0f0f0;
+  border-top: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+</style>
+
 <div class="wa-widget">
   <div class="wa-popup" id="waPopup">
     <div class="wa-popup-header">
       <div class="wa-avatar">📐</div>
-      <div>
+      <div style="flex:1">
         <div class="wa-name">Future Sakato Dynamics</div>
-        <div class="wa-status"><span class="wa-dot"></span> Online sekarang</div>
+        <div class="wa-status"><span class="wa-dot"></span> <span id="waBotStatus">Asisten Virtual</span></div>
       </div>
-      <button class="wa-close" onclick="toggleWA()" aria-label="Tutup">×</button>
+      <button class="wa-close" onclick="toggleWA()" aria-label="Tutup" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;line-height:1;padding:0 0 0 8px;">×</button>
     </div>
-    <div class="wa-popup-body">
-      <div class="wa-bubble">
-        Halo! 👋 Selamat datang di <strong>Future Sakato Dynamics</strong>.<br><br>
-        Ada yang bisa kami bantu untuk kebutuhan desain dan perencanaan Anda? Ketik pesan Anda dan kami akan segera merespons.
-        <div class="wa-time">Balas dalam &lt; 5 menit</div>
-      </div>
+
+    <!-- Chat messages area -->
+    <div class="wa-messages" id="waMessages"></div>
+
+    <!-- Footer: input + human button (hidden until 10 exchanges) -->
+    <div class="wa-footer-area">
+      <button class="wa-human-btn" id="waHumanBtn" onclick="escalateToHuman()" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="white" width="14" height="14"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.47 11.47 0 00.57 3.58 1 1 0 01-.25 1.01z"/></svg>
+        Hubungi Tim Kami via WhatsApp
+      </button>
       <div class="wa-input-row">
-        <input type="text" class="wa-input" id="waInput" placeholder="Ketik pesan..." onkeydown="if(event.key==='Enter') sendWA()">
-        <button class="wa-send" onclick="sendWA()" aria-label="Kirim">
+        <input type="text" class="wa-input" id="waInput" placeholder="Ketik pesan..." onkeydown="if(event.key==='Enter') sendBotMsg()">
+        <button class="wa-send" onclick="sendBotMsg()" aria-label="Kirim">
           <svg viewBox="0 0 24 24" fill="white" width="18" height="18"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
       </div>
@@ -1930,24 +2027,146 @@ function updateActiveNav() {
 window.addEventListener('scroll', updateActiveNav);
 updateActiveNav();
 
-// ── WHATSAPP WIDGET ──
+// ── WHATSAPP BOT WIDGET ──
+const WA_NUMBER = '6282285754080';
+let waChatHistory = [];
+let waBotTyping = false;
+let waInitDone = false;
+let waBotReplyCount = 0; // hitung balasan bot, tombol manusia muncul setelah 10x
+
+function getTime() {
+  return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+}
+
+function scrollWABottom() {
+  const el = document.getElementById('waMessages');
+  if (el) el.scrollTop = el.scrollHeight;
+}
+
+function addWAMsg(text, role) {
+  const el = document.getElementById('waMessages');
+  const div = document.createElement('div');
+  div.className = 'wa-msg ' + role;
+  div.innerHTML = text.replace(/\n/g, '<br>') + `<div class="wa-msg-time">${getTime()}</div>`;
+  el.appendChild(div);
+  scrollWABottom();
+  return div;
+}
+
+function showTyping() {
+  const el = document.getElementById('waMessages');
+  const div = document.createElement('div');
+  div.className = 'wa-msg typing';
+  div.id = 'waTypingIndicator';
+  div.innerHTML = '<div class="wa-typing-dots"><span></span><span></span><span></span></div>';
+  el.appendChild(div);
+  scrollWABottom();
+}
+
+function removeTyping() {
+  const t = document.getElementById('waTypingIndicator');
+  if (t) t.remove();
+}
+
+async function getBotReply(userMsg) {
+  waChatHistory.push({ role: 'user', content: userMsg });
+  showTyping();
+  document.getElementById('waBotStatus').textContent = 'sedang mengetik...';
+
+  const systemPrompt = `Kamu adalah asisten virtual dari Future Sakato Dynamics Studio, sebuah studio desain dan perencanaan profesional berbasis di Bekasi, Jawa Barat, Indonesia. 
+
+Layanan kami meliputi: desain hunian (rumah tinggal), desain perkantoran, perencanaan kawasan industri, desain fasilitas publik, perencanaan sipil & infrastruktur, desain klinik/fasilitas kesehatan, desain hotel & penginapan, desain cafe & restoran.
+
+Nomor WhatsApp tim kami: +62 822-8575-4080
+Email: futuresakatodynamics@gmail.com
+Lokasi: Bekasi, Jawa Barat
+
+Tugasmu:
+- Sambut tamu dengan hangat dan profesional
+- Jawab pertanyaan umum tentang layanan, harga estimasi, proses, dan portofolio
+- Jika pertanyaan sangat spesifik (negosiasi harga detail, pengukuran lapangan, permintaan proposal resmi), sarankan untuk melanjutkan ke tim manusia
+- Balas dalam Bahasa Indonesia yang sopan dan profesional
+- Singkat dan jelas, maksimal 3-4 kalimat per balasan
+- Jangan sebut bahwa kamu adalah AI, cukup sebut dirimu sebagai "tim asisten Future Sakato"`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        system: systemPrompt,
+        messages: waChatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Maaf, ada gangguan teknis. Silakan hubungi tim kami langsung.';
+    waChatHistory.push({ role: 'assistant', content: reply });
+    removeTyping();
+    document.getElementById('waBotStatus').textContent = 'Asisten Virtual';
+    addWAMsg(reply, 'bot');
+
+    // Hitung balasan bot & tampilkan tombol manusia setelah 10x
+    waBotReplyCount++;
+    if (waBotReplyCount >= 10) {
+      const btn = document.getElementById('waHumanBtn');
+      if (btn && btn.style.display === 'none') {
+        btn.style.display = 'flex';
+        setTimeout(() => {
+          addWAMsg('Sepertinya Anda sudah cukup familiar dengan layanan kami. 😊 Jika ingin berdiskusi langsung dengan tim kami, tombol di bawah sudah tersedia!', 'bot');
+        }, 500);
+      }
+    }
+
+    // Deteksi jika perlu eskalasi ke manusia (tampilkan tombol lebih awal jika topik serius)
+    const needHuman = /harga detail|survey|lapangan|proposal resmi|kontrak|bertemu|kunjungan|jadwal|tanda tangan/i.test(userMsg + reply);
+    if (needHuman) {
+      const btn = document.getElementById('waHumanBtn');
+      if (btn) btn.style.display = 'flex';
+      setTimeout(() => {
+        addWAMsg('Untuk keperluan ini, tim kami siap membantu langsung. Silakan klik tombol di bawah untuk melanjutkan via WhatsApp. 👇', 'bot');
+      }, 600);
+    }
+  } catch(e) {
+    removeTyping();
+    document.getElementById('waBotStatus').textContent = 'Asisten Virtual';
+    addWAMsg('Maaf, koneksi bermasalah. Silakan hubungi tim kami langsung via WhatsApp.', 'bot');
+  }
+}
+
+function sendBotMsg() {
+  const input = document.getElementById('waInput');
+  const msg = input.value.trim();
+  if (!msg || waBotTyping) return;
+  input.value = '';
+  addWAMsg(msg, 'user');
+  getBotReply(msg);
+}
+
+function escalateToHuman() {
+  const lastUserMsg = waChatHistory.filter(m => m.role === 'user').slice(-1)[0]?.content || '';
+  const text = encodeURIComponent(
+    'Halo Future Sakato Dynamics, saya ingin konsultasi lebih lanjut.\n\n' +
+    (lastUserMsg ? 'Pertanyaan saya: ' + lastUserMsg : 'Saya ingin mengetahui lebih lanjut tentang layanan Anda.')
+  );
+  window.open('https://wa.me/' + WA_NUMBER + '?text=' + text, '_blank');
+}
+
 function toggleWA() {
   const popup = document.getElementById('waPopup');
   const notif = document.getElementById('waNotif');
   popup.classList.toggle('open');
   if (popup.classList.contains('open')) {
     notif.style.display = 'none';
+    if (!waInitDone) {
+      waInitDone = true;
+      setTimeout(() => {
+        addWAMsg('Halo! 👋 Selamat datang di <strong>Future Sakato Dynamics</strong>.\n\nAda yang bisa kami bantu untuk kebutuhan desain dan perencanaan Anda?', 'bot');
+      }, 400);
+    }
     setTimeout(() => document.getElementById('waInput').focus(), 300);
   }
-}
-
-function sendWA() {
-  const input = document.getElementById('waInput');
-  const msg = input.value.trim();
-  const defaultMsg = 'Halo Future Sakato Dynamics, saya ingin konsultasi mengenai desain dan perencanaan.';
-  const text = encodeURIComponent(msg || defaultMsg);
-  window.open('https://wa.me/6282285754080?text=' + text, '_blank');
-  input.value = '';
 }
 
 // Show WA button after scrolling 1 full screen height
@@ -1967,6 +2186,12 @@ window.addEventListener('scroll', () => {
     if (!popup.classList.contains('open')) {
       popup.classList.add('open');
       document.getElementById('waNotif').style.display = 'none';
+      if (!waInitDone) {
+        waInitDone = true;
+        setTimeout(() => {
+          addWAMsg('Halo! 👋 Selamat datang di <strong>Future Sakato Dynamics</strong>.\n\nAda yang bisa kami bantu untuk kebutuhan desain dan perencanaan Anda?', 'bot');
+        }, 400);
+      }
     }
   }
 });
