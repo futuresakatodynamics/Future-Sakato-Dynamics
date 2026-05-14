@@ -12,15 +12,15 @@
   gtag('config', 'G-H5P79P7CPM');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Future Sakato Dynamics Studio – Konstruksi & Pembangunan Modern</title>
-<meta name="description" content="Future Sakato Dynamics – Studio konstruksi dan pembangunan modern berbasis di Bekasi. Kami membangun gedung hunian, perkantoran, industri, dan berbagai proyek konstruksi lainnya.">
+<title>Future Sakato Dynamics Studio – Desain & Perencanaan Modern</title>
+<meta name="description" content="Future Sakato Dynamics – Studio desain dan perencanaan modern berbasis di Bekasi. Kami merancang hunian, perkantoran, kawasan industri, dan berbagai proyek perencanaan lainnya.">
 
 <!-- SEO: Robots & Canonical -->
 <meta name="robots" content="index, follow" />
 <link rel="canonical" href="https://futuresakatodynamics.github.io/Future-Sakato-Dynamics/" />
 
 <!-- SEO: Keywords -->
-<meta name="keywords" content="jasa konstruksi Bekasi, kontraktor Bekasi, pembangunan gedung Bekasi, renovasi rumah Bekasi, kontraktor perkantoran, gudang industri Bekasi, Future Sakato Dynamics, konstruksi modern Bekasi, jasa bangun rumah Bekasi" />
+<meta name="keywords" content="jasa desain perencanaan Bekasi, studio perencanaan Bekasi, desain arsitektur Bekasi, perencanaan bangunan Bekasi, studio desain perkantoran, perencanaan kawasan industri Bekasi, Future Sakato Dynamics, studio perencanaan modern Bekasi, jasa desain rumah Bekasi" />
 
 <!-- SEO: Author & Geo -->
 <meta name="author" content="Future Sakato Dynamics Studio" />
@@ -29,22 +29,22 @@
 
 <!-- Open Graph (Google & Media Sosial) -->
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Future Sakato Dynamics Studio – Konstruksi & Pembangunan Modern Bekasi" />
-<meta property="og:description" content="Jasa konstruksi profesional di Bekasi: hunian, perkantoran, gudang industri, fasilitas publik. Konsultasi gratis, harga transparan, pengerjaan tepat waktu." />
+<meta property="og:title" content="Future Sakato Dynamics Studio – Desain & Perencanaan Modern Bekasi" />
+<meta property="og:description" content="Studio desain dan perencanaan profesional di Bekasi: hunian, perkantoran, kawasan industri, fasilitas publik. Konsultasi gratis, biaya transparan, perencanaan tepat sasaran." />
 <meta property="og:url" content="https://futuresakatodynamics.github.io/Future-Sakato-Dynamics/" />
 <meta property="og:site_name" content="Future Sakato Dynamics Studio" />
 <meta property="og:locale" content="id_ID" />
 <meta property="og:image" content="https://futuresakatodynamics.github.io/Future-Sakato-Dynamics/og-image.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="Future Sakato Dynamics Studio – Jasa Konstruksi Profesional di Bekasi" />
+<meta property="og:image:alt" content="Future Sakato Dynamics Studio – Studio Desain Perencanaan Profesional di Bekasi" />
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Future Sakato Dynamics Studio – Konstruksi Modern Bekasi" />
-<meta name="twitter:description" content="Jasa konstruksi profesional di Bekasi: hunian, perkantoran, gudang industri, fasilitas publik." />
+<meta name="twitter:title" content="Future Sakato Dynamics Studio – Desain Perencanaan Modern Bekasi" />
+<meta name="twitter:description" content="Studio desain dan perencanaan profesional di Bekasi: hunian, perkantoran, kawasan industri, fasilitas publik." />
 <meta name="twitter:image" content="https://futuresakatodynamics.github.io/Future-Sakato-Dynamics/og-image.png" />
-<meta name="twitter:image:alt" content="Future Sakato Dynamics Studio – Jasa Konstruksi Profesional di Bekasi" />
+<meta name="twitter:image:alt" content="Future Sakato Dynamics Studio – Studio Desain Perencanaan Profesional di Bekasi" />
 
 <!-- Schema.org Structured Data (Local Business) -->
 <script type="application/ld+json">
@@ -52,7 +52,7 @@
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": "Future Sakato Dynamics Studio",
-  "description": "Studio konstruksi dan pembangunan modern berbasis di Bekasi. Melayani pembangunan gedung hunian, perkantoran, industri, dan berbagai proyek konstruksi lainnya.",
+  "description": "Studio desain dan perencanaan modern berbasis di Bekasi. Melayani perencanaan hunian, perkantoran, industri, dan berbagai proyek desain lainnya.",
   "url": "https://futuresakatodynamics.github.io/Future-Sakato-Dynamics/",
   "email": "futuresakatodynamics@gmail.com",
   "telephone": "+6282285754080",
@@ -63,7 +63,7 @@
     "addressCountry": "ID"
   },
   "areaServed": "Bekasi, Jawa Barat, Indonesia",
-  "serviceType": ["Konstruksi Gedung Hunian", "Gedung Perkantoran", "Konstruksi Industri", "Fasilitas Publik", "Konstruksi Sipil", "Konsultasi Perencanaan"]
+  "serviceType": ["Desain Hunian", "Perencanaan Perkantoran", "Perencanaan Kawasan Industri", "Fasilitas Publik", "Perencanaan Sipil", "Konsultasi Perencanaan"]
 }
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:wght@300;400;600&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1204,6 +1204,15 @@ footer {
   flex-direction: column;
   align-items: flex-end;
   gap: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.wa-widget.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 .wa-popup {
@@ -1412,12 +1421,12 @@ footer {
       <span>Bekasi · Jawa Barat · Indonesia</span>
     </div>
     <h1 class="hero-title">
-      MEMBANGUN<br>
+      MERANCANG<br>
       <em>MASA DEPAN</em><br>
       ANDA
     </h1>
     <p class="hero-desc">
-      Solusi konstruksi modern terpercaya untuk gedung hunian, perkantoran, industri, dan berbagai proyek pembangunan.
+      Solusi desain dan perencanaan modern terpercaya untuk hunian, perkantoran, kawasan industri, dan berbagai proyek perencanaan.
     </p>
     <div class="hero-buttons">
       <a href="#layanan" class="btn-primary">Lihat Layanan</a>
@@ -1427,11 +1436,30 @@ footer {
 
   <div class="hero-stats">
     <div class="stat">
-      <div class="stat-num">100<span>%</span></div>
+      <div class="stat-num"><span id="counterNum">0</span><span>%</span></div>
       <div class="stat-label">Komitmen Kualitas</div>
     </div>
   </div>
 </section>
+<script>
+// Counter animation: starts after intro curtains open (~2s)
+setTimeout(() => {
+  const el = document.getElementById('counterNum');
+  const target = 100;
+  const duration = 12000; // ms
+  const start = performance.now();
+  function tick(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease out quart: fast start, slow finish — feels dramatic
+    const eased = 1 - Math.pow(1 - progress, 4);
+    el.textContent = Math.floor(eased * target);
+    if (progress < 1) requestAnimationFrame(tick);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(tick);
+}, 2200);
+</script>
 
 <div class="gold-divider"></div>
 
@@ -1445,26 +1473,26 @@ footer {
     <div class="reveal" style="background:rgba(255,255,255,0.92);border:1px solid rgba(26,63,110,0.12);border-radius:6px;box-shadow:0 4px 24px rgba(26,63,110,0.10);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:44px 40px 40px;position:relative;overflow:hidden;">
       <span style="font-family:'Bebas Neue',sans-serif;font-size:72px;color:rgba(26,63,110,0.06);position:absolute;top:16px;right:24px;line-height:1;pointer-events:none;">FSD</span>
       <p class="tentang-body" style="color:var(--text);font-size:16px;line-height:1.8;margin-bottom:10px;">
-        Future Sakato Dynamics adalah studio konstruksi dan pembangunan modern, berkedudukan di Bekasi, Jawa Barat. Kami hadir untuk menjawab kebutuhan konstruksi modern dengan standar tinggi — dari perencanaan hingga serah terima proyek.
+        Future Sakato Dynamics adalah studio desain dan perencanaan modern, berkedudukan di Bekasi, Jawa Barat. Kami hadir untuk menjawab kebutuhan perencanaan modern dengan standar tinggi — dari konsep awal hingga dokumen perencanaan siap bangun.
         <br><br>
-        Dengan portofolio layanan yang luas mencakup gedung hunian, perkantoran, industri, perbelanjaan, dan fasilitas umum, kami siap menjadi mitra terpercaya dalam setiap proyek pembangunan Anda.
+        Dengan portofolio layanan yang luas mencakup perancangan hunian, perkantoran, kawasan industri, perbelanjaan, dan fasilitas umum, kami siap menjadi mitra perencanaan terpercaya dalam setiap proyek Anda.
       </p>
       <div class="nilai-grid">
         <div class="nilai-item">
           <h4>Kualitas Terjamin</h4>
-          <p>Material pilihan dan pengerjaan standar tinggi di setiap proyek.</p>
+          <p>Standar perencanaan tinggi dengan pendekatan detail di setiap proyek.</p>
         </div>
         <div class="nilai-item">
           <h4>Tepat Waktu</h4>
-          <p>Manajemen proyek terstruktur untuk memastikan tenggat terpenuhi.</p>
+          <p>Manajemen proyek terstruktur untuk memastikan tenggat perencanaan terpenuhi.</p>
         </div>
         <div class="nilai-item">
           <h4>Desain Modern</h4>
           <p>Mengikuti tren arsitektur terkini yang fungsional dan estetis.</p>
         </div>
         <div class="nilai-item">
-          <h4>Harga Transparan</h4>
-          <p>Estimasi biaya yang jelas dan kompetitif tanpa biaya tersembunyi.</p>
+          <h4>Biaya Transparan</h4>
+          <p>Estimasi biaya perencanaan yang jelas dan kompetitif tanpa biaya tersembunyi.</p>
         </div>
       </div>
     </div>
@@ -1476,7 +1504,7 @@ footer {
   <div class="layanan-header reveal">
     <div>
       <div class="section-tag"><span>Layanan Kami</span></div>
-      <h2 class="section-title">APA YANG<br>KAMI KERJAKAN</h2>
+      <h2 class="section-title">APA YANG<br>KAMI RANCANG</h2>
     </div>
   </div>
 
@@ -1484,38 +1512,38 @@ footer {
     <div class="layanan-card">
       <span class="layanan-num">01</span>
       <span class="layanan-icon">🏠</span>
-      <h3 class="layanan-title">Konstruksi Gedung Hunian</h3>
-      <p class="layanan-desc">Pembangunan rumah tinggal, perumahan, apartemen, dan fasilitas hunian lainnya dengan desain modern dan material berkualitas.</p>
+      <h3 class="layanan-title">Desain Hunian</h3>
+      <p class="layanan-desc">Perencanaan rumah tinggal, perumahan, apartemen, dan fasilitas hunian lainnya dengan desain modern dan konsep ruang yang optimal.</p>
     </div>
     <div class="layanan-card">
       <span class="layanan-num">02</span>
       <span class="layanan-icon">🏢</span>
-      <h3 class="layanan-title">Gedung Perkantoran & Komersial</h3>
-      <p class="layanan-desc">Pembangunan gedung kantor, ruko, gedung perbelanjaan, dan kawasan komersial yang representatif dan fungsional.</p>
+      <h3 class="layanan-title">Perencanaan Perkantoran & Komersial</h3>
+      <p class="layanan-desc">Perancangan gedung kantor, ruko, pusat perbelanjaan, dan kawasan komersial yang representatif, fungsional, dan bernilai tinggi.</p>
     </div>
     <div class="layanan-card">
       <span class="layanan-num">03</span>
       <span class="layanan-icon">🏭</span>
-      <h3 class="layanan-title">Konstruksi Gedung Industri</h3>
-      <p class="layanan-desc">Pembangunan pabrik, gudang, dan fasilitas industri yang dirancang sesuai kebutuhan operasional spesifik klien.</p>
+      <h3 class="layanan-title">Perencanaan Kawasan Industri</h3>
+      <p class="layanan-desc">Perancangan pabrik, gudang, dan fasilitas industri yang disesuaikan dengan kebutuhan operasional spesifik klien.</p>
     </div>
     <div class="layanan-card">
       <span class="layanan-num">04</span>
       <span class="layanan-icon">🏥</span>
-      <h3 class="layanan-title">Fasilitas Publik & Kesehatan</h3>
-      <p class="layanan-desc">Konstruksi gedung kesehatan, pendidikan, penginapan, dan fasilitas publik yang memenuhi standar keselamatan dan kenyamanan.</p>
+      <h3 class="layanan-title">Desain Fasilitas Publik & Kesehatan</h3>
+      <p class="layanan-desc">Perencanaan gedung kesehatan, pendidikan, penginapan, dan fasilitas publik yang memenuhi standar keselamatan dan kenyamanan.</p>
     </div>
     <div class="layanan-card">
       <span class="layanan-num">05</span>
       <span class="layanan-icon">🔧</span>
-      <h3 class="layanan-title">Konstruksi Sipil & Infrastruktur</h3>
-      <p class="layanan-desc">Pembangunan infrastruktur pengolahan air bersih dan konstruksi sipil khusus sesuai standar teknis yang berlaku.</p>
+      <h3 class="layanan-title">Perencanaan Sipil & Infrastruktur</h3>
+      <p class="layanan-desc">Perencanaan infrastruktur pengolahan air bersih dan pekerjaan sipil khusus sesuai standar teknis yang berlaku.</p>
     </div>
     <div class="layanan-card">
       <span class="layanan-num">06</span>
       <span class="layanan-icon">📐</span>
-      <h3 class="layanan-title">Konsultasi & Perencanaan</h3>
-      <p class="layanan-desc">Layanan konsultasi desain, perencanaan proyek, RAB, dan pendampingan teknis dari tahap awal hingga penyelesaian proyek.</p>
+      <h3 class="layanan-title">Konsultasi & Perencanaan Terpadu</h3>
+      <p class="layanan-desc">Layanan konsultasi desain, perencanaan proyek, RAB, dan pendampingan teknis dari tahap konsep hingga dokumen siap bangun.</p>
     </div>
   </div>
 </section>
@@ -1525,7 +1553,7 @@ footer {
   <div class="marquee-header reveal">
     <div class="section-tag"><span style="color:var(--gold-light);">Portofolio</span></div>
     <h2 class="section-title">PROYEK KAMI</h2>
-    <p class="section-lead" style="color:rgba(255,255,255,0.5);">Setiap proyek mencerminkan komitmen kami terhadap kualitas dan keunggulan konstruksi.</p>
+    <p class="section-lead" style="color:rgba(255,255,255,0.5);">Setiap rancangan mencerminkan komitmen kami terhadap kualitas desain dan keunggulan perencanaan.</p>
   </div>
 
   <div class="marquee-track-wrap" style="margin-bottom:16px;">
@@ -1541,7 +1569,7 @@ footer {
   <div class="testimoni-header reveal">
     <div class="section-tag"><span>Testimoni Klien</span></div>
     <h2 class="section-title">APA KATA<br>KLIEN KAMI</h2>
-    <p class="section-lead">Kepuasan klien adalah ukuran keberhasilan kami di setiap proyek.</p>
+    <p class="section-lead">Kepuasan klien adalah ukuran keberhasilan kami di setiap rancangan.</p>
   </div>
 
   <div class="testi-track-wrap" style="margin-bottom:24px;">
@@ -1557,8 +1585,8 @@ footer {
   <div class="kontak-inner">
     <div class="kontak-left reveal">
       <div class="section-tag"><span style="color:var(--gold-light);">Hubungi Kami</span></div>
-      <h2 class="section-title">MULAI PROYEK<br>ANDA HARI INI</h2>
-      <p class="section-lead">Konsultasikan kebutuhan konstruksi Anda bersama tim kami. Kami siap memberikan solusi terbaik.</p>
+      <h2 class="section-title">MULAI PERENCANAAN<br>ANDA HARI INI</h2>
+      <p class="section-lead">Konsultasikan kebutuhan desain dan perencanaan Anda bersama tim kami. Kami siap memberikan solusi terbaik.</p>
 
       <div class="kontak-info">
         <div class="kontak-item">
@@ -1589,12 +1617,12 @@ footer {
           <input type="tel" class="form-input" placeholder="08xxxxxxxxxx" required>
         </div>
         <div class="form-row">
-          <label class="form-label">Jenis Proyek</label>
-          <input type="text" class="form-input" placeholder="contoh: Gedung kantor 3 lantai">
+          <label class="form-label">Jenis Perencanaan</label>
+          <input type="text" class="form-input" placeholder="contoh: Desain kantor 3 lantai">
         </div>
         <div class="form-row">
           <label class="form-label">Pesan</label>
-          <textarea class="form-textarea" placeholder="Ceritakan kebutuhan proyek Anda..."></textarea>
+          <textarea class="form-textarea" placeholder="Ceritakan kebutuhan desain dan perencanaan Anda..."></textarea>
         </div>
         <button type="submit" class="form-submit">Kirim Pesan →</button>
       </form>
@@ -1607,7 +1635,7 @@ footer {
 <footer>
   <div class="footer-logo">
     <div class="brand-name">FUTURE SAKATO DYNAMICS</div>
-    <div class="brand-sub">STUDIO · KONSTRUKSI · PERENCANAAN · PEMBANGUNAN</div>
+    <div class="brand-sub">STUDIO · DESAIN · PERENCANAAN · ARSITEKTUR</div>
   </div>
   <div class="footer-copy">
     © Future Sakato Dynamics. Semua hak dilindungi.
@@ -1624,7 +1652,7 @@ footer {
 <div class="wa-widget">
   <div class="wa-popup" id="waPopup">
     <div class="wa-popup-header">
-      <div class="wa-avatar">🏗️</div>
+      <div class="wa-avatar">📐</div>
       <div>
         <div class="wa-name">Future Sakato Dynamics</div>
         <div class="wa-status"><span class="wa-dot"></span> Online sekarang</div>
@@ -1634,7 +1662,7 @@ footer {
     <div class="wa-popup-body">
       <div class="wa-bubble">
         Halo! 👋 Selamat datang di <strong>Future Sakato Dynamics</strong>.<br><br>
-        Ada yang bisa kami bantu untuk proyek konstruksi Anda? Ketik pesan Anda dan kami akan segera merespons.
+        Ada yang bisa kami bantu untuk kebutuhan desain dan perencanaan Anda? Ketik pesan Anda dan kami akan segera merespons.
         <div class="wa-time">Balas dalam &lt; 5 menit</div>
       </div>
       <div class="wa-input-row">
@@ -1850,12 +1878,12 @@ function submitForm(e) {
   const telp  = form.querySelector('input[type=tel]').value;
   const proyek= form.querySelectorAll('input[type=text]')[1]?.value || '';
   const pesan = form.querySelector('textarea').value;
-  const subject = encodeURIComponent('Permintaan Konsultasi Proyek – ' + proyek);
+  const subject = encodeURIComponent('Permintaan Konsultasi Perencanaan – ' + proyek);
   const body    = encodeURIComponent(
     'Halo Tim Future Sakato Dynamics,\n\n' +
     'Nama: ' + nama + '\n' +
     'Telepon: ' + telp + '\n' +
-    'Jenis Proyek: ' + proyek + '\n\n' +
+    'Jenis Perencanaan: ' + proyek + '\n\n' +
     'Pesan:\n' + pesan + '\n\n' +
     'Terima kasih.'
   );
@@ -1916,15 +1944,20 @@ function toggleWA() {
 function sendWA() {
   const input = document.getElementById('waInput');
   const msg = input.value.trim();
-  const defaultMsg = 'Halo Future Sakato Dynamics, saya ingin konsultasi mengenai proyek konstruksi.';
+  const defaultMsg = 'Halo Future Sakato Dynamics, saya ingin konsultasi mengenai desain dan perencanaan.';
   const text = encodeURIComponent(msg || defaultMsg);
   window.open('https://wa.me/6282285754080?text=' + text, '_blank');
   input.value = '';
 }
 
-// Auto-show WA popup after scrolling 40% of page
+// Show WA button after scrolling 1 full screen height
+// Auto-open popup after 40% of page
 let waShown = false;
 window.addEventListener('scroll', () => {
+  const widget = document.querySelector('.wa-widget');
+  if (window.scrollY >= window.innerHeight) {
+    widget.classList.add('visible');
+  }
   if (waShown) return;
   const scrolled = window.scrollY + window.innerHeight;
   const total = document.body.scrollHeight;
@@ -1940,14 +1973,14 @@ window.addEventListener('scroll', () => {
 
 // ── TESTIMONI BUILDER ──
 const testimonials = [
-  { name: 'Budi Santoso', role: 'Pemilik Ruko, Bekasi Timur', text: 'Hasil pembangunan ruko saya sangat memuaskan. Tim Future Sakato sangat profesional dan pengerjaan selesai tepat waktu sesuai perjanjian.', init: 'BS' },
-  { name: 'Hendra Wijaya', role: 'Direktur PT. Maju Bersama', text: 'Gedung kantor kami dibangun dengan standar tinggi. Konsultasi awal sangat membantu kami menentukan desain yang paling efisien dan representatif.', init: 'HW' },
-  { name: 'Siti Rahayu', role: 'Pemilik Rumah, Bekasi Barat', text: 'Renovasi rumah berjalan lancar tanpa gangguan berarti. Hasilnya melebihi ekspektasi — material bagus dan rapih.', init: 'SR' },
-  { name: 'Ahmad Fauzi', role: 'Manager Logistik, Cikarang', text: 'Gudang industri kami selesai lebih cepat dari jadwal. Harga transparan dan tidak ada biaya kejutan di akhir proyek.', init: 'AF' },
-  { name: 'Dewi Kusuma', role: 'Pengelola Klinik, Bekasi Selatan', text: 'Pembangunan klinik kami memenuhi standar kesehatan yang ketat. Future Sakato benar-benar paham kebutuhan fasilitas medis modern.', init: 'DK' },
-  { name: 'Riko Prasetyo', role: 'Pengembang Properti, Tambun', text: 'Sudah dua proyek perumahan saya percayakan ke Future Sakato. Kualitas konsisten, tim komunikatif, dan harga sangat kompetitif.', init: 'RP' },
-  { name: 'Linda Hermawan', role: 'Pemilik Cafe & Restoran', text: 'Interior dan konstruksi cafe saya dikerjakan dengan sentuhan artistik yang luar biasa. Banyak pelanggan memuji desainnya!', init: 'LH' },
-  { name: 'Teguh Prabowo', role: 'Kepala Dinas, Kota Bekasi', text: 'Proyek gedung fasilitas publik berjalan sesuai spesifikasi teknis pemerintah. Kami puas dengan hasil akhir dan profesionalisme timnya.', init: 'TP' },
+  { name: 'Budi Santoso', role: 'Pemilik Ruko, Bekasi Timur', text: 'Hasil desain ruko saya sangat memuaskan. Tim Future Sakato sangat profesional dan perencanaan selesai tepat waktu sesuai perjanjian.', init: 'BS' },
+  { name: 'Hendra Wijaya', role: 'Direktur PT. Maju Bersama', text: 'Rancangan gedung kantor kami memenuhi standar tinggi. Konsultasi awal sangat membantu kami menentukan desain yang paling efisien dan representatif.', init: 'HW' },
+  { name: 'Siti Rahayu', role: 'Pemilik Rumah, Bekasi Barat', text: 'Proses perencanaan renovasi rumah berjalan lancar tanpa gangguan berarti. Hasilnya melebihi ekspektasi — desain bagus dan rapi.', init: 'SR' },
+  { name: 'Ahmad Fauzi', role: 'Manager Logistik, Cikarang', text: 'Dokumen perencanaan gudang industri kami selesai lebih cepat dari jadwal. Biaya transparan dan tidak ada kejutan di akhir proses.', init: 'AF' },
+  { name: 'Dewi Kusuma', role: 'Pengelola Klinik, Bekasi Selatan', text: 'Rancangan klinik kami memenuhi standar kesehatan yang ketat. Future Sakato benar-benar paham kebutuhan desain fasilitas medis modern.', init: 'DK' },
+  { name: 'Riko Prasetyo', role: 'Pengembang Properti, Tambun', text: 'Sudah dua proyek perumahan saya percayakan desainnya ke Future Sakato. Kualitas konsisten, tim komunikatif, dan biaya sangat kompetitif.', init: 'RP' },
+  { name: 'Linda Hermawan', role: 'Pemilik Cafe & Restoran', text: 'Perencanaan interior dan layout cafe saya dirancang dengan sentuhan artistik yang luar biasa. Banyak pelanggan memuji desainnya!', init: 'LH' },
+  { name: 'Teguh Prabowo', role: 'Kepala Dinas, Kota Bekasi', text: 'Dokumen perencanaan gedung fasilitas publik sesuai spesifikasi teknis pemerintah. Kami puas dengan hasil akhir dan profesionalisme timnya.', init: 'TP' },
 ];
 
 function buildTestiItem(t) {
@@ -1976,14 +2009,14 @@ function fillTestiRow(rowId, items) {
 fillTestiRow('testiRow1', testimonials.slice(0, 4));
 fillTestiRow('testiRow2', testimonials.slice(4));
 const projects = [
-  { tag: 'Gedung Perkantoran', title: 'Kantor Modern 5 Lantai', color: '#1a3a6e' },
-  { tag: 'Hunian', title: 'Perumahan Residensial', color: '#1a5fb4' },
-  { tag: 'Industri', title: 'Gudang & Pabrik', color: '#2d4a1e' },
-  { tag: 'Komersial', title: 'Pusat Perbelanjaan', color: '#3a1a1a' },
-  { tag: 'Fasilitas Publik', title: 'Gedung Pendidikan', color: '#1a2a3a' },
-  { tag: 'Konstruksi Sipil', title: 'Infrastruktur Air Bersih', color: '#0a2a3a' },
-  { tag: 'Kesehatan', title: 'Gedung Klinik Modern', color: '#1a3a2a' },
-  { tag: 'Penginapan', title: 'Hotel & Penginapan', color: '#2a1a3a' },
+  { tag: 'Perencanaan Perkantoran', title: 'Desain Kantor Modern 5 Lantai', color: '#1a3a6e' },
+  { tag: 'Hunian', title: 'Perencanaan Kawasan Residensial', color: '#1a5fb4' },
+  { tag: 'Industri', title: 'Desain Gudang & Pabrik', color: '#2d4a1e' },
+  { tag: 'Komersial', title: 'Perencanaan Pusat Perbelanjaan', color: '#3a1a1a' },
+  { tag: 'Fasilitas Publik', title: 'Desain Gedung Pendidikan', color: '#1a2a3a' },
+  { tag: 'Perencanaan Sipil', title: 'Perencanaan Infrastruktur Air Bersih', color: '#0a2a3a' },
+  { tag: 'Kesehatan', title: 'Desain Klinik Modern', color: '#1a3a2a' },
+  { tag: 'Penginapan', title: 'Perencanaan Hotel & Penginapan', color: '#2a1a3a' },
 ];
 
 function buildItem(p, idx) {
