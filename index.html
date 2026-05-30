@@ -2677,6 +2677,14 @@ setTimeout(() => {
                 <span class="kalk-input-unit">m</span>
               </div>
             </div>
+            <div class="kalk-times">×</div>
+            <div class="kalk-dim-group">
+              <label>Jumlah Lantai</label>
+              <div class="kalk-input-wrap">
+                <input type="number" id="kalkLantai" placeholder="1" min="1" step="1" oninput="kalkHitung()">
+                <span class="kalk-input-unit">lt</span>
+              </div>
+            </div>
           </div>
 
           <!-- Result -->
@@ -2794,7 +2802,10 @@ function kalkSelectPkg(btn) {
 function kalkHitung() {
   var p = parseFloat(document.getElementById('kalkPanjang').value) || 0;
   var l = parseFloat(document.getElementById('kalkLebar').value) || 0;
-  var luas = p * l;
+  var lt = parseFloat(document.getElementById('kalkLantai').value) || 1;
+  if (lt < 1) lt = 1;
+  var luas = p * l * lt;
+  var luasPerLantai = p * l;
 
   var resPaket = document.getElementById('kalkResPaket');
   var resLuas  = document.getElementById('kalkResLuas');
@@ -2809,18 +2820,18 @@ function kalkHitung() {
 
   resPaket.textContent = kalkSelected.nama;
 
-  if (luas <= 0) {
+  if (luasPerLantai <= 0) {
     resLuas.textContent = kalkSelected.minLuas ? 'Min. luas: ' + kalkFmtLuas(kalkSelected.minLuas) + ' m²' : 'Masukkan panjang & lebar';
     resOut.innerHTML = '<div class="kalk-placeholder">Masukkan dimensi bangunan</div>';
     return;
   }
 
   if (kalkSelected.minLuas && luas < kalkSelected.minLuas) {
-    resLuas.textContent = 'Luas: ' + kalkFmtLuas(luas) + ' m² — di bawah minimum ' + kalkFmtLuas(kalkSelected.minLuas) + ' m²';
+    resLuas.textContent = 'Luas: ' + kalkFmtLuas(luas) + ' m² (' + lt + ' lantai) — di bawah minimum ' + kalkFmtLuas(kalkSelected.minLuas) + ' m²';
     resOut.innerHTML = '<div class="kalk-res-total" style="color:#e87a5a;">' + kalkFmt(kalkSelected.hargaFlat) + '</div>' +
       '<div class="kalk-res-sub" style="color:rgba(232,122,90,0.7);">Harga minimum berlaku</div>' +
       '<div class="kalk-formula-row">' +
-        '<div class="kalk-formula-chip" style="border-color:rgba(232,122,90,0.3);">Luas <span style="color:#e87a5a;">' + kalkFmtLuas(luas) + ' m²</span></div>' +
+        '<div class="kalk-formula-chip" style="border-color:rgba(232,122,90,0.3);">' + kalkFmtLuas(p) + ' × ' + kalkFmtLuas(l) + ' × ' + lt + ' lt <span style="color:#e87a5a;">= ' + kalkFmtLuas(luas) + ' m²</span></div>' +
         '<span class="kalk-formula-op">→</span>' +
         '<div class="kalk-formula-chip" style="border-color:rgba(232,122,90,0.3);">Min. <span style="color:#e87a5a;">' + kalkFmt(kalkSelected.hargaFlat) + '</span></div>' +
       '</div>';
@@ -2828,7 +2839,7 @@ function kalkHitung() {
   }
 
   var total = luas * kalkSelected.harga;
-  resLuas.textContent = 'Luas bangunan: ' + kalkFmtLuas(luas) + ' m²';
+  resLuas.textContent = 'Luas total: ' + kalkFmtLuas(luas) + ' m² (' + kalkFmtLuas(luasPerLantai) + ' m² × ' + lt + ' lantai)';
   resOut.innerHTML =
     '<div class="kalk-res-total">' + kalkFmt(total) + '</div>' +
     '<div class="kalk-res-sub">Estimasi biaya desain</div>' +
@@ -2955,6 +2966,144 @@ document.addEventListener('keydown', function(ev) {
   flex-direction: column;
   gap: 8px;
 }
+
+/* ── CHAT PAKET OFFER ── */
+.wa-offer-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  align-self: flex-start;
+  max-width: 90%;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  border-top-left-radius: 2px;
+}
+.wa-offer-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1a3a6e;
+  margin-bottom: 4px;
+}
+.wa-offer-sub {
+  font-size: 11.5px;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.wa-offer-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.wa-offer-btn-yes {
+  background: #1a3a6e;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.2s;
+}
+.wa-offer-btn-yes:hover { background: #1a5fb4; }
+.wa-offer-btn-skip {
+  background: transparent;
+  color: #888;
+  border: 1.5px solid #ccc;
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.wa-offer-btn-skip:hover { border-color: #999; color: #555; }
+
+/* ── INLINE MINI CALCULATOR ── */
+.wa-calc-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  align-self: flex-start;
+  max-width: 92%;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  border-top-left-radius: 2px;
+  font-size: 12px;
+}
+.wa-calc-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1a3a6e;
+  margin-bottom: 8px;
+}
+.wa-calc-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.wa-calc-row label {
+  font-size: 11px;
+  color: #555;
+  font-weight: 600;
+}
+.wa-calc-row select,
+.wa-calc-row input {
+  padding: 6px 8px;
+  border: 1.5px solid #ddd;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #333;
+  outline: none;
+  width: 100%;
+}
+.wa-calc-row select:focus,
+.wa-calc-row input:focus { border-color: #1a5fb4; }
+.wa-calc-result {
+  background: #f0f4ff;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: #1a3a6e;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: none;
+}
+.wa-calc-result.show { display: block; }
+.wa-calc-footer {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.wa-calc-btn-order {
+  background: #25D366;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: none;
+  transition: background 0.2s;
+}
+.wa-calc-btn-order.show { display: inline-flex; align-items: center; gap: 5px; }
+.wa-calc-btn-order:hover { background: #1ebe5a; }
+.wa-calc-btn-skip2 {
+  background: transparent;
+  color: #aaa;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.wa-calc-btn-skip2:hover { color: #666; border-color: #bbb; }
 </style>
 
 <div class="wa-widget">
@@ -3525,6 +3674,10 @@ let waChatHistory = [];
 let waBotTyping = false;
 let waInitDone = false;
 let waBotReplyCount = 0;
+let waPaketOfferShown = false;  // sudah tampilkan tawaran paket?
+let waCalcShown = false;        // sudah tampilkan kalkulator?
+let waSkipCount = 0;            // berapa kali skip setelah kalkulator?
+let waFromChat = false;         // modal paket dibuka dari chat?
 
 // ── ANTI-SPAM ──
 let waLastMsgTime = 0;
@@ -3593,6 +3746,210 @@ function getTemplateReply(msg) {
     if (t.keys.test(msg)) return t.reply;
   }
   return null;
+}
+
+// ── TAMPILKAN TAWARAN PAKET (chat ke-8) ──
+function showPaketOffer() {
+  if (waPaketOfferShown) return;
+  waPaketOfferShown = true;
+  const el = document.getElementById('waMessages');
+  const card = document.createElement('div');
+  card.className = 'wa-offer-card';
+  card.innerHTML = `
+    <div class="wa-offer-title">🎁 Lihat Paket Layanan Kami</div>
+    <div class="wa-offer-sub">Kami punya berbagai paket desain sesuai kebutuhan Anda — mulai dari hunian hingga kawasan komersial. Mau lihat detail paket & estimasi harganya?</div>
+    <div class="wa-offer-btns">
+      <button class="wa-offer-btn-yes" onclick="chatPilihPaket()">📋 Lihat Paket</button>
+      <button class="wa-offer-btn-skip" onclick="chatSkipPaket()">Lewati dulu</button>
+    </div>
+  `;
+  el.appendChild(card);
+  scrollWABottom();
+}
+
+function chatPilihPaket() {
+  document.querySelectorAll('.wa-offer-card').forEach(c => {
+    c.querySelectorAll('button').forEach(b => b.disabled = true);
+    c.style.opacity = '0.6';
+  });
+  addWAMsg('Saya ingin lihat paket layanan 📋', 'user');
+  setTimeout(() => {
+    addWAMsg('Tentu! Silakan pilih paket yang sesuai kebutuhan Anda. Setelah memilih, tim kami akan langsung menghubungi via WhatsApp. 😊', 'bot');
+    waFromChat = true;
+    const modal = document.getElementById('paketModal');
+    if (modal) {
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      // Override semua tombol CTA agar langsung ke WA
+      setTimeout(() => {
+        modal.querySelectorAll('.perumahan-cta').forEach(btn => {
+          const newBtn = btn.cloneNode(true);
+          newBtn.onclick = function(e) {
+            e.preventDefault();
+            closePaketModal();
+            escalateToHuman();
+          };
+          btn.parentNode.replaceChild(newBtn, btn);
+        });
+      }, 200);
+    }
+  }, 500);
+}
+
+function chatSkipPaket() {
+  document.querySelectorAll('.wa-offer-card').forEach(c => {
+    c.querySelectorAll('button').forEach(b => b.disabled = true);
+    c.style.opacity = '0.6';
+  });
+  addWAMsg('Lewati dulu', 'user');
+  setTimeout(() => {
+    showCalcCard();
+  }, 500);
+}
+
+function showCalcCard() {
+  if (waCalcShown) return;
+  waCalcShown = true;
+  const el = document.getElementById('waMessages');
+  const card = document.createElement('div');
+  card.className = 'wa-calc-card';
+  card.innerHTML = `
+    <div class="wa-calc-title">🧮 Estimasi Biaya Desain</div>
+    <div class="wa-calc-row">
+      <label>Pilih Paket Layanan</label>
+      <select id="calcJenis" onchange="hitungCalc()">
+        <option value="">-- Pilih Paket --</option>
+        <optgroup label="── Paket Umum ──">
+          <option value="rtha">Rumah Tinggal / Villa / Hotel / Apartemen — Rp 95.000/m²</option>
+          <option value="kos">Kos-kosan / Ruko / Rukan — Rp 65.000/m²</option>
+        </optgroup>
+        <optgroup label="── Paket Perumahan ──">
+          <option value="pkgA">Paket A Perumahan — Rp 160.000/m²</option>
+          <option value="pkgB">Paket B Perumahan — Rp 290.000/m²</option>
+          <option value="pkgC">Paket C Premium Perumahan — Rp 490.000/m²</option>
+        </optgroup>
+        <optgroup label="── Paket DETAPO ──">
+          <option value="detaRt">DETAPO – Rumah Tinggal / Villa / Hotel — Rp 45.000/m²</option>
+          <option value="detaKos">DETAPO – Kos-kosan / Ruko / Rukan — Rp 32.000/m²</option>
+        </optgroup>
+        <optgroup label="── Paket Denah Saja ──">
+          <option value="denah">Paket Denah Saja (1–3 Lantai) — Flat Rp 300.000</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="wa-calc-row" id="calcDimRow">
+      <label>Panjang × Lebar × Lantai (m)</label>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input type="number" id="calcP" placeholder="P" min="0" step="0.1" oninput="hitungCalc()" style="width:56px;padding:6px 6px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;">
+        <span style="color:#999;font-size:11px;">×</span>
+        <input type="number" id="calcL" placeholder="L" min="0" step="0.1" oninput="hitungCalc()" style="width:56px;padding:6px 6px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;">
+        <span style="color:#999;font-size:11px;">×</span>
+        <input type="number" id="calcLt" placeholder="Lt" min="1" step="1" value="1" oninput="hitungCalc()" style="width:46px;padding:6px 6px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;">
+      </div>
+    </div>
+    <div class="wa-calc-result" id="calcResult"></div>
+    <div class="wa-calc-footer">
+      <button class="wa-calc-btn-order" id="calcOrderBtn" onclick="escalateToHuman()">
+        <svg viewBox="0 0 24 24" fill="white" width="12" height="12"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.47 11.47 0 00.57 3.58 1 1 0 01-.25 1.01z"/></svg>
+        Pesan via WhatsApp
+      </button>
+      <button class="wa-calc-btn-skip2" onclick="chatSkipCalc()">Lanjut chat dulu</button>
+    </div>
+    <div style="font-size:10px;color:#bbb;margin-top:6px;">*Berdasarkan tarif paket resmi Future Sakato Dynamics</div>
+  `;
+  el.appendChild(card);
+  scrollWABottom();
+  setTimeout(() => {
+    addWAMsg('Silakan hitung estimasi biaya desain Anda menggunakan tarif paket resmi kami. 😊', 'bot');
+  }, 400);
+}
+
+var chatPaketExtra = {
+  denah: { nama: 'Paket Denah Saja (1–3 Lantai)', hargaFlat: 300000, flatOnly: true,
+           benefits: ['Gambar Denah 1 Lantai', 'Gambar Denah 2 Lantai', 'Gambar Denah 3 Lantai'] }
+};
+
+function hitungCalc() {
+  const jenis    = document.getElementById('calcJenis')?.value;
+  const p        = parseFloat(document.getElementById('calcP')?.value)  || 0;
+  const l        = parseFloat(document.getElementById('calcL')?.value)  || 0;
+  const lt       = parseFloat(document.getElementById('calcLt')?.value) || 1;
+  const result   = document.getElementById('calcResult');
+  const orderBtn = document.getElementById('calcOrderBtn');
+  const dimRow   = document.getElementById('calcDimRow');
+
+  if (!jenis) {
+    if (result)   result.classList.remove('show');
+    if (orderBtn) orderBtn.classList.remove('show');
+    return;
+  }
+
+  // Ambil dari kalkPakets (modal) atau chatPaketExtra (denah)
+  const pkg = (kalkPakets && kalkPakets[jenis]) ? kalkPakets[jenis] : chatPaketExtra[jenis];
+  if (!pkg) return;
+
+  if (dimRow) dimRow.style.display = pkg.flatOnly ? 'none' : '';
+
+  const fmt  = n => new Intl.NumberFormat('id-ID', {style:'currency', currency:'IDR', minimumFractionDigits:0}).format(n);
+  const fmtM = n => new Intl.NumberFormat('id-ID', {maximumFractionDigits:2}).format(n);
+
+  if (pkg.flatOnly) {
+    const info = pkg.benefits.map(b => '✓ ' + b).join('<br>');
+    result.innerHTML = '<strong>' + pkg.nama + '</strong><br>' +
+      '<span style="font-size:15px;font-weight:700;color:#1a3a6e;">' + fmt(pkg.hargaFlat) + '</span>' +
+      '<span style="font-size:10px;color:#888;"> (flat semua lantai)</span><br>' +
+      '<span style="font-size:10.5px;color:#555;line-height:1.7;">' + info + '</span>';
+    result.classList.add('show');
+    if (orderBtn) orderBtn.classList.add('show');
+    scrollWABottom();
+    return;
+  }
+
+  if (p <= 0 || l <= 0) {
+    result.innerHTML = '<span style="color:#888;font-size:11px;">Masukkan panjang & lebar bangunan</span>';
+    result.classList.add('show');
+    if (orderBtn) orderBtn.classList.remove('show');
+    return;
+  }
+
+  const luas      = p * l * lt;
+  const luasPerLt = p * l;
+
+  let totalHtml = '';
+  if (pkg.minLuas && luas < pkg.minLuas) {
+    totalHtml = '<strong>' + pkg.nama + '</strong><br>' +
+      'Luas: ' + fmtM(luas) + ' m² &lt; min ' + fmtM(pkg.minLuas) + ' m² → harga minimum berlaku<br>' +
+      '<span style="font-size:15px;font-weight:700;color:#e87a5a;">' + fmt(pkg.hargaFlat) + '</span>';
+  } else {
+    const total = luas * pkg.harga;
+    totalHtml = '<strong>' + pkg.nama + '</strong><br>' +
+      fmtM(p) + ' × ' + fmtM(l) + ' × ' + Math.round(lt) + ' lt = <b>' + fmtM(luas) + ' m²</b><br>' +
+      '<span style="font-size:15px;font-weight:700;color:#1a3a6e;">' + fmt(total) + '</span>' +
+      '<span style="font-size:10px;color:#888;"> (' + fmt(pkg.harga) + '/m²)</span>';
+  }
+
+  const info = pkg.benefits.slice(0,3).map(b => '✓ ' + b).join('<br>');
+  const more = pkg.benefits.length > 3 ? '<br><span style="color:#aaa;">+ ' + (pkg.benefits.length-3) + ' lainnya...</span>' : '';
+  result.innerHTML = totalHtml + '<br><span style="font-size:10.5px;color:#555;line-height:1.7;">' + info + more + '</span>';
+  result.classList.add('show');
+  if (orderBtn) orderBtn.classList.add('show');
+  scrollWABottom();
+}
+
+function chatSkipCalc() {
+  waSkipCount++;
+  document.querySelectorAll('.wa-calc-btn-skip2').forEach(b => { b.disabled = true; b.textContent = '✓ Lanjut chat'; });
+  addWAMsg('Lanjut chat dulu', 'user');
+  setTimeout(() => {
+    if (waSkipCount >= 2 || waBotReplyCount >= 10) {
+      addWAMsg('😊 Kami siap melanjutkan diskusi langsung untuk memberikan solusi terbaik buat proyek Anda!', 'bot');
+      const btn = document.getElementById('waHumanBtn');
+      if (btn) btn.style.display = 'flex';
+    } else {
+      addWAMsg('Tentu! Ceritakan lebih lanjut tentang proyek Anda, kami siap membantu. 🙏', 'bot');
+      waBotReplyCount++;
+    }
+  }, 600);
 }
 
 // ── KATA KUNCI ESKALASI KE MANUSIA ──
@@ -3724,6 +4081,11 @@ Tugasmu:
     document.getElementById('waBotStatus').textContent = 'Asisten Virtual';
     addWAMsg(reply, 'bot');
     waBotReplyCount++;
+  }
+
+  // Tampilkan tawaran paket di chat ke-8
+  if (waBotReplyCount === 8 && !waPaketOfferShown) {
+    setTimeout(() => showPaketOffer(), 600);
   }
 
   // Tampilkan tombol manusia setelah 10x
