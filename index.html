@@ -1160,7 +1160,6 @@ footer {
   .burger { display: flex; }
   section { padding: 72px 24px; }
   .hero-content { padding: 0 24px; }
-  .hero-stats { display: none; }
   .tentang-grid { grid-template-columns: 1fr; gap: 40px; }
   .tentang-text { padding-left: 0; }
   .layanan-grid { grid-template-columns: 1fr; }
@@ -1173,6 +1172,37 @@ footer {
   .wa-widget { bottom: 20px; right: 16px; }
   .testimoni-header { padding: 0 24px; }
   .testi-card { width: 270px; }
+
+  /* Fix marquee item agar tidak overflow layar HP */
+  .marquee-item { width: 240px; height: 190px; }
+
+  /* Hero stats tampil di bawah hero content, lebih kecil */
+  .hero-stats {
+    display: flex;
+    position: relative;
+    bottom: auto; right: auto;
+    padding: 24px 24px 0;
+    margin-top: 0;
+    gap: 24px;
+    flex-wrap: wrap;
+    z-index: 2;
+  }
+  .stat { text-align: left; }
+  .stat-num { font-size: 40px; }
+  .stat-num span { font-size: 32px; }
+  .stat-label { font-size: 9px; }
+
+  /* Izinkan user copy nomor & email di HP */
+  .kontak-item-value,
+  .kontak-item-value * {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+    pointer-events: auto !important;
+  }
+
+  /* Cegah scroll horizontal dari marquee */
+  .marquee-section { overflow: hidden; }
+  body { overflow-x: hidden; }
 }
 
 /* ── PLACEHOLDER SVG STYLE ── */
@@ -1791,8 +1821,9 @@ setTimeout(() => {
   const W = () => hero.offsetWidth;
   const H = () => hero.offsetHeight;
 
-  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 900;
+  const renderer = new THREE.WebGLRenderer({canvas, antialias: !isMobile, alpha:true});
+  renderer.setPixelRatio(isMobile ? 1 : Math.min(devicePixelRatio,2));
   renderer.setSize(W(),H());
   renderer.setClearColor(0x000000,0);
 
@@ -1836,26 +1867,26 @@ setTimeout(() => {
   ring2.position.copy(planet.position); scene.add(ring2);
 
   /* ── STARS LAYER 1 – putih besar ── */
-  const S1=2000, sp1=new Float32Array(S1*3);
+  const S1= isMobile ? 600 : 2000, sp1=new Float32Array(S1*3);
   for(let i=0;i<S1;i++){sp1[i*3]=(Math.random()-.5)*38;sp1[i*3+1]=(Math.random()-.5)*22;sp1[i*3+2]=(Math.random()-.5)*18-2;}
   const sg1=new THREE.BufferGeometry(); sg1.setAttribute('position',new THREE.BufferAttribute(sp1,3));
   const stars1=new THREE.Points(sg1,new THREE.PointsMaterial({color:0xffffff,size:.055,transparent:true,opacity:.85,sizeAttenuation:true}));
   scene.add(stars1);
 
   /* ── STARS LAYER 2 – biru muda ── */
-  const S2=800, sp2=new Float32Array(S2*3);
+  const S2= isMobile ? 200 : 800, sp2=new Float32Array(S2*3);
   for(let i=0;i<S2;i++){sp2[i*3]=(Math.random()-.5)*38;sp2[i*3+1]=(Math.random()-.5)*22;sp2[i*3+2]=(Math.random()-.5)*18-2;}
   const sg2=new THREE.BufferGeometry(); sg2.setAttribute('position',new THREE.BufferAttribute(sp2,3));
   scene.add(new THREE.Points(sg2,new THREE.PointsMaterial({color:0xaaccff,size:.035,transparent:true,opacity:.6})));
 
   /* ── STARS LAYER 3 – kekuningan ── */
-  const S3=500, sp3=new Float32Array(S3*3);
+  const S3= isMobile ? 150 : 500, sp3=new Float32Array(S3*3);
   for(let i=0;i<S3;i++){sp3[i*3]=(Math.random()-.5)*38;sp3[i*3+1]=(Math.random()-.5)*22;sp3[i*3+2]=(Math.random()-.5)*18-2;}
   const sg3=new THREE.BufferGeometry(); sg3.setAttribute('position',new THREE.BufferAttribute(sp3,3));
   scene.add(new THREE.Points(sg3,new THREE.PointsMaterial({color:0xffe8b0,size:.028,transparent:true,opacity:.5})));
 
   /* ── STARS LAYER 4 – mikro sangat banyak ── */
-  const S4=1500, sp4=new Float32Array(S4*3);
+  const S4= isMobile ? 400 : 1500, sp4=new Float32Array(S4*3);
   for(let i=0;i<S4;i++){sp4[i*3]=(Math.random()-.5)*38;sp4[i*3+1]=(Math.random()-.5)*22;sp4[i*3+2]=(Math.random()-.5)*18-2;}
   const sg4=new THREE.BufferGeometry(); sg4.setAttribute('position',new THREE.BufferAttribute(sp4,3));
   scene.add(new THREE.Points(sg4,new THREE.PointsMaterial({color:0xffffff,size:.02,transparent:true,opacity:.4})));
@@ -1874,6 +1905,195 @@ setTimeout(() => {
   dustGeo.setAttribute('position',new THREE.BufferAttribute(dustPos,3));
   const dust=new THREE.Points(dustGeo,new THREE.PointsMaterial({color:0xe8a030,size:.038,transparent:true,opacity:.65}));
   scene.add(dust);
+
+  /* ── ROCKET ── */
+  function makeRocket() {
+    const g = new THREE.Group();
+    // Body
+    const body = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.045, 0.06, 0.32, 10),
+      new THREE.MeshStandardMaterial({color:0xdde8f5, metalness:.85, roughness:.15})
+    );
+    g.add(body);
+    // Nose cone
+    const nose = new THREE.Mesh(
+      new THREE.ConeGeometry(0.045, 0.15, 10),
+      new THREE.MeshStandardMaterial({color:0xe8a030, metalness:.7, roughness:.2})
+    );
+    nose.position.y = 0.235; g.add(nose);
+    // Side fins (4x)
+    for(let i=0;i<4;i++){
+      const fin = new THREE.Mesh(
+        new THREE.BoxGeometry(0.005, 0.09, 0.07),
+        new THREE.MeshStandardMaterial({color:0x1a5fb4, metalness:.6, roughness:.3})
+      );
+      const angle = (i/4)*Math.PI*2;
+      fin.position.set(Math.cos(angle)*0.055, -0.13, Math.sin(angle)*0.055);
+      fin.rotation.y = angle;
+      g.add(fin);
+    }
+    // Engine nozzle
+    const nozzle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.035, 0.055, 0.055, 8),
+      new THREE.MeshStandardMaterial({color:0x888888, metalness:.9, roughness:.1})
+    );
+    nozzle.position.y = -0.185; g.add(nozzle);
+    // Exhaust glow (point light)
+    const exLight = new THREE.PointLight(0xff6600, 2.5, 0.8);
+    exLight.position.y = -0.26; g.add(exLight);
+    // Exhaust particles
+    const exCount = 18;
+    const exPos = new Float32Array(exCount*3);
+    for(let i=0;i<exCount;i++){
+      exPos[i*3]=(Math.random()-.5)*.06;
+      exPos[i*3+1]=-0.22 - Math.random()*.18;
+      exPos[i*3+2]=(Math.random()-.5)*.06;
+    }
+    const exGeo = new THREE.BufferGeometry();
+    exGeo.setAttribute('position', new THREE.BufferAttribute(exPos,3));
+    const exhaust = new THREE.Points(exGeo,
+      new THREE.PointsMaterial({color:0xff8800, size:0.025, transparent:true, opacity:.9, sizeAttenuation:true})
+    );
+    g.add(exhaust);
+    // Trail streak
+    const trailCount = 30;
+    const trailPos = new Float32Array(trailCount*3);
+    for(let i=0;i<trailCount;i++){
+      trailPos[i*3]=(Math.random()-.5)*.04;
+      trailPos[i*3+1]=-0.25 - i*0.045;
+      trailPos[i*3+2]=(Math.random()-.5)*.04;
+    }
+    const trailGeo = new THREE.BufferGeometry();
+    trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPos,3));
+    const trail = new THREE.Points(trailGeo,
+      new THREE.PointsMaterial({color:0xffcc66, size:0.015, transparent:true, opacity:.55, sizeAttenuation:true})
+    );
+    g.add(trail);
+    return {group:g, exLight, exhaust, trail};
+  }
+
+  const rockets = [];
+  function spawnRocket() {
+    const r = makeRocket();
+    // Random entry: left edge going right-upward, or bottom going upward
+    const side = Math.random() > 0.5 ? 'left' : 'bottom';
+    let startX, startY, startZ, tiltZ, tiltX;
+    if(side === 'left'){
+      startX = -9; startY = (Math.random()-.5)*3.5; startZ = (Math.random()-.5)*2;
+      tiltZ = -Math.PI*0.15; // tilted slightly toward upper-right
+      tiltX = 0;
+    } else {
+      startX = (Math.random()-.5)*6; startY = -3.5; startZ = (Math.random()-.5)*1.5;
+      tiltZ = 0; tiltX = 0;
+    }
+    r.group.position.set(startX, startY, startZ);
+    // Rocket points up by default (Y-axis), tilt to travel direction
+    r.group.rotation.z = tiltZ + (Math.random()-.5)*.15;
+    r.group.rotation.x = (Math.random()-.5)*.1;
+    scene.add(r.group);
+    const speed = 0.018 + Math.random()*0.012;
+    const velX = (side==='left') ? speed*Math.cos(Math.abs(tiltZ)+0.2) : (Math.random()-.5)*speed*.5;
+    const velY = (side==='left') ? speed*0.35 : speed;
+    rockets.push({...r, velX, velY, life:0, maxLife: 280+Math.floor(Math.random()*120)});
+  }
+
+  /* ── UFO ── */
+  function makeUFO() {
+    const g = new THREE.Group();
+    // Saucer body – flatten a sphere
+    const body = new THREE.Mesh(
+      new THREE.SphereGeometry(0.22, 24, 12),
+      new THREE.MeshStandardMaterial({color:0xaabbcc, metalness:.9, roughness:.1})
+    );
+    body.scale.y = 0.4;
+    g.add(body);
+    // Dome on top
+    const dome = new THREE.Mesh(
+      new THREE.SphereGeometry(0.12, 20, 10, 0, Math.PI*2, 0, Math.PI/2),
+      new THREE.MeshStandardMaterial({color:0x88ddff, transparent:true, opacity:.7, metalness:.3, roughness:.05})
+    );
+    dome.position.y = 0.04;
+    g.add(dome);
+    // Rim ring
+    const rim = new THREE.Mesh(
+      new THREE.TorusGeometry(0.22, 0.022, 6, 40),
+      new THREE.MeshStandardMaterial({color:0x7799cc, metalness:.95, roughness:.05})
+    );
+    rim.rotation.x = Math.PI/2;
+    g.add(rim);
+    // Underbelly glow lights (5 points)
+    const lightColors = [0x00ffcc, 0xff00ff, 0xffdd00, 0x00aaff, 0xff3300];
+    const ufoLights = [];
+    for(let i=0;i<5;i++){
+      const a = (i/5)*Math.PI*2;
+      const lMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.018, 6, 6),
+        new THREE.MeshStandardMaterial({color:lightColors[i], emissive:lightColors[i], emissiveIntensity:2})
+      );
+      lMesh.position.set(Math.cos(a)*0.15, -0.08, Math.sin(a)*0.15);
+      g.add(lMesh);
+      const pl = new THREE.PointLight(lightColors[i], 1.2, 0.6);
+      pl.position.copy(lMesh.position);
+      g.add(pl);
+      ufoLights.push({mesh:lMesh, light:pl, color:lightColors[i]});
+    }
+    // Tractor beam (cone pointing down)
+    const beam = new THREE.Mesh(
+      new THREE.ConeGeometry(0.28, 0.55, 16, 1, true),
+      new THREE.MeshStandardMaterial({color:0x00ffcc, transparent:true, opacity:.10, side:THREE.DoubleSide})
+    );
+    beam.rotation.z = Math.PI;
+    beam.position.y = -0.32;
+    g.add(beam);
+    return {group:g, ufoLights, beam};
+  }
+
+  const ufos = [];
+  function spawnUFO() {
+    const u = makeUFO();
+    // Spawn off-screen left or right
+    const fromRight = Math.random() > 0.5;
+    u.group.position.set(fromRight?9:-9, 1.5+Math.random()*1.5, (Math.random()-.5)*1.5);
+    scene.add(u.group);
+    const speed = 0.008 + Math.random()*0.006;
+    ufos.push({...u, velX: fromRight?-speed:speed, velY: (Math.random()-.5)*0.003, hoverBase:u.group.position.y, life:0, maxLife:400+Math.floor(Math.random()*200)});
+  }
+
+  /* ── METEORS / SHOOTING STARS ── */
+  function spawnMeteor() {
+    const count = 1;
+    // Meteor streak: head + tail
+    const headPos = new Float32Array(3);
+    headPos[0] = (Math.random()-.5)*18+5; headPos[1] = 2.5+Math.random()*2; headPos[2]=(Math.random()-.5)*3;
+    const headGeo = new THREE.BufferGeometry();
+    headGeo.setAttribute('position', new THREE.BufferAttribute(headPos, 3));
+    const head = new THREE.Points(headGeo,
+      new THREE.PointsMaterial({color:0xffffff, size:0.08, transparent:true, opacity:1})
+    );
+    scene.add(head);
+
+    const tailLen = 22;
+    const tailPositions = new Float32Array(tailLen*3);
+    const tailGeo = new THREE.BufferGeometry();
+    tailGeo.setAttribute('position', new THREE.BufferAttribute(tailPositions, 3));
+    const tail = new THREE.Points(tailGeo,
+      new THREE.PointsMaterial({color:0xaaddff, size:0.028, transparent:true, opacity:.7, sizeAttenuation:true})
+    );
+    scene.add(tail);
+
+    const velX = -(0.06 + Math.random()*0.05);
+    const velY = -(0.03 + Math.random()*0.03);
+    const velZ = (Math.random()-.5)*0.01;
+    const history = [];
+    return {head, tail, tailPositions, velX, velY, velZ, history, life:0, maxLife:55+Math.floor(Math.random()*30)};
+  }
+
+  const meteors = [];
+
+  /* ── INITIAL SPAWN ── */
+  setTimeout(()=>{ spawnRocket(); }, 1000);
+  setTimeout(()=>{ spawnUFO(); }, 2500);
+  setTimeout(()=>{ meteors.push(spawnMeteor()); }, 800);
 
   let mx=0,my=0,t=0;
   hero.addEventListener('mousemove',e=>{
@@ -1902,6 +2122,92 @@ setTimeout(() => {
     }
     dust.geometry.attributes.position.needsUpdate=true;
     goldLight.intensity=1.2+Math.sin(t*1.5)*.5;
+
+    /* ── ANIMATE ROCKETS ── */
+    for(let i=rockets.length-1;i>=0;i--){
+      const r=rockets[i];
+      r.life++;
+      r.group.position.x += r.velX;
+      r.group.position.y += r.velY;
+      // Slight wobble
+      r.group.position.z += Math.sin(t*3+i)*0.002;
+      // Exhaust flicker
+      r.exLight.intensity = 2.0 + Math.sin(t*25)*0.8;
+      r.exhaust.material.opacity = 0.7+Math.sin(t*20+i)*.3;
+      r.trail.material.opacity = 0.4+Math.sin(t*15+i)*.2;
+      // Fade in/out
+      const fadeIn = Math.min(r.life/20, 1);
+      const fadeOut = Math.min((r.maxLife-r.life)/30, 1);
+      const alpha = Math.min(fadeIn, fadeOut);
+      r.group.traverse(o=>{ if(o.material && o.material.opacity !== undefined && o !== r.exLight) o.material.opacity = Math.min(o.material.opacity, alpha); });
+      if(r.life >= r.maxLife){
+        scene.remove(r.group);
+        rockets.splice(i,1);
+      }
+    }
+    // Spawn new rocket randomly
+    if(Math.random() < 0.004 && rockets.length < 2) spawnRocket();
+
+    /* ── ANIMATE UFOs ── */
+    for(let i=ufos.length-1;i>=0;i--){
+      const u=ufos[i];
+      u.life++;
+      u.group.position.x += u.velX;
+      u.group.position.y += Math.sin(t*1.5+i*2)*0.006 + u.velY;
+      u.group.rotation.y += 0.02;
+      // Blink lights
+      u.ufoLights.forEach((l,li)=>{
+        const on = Math.sin(t*8+li*1.3) > 0.3;
+        l.light.intensity = on ? 1.5+Math.sin(t*12+li)*.5 : 0.1;
+        l.mesh.material.emissiveIntensity = on ? 2.5 : 0.2;
+      });
+      // Beam pulse
+      u.beam.material.opacity = 0.06+Math.abs(Math.sin(t*2+i))*.12;
+      // Fade in/out
+      const fadeIn = Math.min(u.life/40, 1);
+      const fadeOut = Math.min((u.maxLife-u.life)/50, 1);
+      const alpha = Math.min(fadeIn, fadeOut);
+      u.group.traverse(o=>{ if(o.material && o.material.opacity!==undefined) o.material.opacity = Math.min(o.material.opacity || 1, alpha); });
+      if(u.life >= u.maxLife){
+        scene.remove(u.group);
+        ufos.splice(i,1);
+      }
+    }
+    if(Math.random() < 0.003 && ufos.length < 1) spawnUFO();
+
+    /* ── ANIMATE METEORS ── */
+    for(let i=meteors.length-1;i>=0;i--){
+      const m=meteors[i];
+      m.life++;
+      const hPos = m.head.geometry.attributes.position.array;
+      hPos[0]+=m.velX; hPos[1]+=m.velY; hPos[2]+=m.velZ;
+      m.head.geometry.attributes.position.needsUpdate=true;
+      m.history.push([hPos[0],hPos[1],hPos[2]]);
+      // Build tail from history
+      const len = Math.min(m.history.length, 22);
+      for(let j=0;j<22;j++){
+        const hi = m.history.length-1-j;
+        if(hi>=0 && j<len){
+          m.tailPositions[j*3]=m.history[hi][0];
+          m.tailPositions[j*3+1]=m.history[hi][1];
+          m.tailPositions[j*3+2]=m.history[hi][2];
+        } else {
+          m.tailPositions[j*3]=hPos[0]; m.tailPositions[j*3+1]=hPos[1]; m.tailPositions[j*3+2]=hPos[2];
+        }
+      }
+      m.tail.geometry.attributes.position.needsUpdate=true;
+      // Fade out near end
+      const fadeOut = Math.max((m.maxLife-m.life)/15, 0);
+      m.head.material.opacity = Math.min(1, fadeOut);
+      m.tail.material.opacity = Math.min(0.65, fadeOut*.65);
+      if(m.life>=m.maxLife){
+        scene.remove(m.head); scene.remove(m.tail);
+        meteors.splice(i,1);
+      }
+    }
+    // Spawn meteors randomly
+    if(Math.random() < 0.012 && meteors.length < 4) meteors.push(spawnMeteor());
+
     camera.position.x+=(mx*.3-camera.position.x)*.04;
     camera.position.y+=(my*.2-camera.position.y)*.04;
     camera.lookAt(0,0,0);
@@ -2031,10 +2337,38 @@ updateActiveNav();
 
 // ── WHATSAPP BOT WIDGET ──
 const WA_NUMBER = '6285117031202';
+const ANTHROPIC_API_KEY = 'MASUKKAN_API_KEY_ANDA_DI_SINI'; // Isi API key Anthropic kamu di sini
 let waChatHistory = [];
 let waBotTyping = false;
 let waInitDone = false;
-let waBotReplyCount = 0; // hitung balasan bot, tombol manusia muncul setelah 10x
+let waBotReplyCount = 0;
+
+// ── ANTI-SPAM ──
+let waLastMsgTime = 0;
+let waSpamCount = 0;
+let waUserMsgCount = 0;
+const WA_SPAM_LIMIT = 3;
+const WA_SPAM_WINDOW = 4000;
+
+// ── TEMPLATE FALLBACK ──
+const waTemplates = [
+  { keys: /halo|hai|hi|hello|selamat|pagi|siang|sore|malam|apa kabar/i, reply: '👋 Halo! Selamat datang di *Future Sakato Dynamics Studio*.\\n\\nKami adalah studio desain dan perencanaan profesional untuk hunian, perkantoran, kawasan industri, hingga fasilitas publik.\\n\\nAda kebutuhan desain apa yang bisa kami bantu?' },
+  { keys: /harga|biaya|tarif|cost|fee|bayar/i, reply: '💰 Biaya perencanaan kami bervariasi sesuai jenis dan skala proyek.\\n\\n• Desain rumah tinggal: mulai Rp 3 jt\\n• Perkantoran / komersial: mulai Rp 8 jt\\n• Kawasan industri: sesuai kebutuhan\\n\\nSemua estimasi transparan. Proyek apa yang sedang Anda rencanakan?' },
+  { keys: /rumah|hunian|tinggal|perumahan|apartemen|vila/i, reply: '🏠 Kami menyediakan layanan *Desain Hunian* lengkap:\\n\\n• Rumah tinggal 1–3 lantai\\n• Desain interior & eksterior\\n• Gambar kerja siap bangun\\n• RAB & estimasi biaya\\n\\nBoleh ceritakan kebutuhan rumah Anda?' },
+  { keys: /kantor|perkantoran|gedung|ruko|komersial|toko/i, reply: '🏢 Layanan *Desain Perkantoran & Komersial* kami:\\n\\n• Gedung kantor 1–10 lantai\\n• Ruko dan pusat perbelanjaan\\n• Desain representatif & fungsional\\n\\nBisa ceritakan gambaran proyeknya?' },
+  { keys: /industri|pabrik|gudang|warehouse|manufaktur/i, reply: '🏭 Untuk *Perencanaan Kawasan Industri*, kami menangani:\\n\\n• Desain pabrik & gudang\\n• Layout kawasan industri\\n• Perencanaan utilitas & infrastruktur\\n\\nCeritakan kebutuhan industri Anda!' },
+  { keys: /klinik|rumah sakit|puskesmas|kesehatan|medis|dokter/i, reply: '🏥 Kami berpengalaman dalam *Desain Fasilitas Kesehatan*:\\n\\n• Klinik & puskesmas\\n• Ruang periksa & apotek\\n• Standar kesehatan & sanitasi\\n\\nAda proyek fasilitas kesehatan yang ingin direncanakan?' },
+  { keys: /cafe|restoran|hotel|penginapan|resort|kafe/i, reply: '☕ Untuk *Desain Cafe, Restoran & Penginapan*:\\n\\n• Konsep interior modern & estetis\\n• Denah sirkulasi pengunjung optimal\\n• Desain hotel & villa\\n\\nBagaimana konsep yang Anda bayangkan?' },
+  { keys: /sipil|infrastruktur|jalan|jembatan|drainase|air bersih/i, reply: '🔧 Layanan *Perencanaan Sipil & Infrastruktur* kami:\\n\\n• Perencanaan jalan & drainase\\n• Sistem air bersih & sanitasi\\n• Dokumen teknis siap lelang\\n\\nProyek infrastruktur apa yang sedang direncanakan?' },
+  { keys: /proses|alur|langkah|cara|prosedur|bagaimana|gimana/i, reply: '📋 Proses kerja kami sederhana:\\n\\n1️⃣ Konsultasi — ceritakan kebutuhan\\n2️⃣ Brief & kajian — kami pelajari detail\\n3️⃣ Desain konsep — sketsa & rencana awal\\n4️⃣ Revisi — sampai sesuai keinginan\\n5️⃣ Dokumen final — siap bangun\\n\\nSemua bisa online! 💻' },
+  { keys: /lokasi|alamat|dimana|kantor|sijunjung|sumatera/i, reply: '📍 Studio kami di *Sijunjung, Sumatera Barat*, namun melayani seluruh Indonesia secara online.\\n\\nAda yang ingin Anda tanyakan lebih lanjut?' },
+  { keys: /kontak|hubungi|telepon|wa|whatsapp|nomor|email/i, reply: '📞 Untuk berdiskusi langsung, silakan klik tombol *"Hubungi Tim Kami"* di bawah — tim kami siap merespons via WhatsApp.\\n\\nAtau ada pertanyaan lain dulu?' },
+  { keys: /lama|waktu|durasi|berapa lama|kapan selesai|deadline/i, reply: '⏱️ Estimasi waktu pengerjaan:\\n\\n• Desain rumah: *7–14 hari*\\n• Perkantoran: *14–21 hari*\\n• Proyek besar: sesuai kompleksitas\\n\\nAda target waktu tertentu?' },
+  { keys: /revisi|ubah|ganti|tidak suka|kurang|perbaiki/i, reply: '✏️ Setiap paket sudah termasuk revisi desain hingga Anda puas. Kepuasan klien adalah prioritas kami. 💯\\n\\nMau tahu lebih lanjut tentang paket layanan kami?' },
+  { keys: /portofolio|contoh|hasil|proyek|karya|galeri/i, reply: '🖼️ Portofolio kami bisa dilihat di bagian *"Proyek Kami"* di halaman ini.\\n\\nUntuk katalog lengkap dengan detail gambar, tim kami siap mengirimkan setelah konsultasi singkat.' },
+  { keys: /terima kasih|makasih|thanks|mantap|bagus|oke|ok|siap/i, reply: '😊 Sama-sama! Senang bisa membantu.\\n\\nJika ada pertanyaan lain seputar desain dan perencanaan, jangan ragu bertanya ya!' },
+  { keys: /berapa|ukuran|luas|meter|lantai|kamar/i, reply: '📐 Kami bisa bantu sesuai ukuran dan spesifikasi proyek Anda.\\n\\nCoba ceritakan: luas tanah, jumlah lantai yang diinginkan, dan fungsi bangunannya. Kami siap bantu!' }
+];
 
 function getTime() {
   return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
@@ -2070,68 +2404,158 @@ function removeTyping() {
   if (t) t.remove();
 }
 
+// ── TEMPLATE MATCHER ──
+function getTemplateReply(msg) {
+  for (const t of waTemplates) {
+    if (t.keys.test(msg)) return t.reply;
+  }
+  return null;
+}
+
+// ── KATA KUNCI ESKALASI KE MANUSIA ──
+const ESCALATE_KEYS = /harga detail|survey|lapangan|proposal resmi|kontrak|bertemu|kunjungan|jadwal|tanda tangan|serius|mau pesan|mau order|mau beli|lanjut|deal|setuju/i;
+
+// ── KATA KASAR / ISENG ──
+const SPAM_WORDS_EXACT = new Set([
+  'tai','tahi','cuk','cok','jing','asu','gila','hina','kutu','babi',
+  'oon','edan','noob','jancuk','jancok','anjir','anjay','anying','njing',
+  'jingan','coeg','coek','cokil','cukimai','bajulmu','matamu','ndasmu','raimu',
+  'bocil','badut','cupu','culun','norak','loser'
+]);
+const SPAM_KEYS = /anjing|bangsat|bajingan|brengsek|kampret|keparat|bedebah|laknatullah|laknat|sialan|goblok|tolol|bodoh|dungu|bloon|bego|idiot|sinting|mampus|kurang ajar|celaka|jahanam|biadab|bejat|pecundang|pengecut|pengkhianat|penipu|munafik|sampah|benalu|parasit|bangke|bangkai|monyet|beruk|keledai|bajul|dogol|belegug|kampungan|anak haram|anak setan|anak iblis|anjirrr|gendeng|kenthir|kontol|memek|tai kucing|tai ayam|tai babi|tahi|tololol|bodo amat/i;
+function isSpam(msg) {
+  if (SPAM_KEYS.test(msg)) return true;
+  const words = msg.toLowerCase().replace(/[^a-z\s]/g,' ').split(/\s+/);
+  return words.some(w => SPAM_WORDS_EXACT.has(w));
+}
+
 async function getBotReply(userMsg) {
+  // ── CEK SPAM ──
+  const now = Date.now();
+  if (now - waLastMsgTime < WA_SPAM_WINDOW) {
+    waSpamCount++;
+  } else {
+    waSpamCount = 1;
+  }
+  waLastMsgTime = now;
+  waUserMsgCount++;
+
+  if (isSpam(userMsg)) {
+    removeTyping();
+    waBotTyping = false;
+    document.getElementById('waBotStatus').textContent = 'Asisten Virtual';
+    addWAMsg('⚠️ Mohon gunakan bahasa yang sopan ya. Tim kami siap membantu kebutuhan desain Anda dengan sepenuh hati. 🙏', 'bot');
+    return;
+  }
+
+  if (waSpamCount >= WA_SPAM_LIMIT) {
+    removeTyping();
+    waBotTyping = false;
+    document.getElementById('waBotStatus').textContent = 'Asisten Virtual';
+    addWAMsg('⏳ Hei, pelan-pelan ya! Kami sedang membaca pesan Anda. Silakan tunggu sebentar sebelum mengirim pesan berikutnya. 😊', 'bot');
+    waSpamCount = 0;
+    return;
+  }
+
   waChatHistory.push({ role: 'user', content: userMsg });
   showTyping();
   document.getElementById('waBotStatus').textContent = 'sedang mengetik...';
+
+  // ── CEK APAKAH SUDAH WAKTUNYA ESKALASI ──
+  const shouldEscalate = waBotReplyCount >= 10 || ESCALATE_KEYS.test(userMsg);
+  if (shouldEscalate) {
+    await new Promise(r => setTimeout(r, 900));
+    removeTyping();
+    waBotTyping = false;
+    document.getElementById('waBotStatus').textContent = 'Asisten Virtual';
+    const escalMsg = waBotReplyCount >= 10
+      ? '😊 Sepertinya Anda sudah sangat familiar dengan layanan kami! Untuk hasil terbaik, izinkan tim kami melanjutkan diskusi langsung dengan Anda.'
+      : '📋 Untuk kebutuhan ini, tim kami perlu berdiskusi langsung agar bisa memberikan solusi terbaik.';
+    addWAMsg(escalMsg + '\n\nSilakan klik tombol di bawah untuk terhubung via WhatsApp. 👇', 'bot');
+    const btn = document.getElementById('waHumanBtn');
+    if (btn) btn.style.display = 'flex';
+    return;
+  }
 
   const systemPrompt = `Kamu adalah asisten virtual dari Future Sakato Dynamics Studio, sebuah studio desain dan perencanaan profesional berbasis di Sijunjung, Sumatera Barat, Indonesia. 
 
 Layanan kami meliputi: desain hunian (rumah tinggal), desain perkantoran, perencanaan kawasan industri, desain fasilitas publik, perencanaan sipil & infrastruktur, desain klinik/fasilitas kesehatan, desain hotel & penginapan, desain cafe & restoran.
 
-Nomor WhatsApp tim kami: +62 822-8575-4080
+Nomor WhatsApp tim kami: +62 851-1703-1202
 Email: futuresakatodynamics@gmail.com
 Lokasi: Sijunjung, Sumatera Barat
 
 Tugasmu:
 - Sambut tamu dengan hangat dan profesional
 - Jawab pertanyaan umum tentang layanan, harga estimasi, proses, dan portofolio
-- Jika pertanyaan sangat spesifik (negosiasi harga detail, pengukuran lapangan, permintaan proposal resmi), sarankan untuk melanjutkan ke tim manusia
+- Jika pertanyaan sangat spesifik (negosiasi harga detail, pengukuran lapangan, proposal resmi), sarankan untuk melanjutkan ke tim manusia
 - Balas dalam Bahasa Indonesia yang sopan dan profesional
 - Singkat dan jelas, maksimal 3-4 kalimat per balasan
-- Jangan sebut bahwa kamu adalah AI, cukup sebut dirimu sebagai "tim asisten Future Sakato"`;
+- Jangan sebut bahwa kamu adalah AI`;
 
+  let replied = false;
+
+  // ── COBA CLAUDE API ──
   try {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system: systemPrompt,
-        messages: waChatHistory
-      })
-    });
-    const data = await res.json();
-    const reply = data.reply || 'Maaf, ada gangguan teknis. Silakan hubungi tim kami langsung.';
-    waChatHistory.push({ role: 'assistant', content: reply });
-    removeTyping();
-    document.getElementById('waBotStatus').textContent = 'Asisten Virtual';
-    addWAMsg(reply, 'bot');
-
-    // Hitung balasan bot & tampilkan tombol manusia setelah 10x
-    waBotReplyCount++;
-    if (waBotReplyCount >= 10) {
-      const btn = document.getElementById('waHumanBtn');
-      if (btn && btn.style.display === 'none') {
-        btn.style.display = 'flex';
-        setTimeout(() => {
-          addWAMsg('Sepertinya Anda sudah cukup familiar dengan layanan kami. 😊 Jika ingin berdiskusi langsung dengan tim kami, tombol di bawah sudah tersedia!', 'bot');
-        }, 500);
+    const apiKey = ANTHROPIC_API_KEY;
+    if (apiKey && apiKey !== 'MASUKKAN_API_KEY_ANDA_DI_SINI') {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 300,
+          system: systemPrompt,
+          messages: waChatHistory
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const reply = data.content?.[0]?.text || null;
+        if (reply) {
+          waChatHistory.push({ role: 'assistant', content: reply });
+          removeTyping();
+          waBotTyping = false;
+          document.getElementById('waBotStatus').textContent = 'Asisten Virtual';
+          addWAMsg(reply, 'bot');
+          waBotReplyCount++;
+          replied = true;
+        }
       }
     }
+  } catch(e) { /* gagal, lanjut ke template */ }
 
-    // Deteksi jika perlu eskalasi ke manusia (tampilkan tombol lebih awal jika topik serius)
-    const needHuman = /harga detail|survey|lapangan|proposal resmi|kontrak|bertemu|kunjungan|jadwal|tanda tangan/i.test(userMsg + reply);
-    if (needHuman) {
-      const btn = document.getElementById('waHumanBtn');
-      if (btn) btn.style.display = 'flex';
-      setTimeout(() => {
-        addWAMsg('Untuk keperluan ini, tim kami siap membantu langsung. Silakan klik tombol di bawah untuk melanjutkan via WhatsApp. 👇', 'bot');
-      }, 600);
-    }
-  } catch(e) {
+  // ── FALLBACK: TEMPLATE OTOMATIS ──
+  if (!replied) {
+    await new Promise(r => setTimeout(r, 700 + Math.random()*600));
+    const tmpl = getTemplateReply(userMsg);
+    const reply = tmpl || 'Terima kasih atas pertanyaannya! 😊\\n\\nBoleh ceritakan sedikit tentang proyek atau kebutuhan desain Anda? Tim kami siap membantu menemukan solusi yang tepat.';
+    waChatHistory.push({ role: 'assistant', content: reply });
     removeTyping();
+    waBotTyping = false;
     document.getElementById('waBotStatus').textContent = 'Asisten Virtual';
-    addWAMsg('Maaf, koneksi bermasalah. Silakan hubungi tim kami langsung via WhatsApp.', 'bot');
+    addWAMsg(reply, 'bot');
+    waBotReplyCount++;
+  }
+
+  // Tampilkan tombol manusia setelah 10x
+  if (waBotReplyCount >= 10) {
+    const btn = document.getElementById('waHumanBtn');
+    if (btn && btn.style.display === 'none') btn.style.display = 'flex';
+  }
+
+  // Deteksi topik serius → tampilkan tombol manusia
+  if (ESCALATE_KEYS.test(userMsg)) {
+    const btn = document.getElementById('waHumanBtn');
+    if (btn) btn.style.display = 'flex';
+    setTimeout(() => {
+      addWAMsg('Untuk keperluan ini, tim kami siap membantu langsung. Klik tombol di bawah untuk melanjutkan via WhatsApp. 👇', 'bot');
+    }, 600);
   }
 }
 
@@ -2139,9 +2563,10 @@ function sendBotMsg() {
   const input = document.getElementById('waInput');
   const msg = input.value.trim();
   if (!msg || waBotTyping) return;
+  waBotTyping = true;
   input.value = '';
   addWAMsg(msg, 'user');
-  getBotReply(msg);
+  getBotReply(msg).finally(() => { waBotTyping = false; });
 }
 
 function escalateToHuman() {
