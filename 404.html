@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0ede8;font-family:'Rajdhani',sans-serif;display:flex;align-items:center;justify-content:center;min-height:580px;overflow:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(26,95,180,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(26,95,180,.055) 1px,transparent 1px);background-size:44px 44px;pointer-events:none}
+.wrap{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding:28px 24px 24px;gap:0}
+
+.badge{display:inline-flex;align-items:center;gap:8px;background:#1a3a6e;color:#fff;font-size:10px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;padding:6px 20px;border-radius:2px;margin-bottom:20px}
+.dot{width:7px;height:7px;border-radius:50%;background:#d4930e;animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+
+.scene{position:relative;width:380px;height:300px;margin-bottom:16px}
+
+/* ORBIT CENTER tepat di atas layar laptop */
+.orbit-center{position:absolute;left:190px;top:38px;width:0;height:0}
+
+/* BINTANG */
+.star-el{position:absolute;width:22px;height:22px;transform-origin:0 0;display:flex;align-items:center;justify-content:center}
+.star-el:nth-child(1){animation:sorb 1.7s linear infinite}
+.star-el:nth-child(2){animation:sorb 1.7s linear infinite;animation-delay:-.57s}
+.star-el:nth-child(3){animation:sorb 1.7s linear infinite;animation-delay:-1.13s}
+.star-el:nth-child(4){animation:sorb 1.7s linear infinite;animation-delay:-.85s}
+@keyframes sorb{from{transform:rotate(0deg) translateX(46px) rotate(0deg)}to{transform:rotate(360deg) translateX(46px) rotate(-360deg)}}
+.star-el svg{animation:sspin .85s linear infinite;width:20px;height:20px}
+@keyframes sspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* BURUNG */
+.bird-el{position:absolute;width:30px;height:30px;transform-origin:0 0}
+.bird-el:nth-child(1){animation:borb 2.3s linear infinite}
+.bird-el:nth-child(2){animation:borb 2.3s linear infinite;animation-delay:-.77s}
+.bird-el:nth-child(3){animation:borb 2.3s linear infinite;animation-delay:-1.53s}
+@keyframes borb{
+  0%  {transform:rotate(0deg)   translateX(58px) rotate(0deg)}
+  49% {transform:rotate(176deg) translateX(58px) rotate(-176deg)}
+  50% {transform:rotate(180deg) translateX(58px) rotate(-180deg) scaleX(-1)}
+  99% {transform:rotate(356deg) translateX(58px) rotate(-356deg) scaleX(-1)}
+  100%{transform:rotate(360deg) translateX(58px) rotate(-360deg)}
+}
+.bird-el svg{width:30px;height:30px}
+.wt{animation:flap .26s ease-in-out infinite alternate;transform-origin:50% 100%}
+.wb{animation:flap .26s ease-in-out infinite alternate .13s;transform-origin:50% 0%}
+@keyframes flap{from{transform:scaleY(1)}to{transform:scaleY(.18)}}
+
+/* LAPTOP wobble */
+.laptop-wrap{position:absolute;bottom:20px;left:50%;transform:translateX(-50%)}
+.laptop-shake{animation:wobble 1.6s ease-in-out infinite;transform-origin:190px 120px}
+@keyframes wobble{
+  0%,100%{transform:rotate(0deg) translateY(0)}
+  18%{transform:rotate(-3deg) translateY(-2px)}
+  36%{transform:rotate(2.5deg) translateY(-1px)}
+  54%{transform:rotate(-3.5deg) translateY(-3px)}
+  72%{transform:rotate(2deg) translateY(-1px)}
+}
+
+/* screen flicker */
+.screen{animation:flicker 3.5s ease-in-out infinite}
+@keyframes flicker{0%,86%,100%{opacity:1}89%{opacity:.25}92%{opacity:1}95%{opacity:.1}97%{opacity:1}}
+
+/* error lines blink */
+.el1{animation:eblink 2.2s step-end infinite}
+.el2{animation:eblink 2.2s step-end infinite;animation-delay:.4s}
+.el3{animation:eblink 2.2s step-end infinite;animation-delay:.8s}
+@keyframes eblink{0%,100%{opacity:1}50%{opacity:.15}}
+
+/* keringat dari laptop */
+.sw1{animation:swfall 1.9s ease-in infinite}
+.sw2{animation:swfall 1.9s ease-in infinite;animation-delay:.95s}
+.sw3{animation:swfall 1.9s ease-in infinite;animation-delay:.45s}
+@keyframes swfall{0%{transform:translateY(0);opacity:1}100%{transform:translateY(28px);opacity:0}}
+
+/* smoke/uap dari laptop */
+.smoke{animation:smokeup 2.4s ease-out infinite;transform-origin:center bottom}
+.smoke:nth-child(2){animation-delay:.8s}
+.smoke:nth-child(3){animation-delay:1.6s}
+@keyframes smokeup{0%{transform:translateY(0) scale(.6);opacity:.7}100%{transform:translateY(-32px) scale(1.4);opacity:0}}
+
+/* TEXT */
+.txt{text-align:center;max-width:440px}
+.code{font-family:'Bebas Neue',sans-serif;font-size:78px;line-height:1;color:#1a3a6e;letter-spacing:6px;margin-bottom:2px}
+.etitle{font-size:21px;font-weight:700;color:#1a3a6e;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.emsg{font-size:15px;color:#6b6a66;line-height:1.65;margin-bottom:22px}
+.btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{padding:10px 28px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-radius:2px;cursor:pointer;border:none;text-decoration:none;transition:.18s}
+.bp{background:#1a3a6e;color:#fff}.bp:hover{background:#1a5fb4;transform:translateY(-1px)}
+.bs{background:transparent;color:#1a3a6e;border:1.5px solid #1a3a6e}.bs:hover{background:#1a3a6e;color:#fff;transform:translateY(-1px)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="badge"><span class="dot"></span><span id="badgeText">Sedang Perbaikan</span></div>
+
+  <div class="scene">
+
+    <!-- ORBIT CENTER di atas laptop -->
+    <div class="orbit-center">
+
+      <!-- BINTANG -->
+      <div id="starRing">
+        <div class="star-el"><svg viewBox="0 0 20 20"><polygon points="10,1 12.5,7.5 19,8 14,13 15.5,19 10,15.5 4.5,19 6,13 1,8 7.5,7.5" fill="#d4930e"/></svg></div>
+        <div class="star-el"><svg viewBox="0 0 20 20"><polygon points="10,1 12.5,7.5 19,8 14,13 15.5,19 10,15.5 4.5,19 6,13 1,8 7.5,7.5" fill="#e05a2b"/></svg></div>
+        <div class="star-el"><svg viewBox="0 0 20 20"><polygon points="10,1 12.5,7.5 19,8 14,13 15.5,19 10,15.5 4.5,19 6,13 1,8 7.5,7.5" fill="#e8a030"/></svg></div>
+        <div class="star-el"><svg viewBox="0 0 20 20"><polygon points="10,1 12.5,7.5 19,8 14,13 15.5,19 10,15.5 4.5,19 6,13 1,8 7.5,7.5" fill="#1a5fb4"/></svg></div>
+      </div>
+
+      <!-- BURUNG -->
+      <div id="birdRing" style="display:none">
+        <div class="bird-el"><svg viewBox="0 0 36 28" fill="none"><g class="wt"><path d="M18 14 Q8 2 1 7 Q9 10 18 14Z" fill="#1a3a6e"/></g><ellipse cx="18" cy="15" rx="8" ry="5" fill="#1a5fb4"/><ellipse cx="24" cy="13.5" rx="4" ry="3" fill="#1a3a6e"/><circle cx="27" cy="12.5" r="1.2" fill="#fff"/><circle cx="27.4" cy="12.5" r=".55" fill="#111"/><path d="M30 14 L35 13 L30 16Z" fill="#d4930e"/><g class="wb"><path d="M18 16 Q8 28 1 23 Q9 20 18 16Z" fill="#1a5fb4"/></g></svg></div>
+        <div class="bird-el"><svg viewBox="0 0 36 28" fill="none"><g class="wt"><path d="M18 14 Q8 2 1 7 Q9 10 18 14Z" fill="#d4930e"/></g><ellipse cx="18" cy="15" rx="8" ry="5" fill="#e8a030"/><ellipse cx="24" cy="13.5" rx="4" ry="3" fill="#d4930e"/><circle cx="27" cy="12.5" r="1.2" fill="#fff"/><circle cx="27.4" cy="12.5" r=".55" fill="#111"/><path d="M30 14 L35 13 L30 16Z" fill="#1a3a6e"/><g class="wb"><path d="M18 16 Q8 28 1 23 Q9 20 18 16Z" fill="#e8a030"/></g></svg></div>
+        <div class="bird-el"><svg viewBox="0 0 36 28" fill="none"><g class="wt"><path d="M18 14 Q8 2 1 7 Q9 10 18 14Z" fill="#e05a2b"/></g><ellipse cx="18" cy="15" rx="8" ry="5" fill="#f07040"/><ellipse cx="24" cy="13.5" rx="4" ry="3" fill="#e05a2b"/><circle cx="27" cy="12.5" r="1.2" fill="#fff"/><circle cx="27.4" cy="12.5" r=".55" fill="#111"/><path d="M30 14 L35 13 L30 16Z" fill="#1a3a6e"/><g class="wb"><path d="M18 16 Q8 28 1 23 Q9 20 18 16Z" fill="#f07040"/></g></svg></div>
+      </div>
+    </div>
+
+    <!-- LAPTOP SVG -->
+    <div class="laptop-wrap">
+      <svg class="laptop-shake" width="380" height="260" viewBox="0 0 380 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- uap/asap keluar dari laptop kiri kanan -->
+        <g class="smoke" style="transform-origin:80px 95px">
+          <ellipse cx="80" cy="95" rx="7" ry="10" fill="#c8bfb0" opacity=".5"/>
+        </g>
+        <g class="smoke" style="transform-origin:300px 95px;animation-delay:.8s">
+          <ellipse cx="300" cy="95" rx="6" ry="9" fill="#c8bfb0" opacity=".4"/>
+        </g>
+        <g class="smoke" style="transform-origin:190px 78px;animation-delay:1.6s">
+          <ellipse cx="190" cy="78" rx="5" ry="8" fill="#c8bfb0" opacity=".35"/>
+        </g>
+
+        <!-- LAYAR FRAME -->
+        <rect x="54" y="20" width="272" height="172" rx="8" fill="#1e1e1c"/>
+        <!-- LAYAR ISI -->
+        <rect x="60" y="26" width="260" height="160" rx="4" class="screen" fill="#0a1f4a"/>
+
+        <!-- Muka laptop — ekspresi pusing di layar -->
+        <!-- lingkaran muka kuning di tengah layar -->
+        <circle cx="190" cy="106" r="52" fill="#f5d77a"/>
+
+        <!-- rambut acak-acakan -->
+        <path d="M142 90 Q144 66 162 60 Q190 54 218 60 Q236 66 238 90" fill="#2c2c2a"/>
+        <path d="M142 90 Q138 96 140 102" stroke="#2c2c2a" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M238 90 Q242 96 240 102" stroke="#2c2c2a" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <!-- rambut gimbal/acak -->
+        <path d="M150 72 Q148 60 155 58 Q158 68 152 74Z" fill="#2c2c2a"/>
+        <path d="M165 62 Q163 50 170 48 Q173 58 167 64Z" fill="#2c2c2a"/>
+        <path d="M180 58 Q180 46 187 44 Q190 54 183 60Z" fill="#2c2c2a"/>
+        <path d="M196 58 Q198 46 205 48 Q206 58 199 62Z" fill="#2c2c2a"/>
+        <path d="M212 64 Q216 52 222 56 Q221 66 215 68Z" fill="#2c2c2a"/>
+        <path d="M224 76 Q230 64 235 68 Q232 78 227 80Z" fill="#2c2c2a"/>
+
+        <!-- alis lebat turun (pusing/kesal) -->
+        <path d="M160 92 Q172 85 184 89" stroke="#2c2c2a" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <path d="M196 89 Q208 85 220 92" stroke="#2c2c2a" stroke-width="4" stroke-linecap="round" fill="none"/>
+
+        <!-- mata spiral/pusing (kiri) -->
+        <circle cx="172" cy="106" r="10" fill="#fff"/>
+        <path d="M172 103 Q175 100 178 103 Q181 106 178 109 Q175 112 172 109 Q169 106 172 103" stroke="#3a2010" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <circle cx="174" cy="105" r="2" fill="#3a2010"/>
+
+        <!-- mata spiral/pusing (kanan) -->
+        <circle cx="208" cy="106" r="10" fill="#fff"/>
+        <path d="M208 103 Q211 100 214 103 Q217 106 214 109 Q211 112 208 109 Q205 106 208 103" stroke="#3a2010" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <circle cx="210" cy="105" r="2" fill="#3a2010"/>
+
+        <!-- hidung -->
+        <ellipse cx="188" cy="118" rx="5" ry="3" fill="#e0aa55" opacity=".5"/>
+        <ellipse cx="193" cy="118" rx="5" ry="3" fill="#e0aa55" opacity=".5"/>
+
+        <!-- mulut cemberut besar -->
+        <path d="M168 134 Q180 126 212 134" stroke="#b07030" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+        <!-- pipi merah -->
+        <ellipse cx="155" cy="122" rx="11" ry="7" fill="#e07070" opacity=".3"/>
+        <ellipse cx="225" cy="122" rx="11" ry="7" fill="#e07070" opacity=".3"/>
+
+        <!-- keringat kiri -->
+        <path class="sw1" d="M144 88 Q140 78 146 74" stroke="#60b8ff" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path class="sw2" d="M148 100 Q144 92 148 88" stroke="#60b8ff" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <!-- keringat kanan -->
+        <path class="sw3" d="M236 88 Q240 78 234 74" stroke="#60b8ff" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+        <!-- tanda error di pojok layar -->
+        <circle cx="298" cy="44" r="12" fill="rgba(224,90,43,.2)" stroke="#e05a2b" stroke-width="1.5"/>
+        <line x1="293" y1="39" x2="303" y2="49" stroke="#e05a2b" stroke-width="2" stroke-linecap="round"/>
+        <line x1="303" y1="39" x2="293" y2="49" stroke="#e05a2b" stroke-width="2" stroke-linecap="round"/>
+
+        <!-- bar error di bawah muka -->
+        <g class="el1"><rect x="68" y="172" width="80" height="5" rx="2.5" fill="rgba(224,90,43,.7)"/></g>
+        <g class="el2"><rect x="68" y="180" width="130" height="4" rx="2" fill="rgba(255,255,255,.2)"/></g>
+        <g class="el3"><rect x="68" y="188" width="100" height="4" rx="2" fill="rgba(255,255,255,.12)"/></g>
+
+        <!-- BASE LAPTOP -->
+        <rect x="44" y="192" width="292" height="12" rx="4" fill="#1e1e1c"/>
+        <!-- keyboard area -->
+        <rect x="44" y="192" width="292" height="30" rx="6" fill="#2a2a28"/>
+        <!-- keyboard keys -->
+        <rect x="58" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="72" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="86" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="100" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="114" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="128" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="142" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="156" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="170" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="184" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="198" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="212" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="226" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="240" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="254" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="268" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="282" y="198" width="30" height="6" rx="1.5" fill="#3a3a38"/>
+        <!-- row 2 -->
+        <rect x="65" y="208" width="14" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="83" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="97" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="111" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="125" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="139" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="153" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="167" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="181" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="195" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="209" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="223" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="237" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/>
+        <rect x="251" y="208" width="26" height="6" rx="1.5" fill="#3a3a38"/>
+        <!-- spasi -->
+        <rect x="120" y="218" width="140" height="6" rx="1.5" fill="#3a3a38"/>
+        <!-- touchpad -->
+        <rect x="155" y="228" width="70" height="10" rx="3" fill="#333330"/>
+        <!-- kaki laptop -->
+        <rect x="52" y="222" width="20" height="8" rx="2" fill="#111"/>
+        <rect x="308" y="222" width="20" height="8" rx="2" fill="#111"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- TEKS -->
+  <div class="txt">
+    <div class="code" id="errCode">4 0 4</div>
+    <div class="etitle" id="errTitle">Halaman Tidak Ditemukan</div>
+    <p class="emsg" id="errMsg">Aduh, laptopnya ikutan pusing mencari halaman ini!<br>Tim kami sudah siap — sebentar lagi kembali normal.</p>
+    <div class="btns">
+      <a href="/" class="btn bp">← Kembali ke Beranda</a>
+      <button class="btn bs" onclick="location.reload()">Coba Lagi</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function applyMode(){
+  var offline=!navigator.onLine;
+  var sr=document.getElementById('starRing');
+  var br=document.getElementById('birdRing');
+  var bt=document.getElementById('badgeText');
+  var ec=document.getElementById('errCode');
+  var et=document.getElementById('errTitle');
+  var em=document.getElementById('errMsg');
+  if(offline){
+    sr.style.display='none'; br.style.display='block';
+    bt.textContent='Koneksi Terputus';
+    ec.textContent='OFFLINE'; ec.style.fontSize='50px'; ec.style.letterSpacing='3px';
+    et.textContent='Ups! Internetmu Terputus';
+    em.innerHTML='Laptopnya bingung... sinyal kemana?<br>Cek WiFi atau data selulermu, lalu muat ulang halaman.';
+  } else {
+    sr.style.display='block'; br.style.display='none';
+    ec.style.fontSize=''; ec.style.letterSpacing='';
+    var p=window.location.pathname;
+    if(p.includes('500')||p.includes('server-error')){
+      bt.textContent='Error Server'; ec.textContent='5 0 0';
+      et.textContent='Server Sedang Rewel';
+      em.innerHTML='Server ikutan pusing juga nih!<br>Tim teknis sedang memperbaiki, coba lagi beberapa saat ya.';
+    } else if(p.includes('503')||p.includes('maintenance')){
+      bt.textContent='Maintenance'; ec.textContent='503';
+      et.textContent='Web Lagi Maintenance';
+      em.innerHTML='Laptop sedang di-update biar makin kencang!<br>Website kembali online sebentar lagi. Terima kasih sabar menunggu.';
+    }
+  }
+}
+applyMode();
+window.addEventListener('online',applyMode);
+window.addEventListener('offline',applyMode);
+</script>
+</body>
+</html>

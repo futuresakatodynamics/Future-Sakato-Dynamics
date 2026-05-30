@@ -96,6 +96,77 @@ body {
 ::-webkit-scrollbar-track { background: var(--off-white); }
 ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 2px; }
 
+/* ── ERROR / OFFLINE OVERLAY ── */
+#error-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #f0ede8;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#error-overlay.visible { display: flex; }
+#error-overlay::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(26,95,180,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,95,180,.055) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none;
+}
+.err-wrap { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; padding: 28px 24px 24px; gap: 0; }
+.err-badge { display: inline-flex; align-items: center; gap: 8px; background: #1a3a6e; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 3.5px; text-transform: uppercase; padding: 6px 20px; border-radius: 2px; margin-bottom: 20px; }
+.err-dot { width: 7px; height: 7px; border-radius: 50%; background: #d4930e; animation: eblink2 1.4s ease-in-out infinite; }
+@keyframes eblink2 { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.6)} }
+.err-scene { position: relative; width: 380px; height: 300px; margin-bottom: 16px; }
+.err-orbit-center { position: absolute; left: 190px; top: 38px; width: 0; height: 0; }
+.err-star-el { position: absolute; width: 22px; height: 22px; transform-origin: 0 0; display: flex; align-items: center; justify-content: center; }
+.err-star-el:nth-child(1){animation:esorb 1.7s linear infinite}
+.err-star-el:nth-child(2){animation:esorb 1.7s linear infinite;animation-delay:-.57s}
+.err-star-el:nth-child(3){animation:esorb 1.7s linear infinite;animation-delay:-1.13s}
+.err-star-el:nth-child(4){animation:esorb 1.7s linear infinite;animation-delay:-.85s}
+@keyframes esorb{from{transform:rotate(0deg) translateX(46px) rotate(0deg)}to{transform:rotate(360deg) translateX(46px) rotate(-360deg)}}
+.err-star-el svg{animation:esspin .85s linear infinite;width:20px;height:20px}
+@keyframes esspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.err-bird-el{position:absolute;width:30px;height:30px;transform-origin:0 0}
+.err-bird-el:nth-child(1){animation:eborb 2.3s linear infinite}
+.err-bird-el:nth-child(2){animation:eborb 2.3s linear infinite;animation-delay:-.77s}
+.err-bird-el:nth-child(3){animation:eborb 2.3s linear infinite;animation-delay:-1.53s}
+@keyframes eborb{0%{transform:rotate(0deg) translateX(58px) rotate(0deg)}49%{transform:rotate(176deg) translateX(58px) rotate(-176deg)}50%{transform:rotate(180deg) translateX(58px) rotate(-180deg) scaleX(-1)}99%{transform:rotate(356deg) translateX(58px) rotate(-356deg) scaleX(-1)}100%{transform:rotate(360deg) translateX(58px) rotate(-360deg)}}
+.err-bird-el svg{width:30px;height:30px}
+.ewt{animation:eflap .26s ease-in-out infinite alternate;transform-origin:50% 100%}
+.ewb{animation:eflap .26s ease-in-out infinite alternate .13s;transform-origin:50% 0%}
+@keyframes eflap{from{transform:scaleY(1)}to{transform:scaleY(.18)}}
+.err-laptop-wrap{position:absolute;bottom:20px;left:50%;transform:translateX(-50%)}
+.err-laptop-shake{animation:ewobble 1.6s ease-in-out infinite;transform-origin:190px 120px}
+@keyframes ewobble{0%,100%{transform:rotate(0deg) translateY(0)}18%{transform:rotate(-3deg) translateY(-2px)}36%{transform:rotate(2.5deg) translateY(-1px)}54%{transform:rotate(-3.5deg) translateY(-3px)}72%{transform:rotate(2deg) translateY(-1px)}}
+.err-screen{animation:eflicker 3.5s ease-in-out infinite}
+@keyframes eflicker{0%,86%,100%{opacity:1}89%{opacity:.25}92%{opacity:1}95%{opacity:.1}97%{opacity:1}}
+.eel1{animation:eeblink 2.2s step-end infinite}
+.eel2{animation:eeblink 2.2s step-end infinite;animation-delay:.4s}
+.eel3{animation:eeblink 2.2s step-end infinite;animation-delay:.8s}
+@keyframes eeblink{0%,100%{opacity:1}50%{opacity:.15}}
+.esw1{animation:eswfall 1.9s ease-in infinite}
+.esw2{animation:eswfall 1.9s ease-in infinite;animation-delay:.95s}
+.esw3{animation:eswfall 1.9s ease-in infinite;animation-delay:.45s}
+@keyframes eswfall{0%{transform:translateY(0);opacity:1}100%{transform:translateY(28px);opacity:0}}
+.esmoke{animation:esmokeup 2.4s ease-out infinite;transform-origin:center bottom}
+.esmoke:nth-child(2){animation-delay:.8s}
+.esmoke:nth-child(3){animation-delay:1.6s}
+@keyframes esmokeup{0%{transform:translateY(0) scale(.6);opacity:.7}100%{transform:translateY(-32px) scale(1.4);opacity:0}}
+.err-txt{text-align:center;max-width:440px}
+.err-code{font-family:'Bebas Neue',sans-serif;font-size:78px;line-height:1;color:#1a3a6e;letter-spacing:6px;margin-bottom:2px}
+.err-etitle{font-size:21px;font-weight:700;color:#1a3a6e;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.err-emsg{font-size:15px;color:#6b6a66;line-height:1.65;margin-bottom:22px}
+.err-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.err-btn{padding:10px 28px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-radius:2px;cursor:pointer;border:none;text-decoration:none;transition:.18s}
+.err-bp{background:#1a3a6e;color:#fff}.err-bp:hover{background:#1a5fb4;transform:translateY(-1px)}
+.err-bs{background:transparent;color:#1a3a6e;border:1.5px solid #1a3a6e}.err-bs:hover{background:#1a3a6e;color:#fff;transform:translateY(-1px)}
+
 /* ── INTRO SCREEN ── */
 #intro-screen {
   position: fixed;
@@ -1399,6 +1470,82 @@ footer {
 </head>
 <body>
 
+<!-- ── ERROR / OFFLINE OVERLAY ── -->
+<div id="error-overlay">
+  <div class="err-wrap">
+    <div class="err-badge"><span class="err-dot"></span><span id="errBadgeText">Sedang Perbaikan</span></div>
+    <div class="err-scene">
+      <div class="err-orbit-center">
+        <div id="errStarRing">
+          <div class="err-star-el"><svg viewBox="0 0 20 20"><polygon points="10,1 12.5,7.5 19,8 14,13 15.5,19 10,15.5 4.5,19 6,13 1,8 7.5,7.5" fill="#d4930e"/></svg></div>
+          <div class="err-star-el"><svg viewBox="0 0 20 20"><polygon points="10,1 12.5,7.5 19,8 14,13 15.5,19 10,15.5 4.5,19 6,13 1,8 7.5,7.5" fill="#e05a2b"/></svg></div>
+          <div class="err-star-el"><svg viewBox="0 0 20 20"><polygon points="10,1 12.5,7.5 19,8 14,13 15.5,19 10,15.5 4.5,19 6,13 1,8 7.5,7.5" fill="#e8a030"/></svg></div>
+          <div class="err-star-el"><svg viewBox="0 0 20 20"><polygon points="10,1 12.5,7.5 19,8 14,13 15.5,19 10,15.5 4.5,19 6,13 1,8 7.5,7.5" fill="#1a5fb4"/></svg></div>
+        </div>
+        <div id="errBirdRing" style="display:none">
+          <div class="err-bird-el"><svg viewBox="0 0 36 28" fill="none"><g class="ewt"><path d="M18 14 Q8 2 1 7 Q9 10 18 14Z" fill="#1a3a6e"/></g><ellipse cx="18" cy="15" rx="8" ry="5" fill="#1a5fb4"/><ellipse cx="24" cy="13.5" rx="4" ry="3" fill="#1a3a6e"/><circle cx="27" cy="12.5" r="1.2" fill="#fff"/><circle cx="27.4" cy="12.5" r=".55" fill="#111"/><path d="M30 14 L35 13 L30 16Z" fill="#d4930e"/><g class="ewb"><path d="M18 16 Q8 28 1 23 Q9 20 18 16Z" fill="#1a5fb4"/></g></svg></div>
+          <div class="err-bird-el"><svg viewBox="0 0 36 28" fill="none"><g class="ewt"><path d="M18 14 Q8 2 1 7 Q9 10 18 14Z" fill="#d4930e"/></g><ellipse cx="18" cy="15" rx="8" ry="5" fill="#e8a030"/><ellipse cx="24" cy="13.5" rx="4" ry="3" fill="#d4930e"/><circle cx="27" cy="12.5" r="1.2" fill="#fff"/><circle cx="27.4" cy="12.5" r=".55" fill="#111"/><path d="M30 14 L35 13 L30 16Z" fill="#1a3a6e"/><g class="ewb"><path d="M18 16 Q8 28 1 23 Q9 20 18 16Z" fill="#e8a030"/></g></svg></div>
+          <div class="err-bird-el"><svg viewBox="0 0 36 28" fill="none"><g class="ewt"><path d="M18 14 Q8 2 1 7 Q9 10 18 14Z" fill="#e05a2b"/></g><ellipse cx="18" cy="15" rx="8" ry="5" fill="#f07040"/><ellipse cx="24" cy="13.5" rx="4" ry="3" fill="#e05a2b"/><circle cx="27" cy="12.5" r="1.2" fill="#fff"/><circle cx="27.4" cy="12.5" r=".55" fill="#111"/><path d="M30 14 L35 13 L30 16Z" fill="#1a3a6e"/><g class="ewb"><path d="M18 16 Q8 28 1 23 Q9 20 18 16Z" fill="#f07040"/></g></svg></div>
+        </div>
+      </div>
+      <div class="err-laptop-wrap">
+        <svg class="err-laptop-shake" width="380" height="260" viewBox="0 0 380 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g class="esmoke" style="transform-origin:80px 95px"><ellipse cx="80" cy="95" rx="7" ry="10" fill="#c8bfb0" opacity=".5"/></g>
+          <g class="esmoke" style="transform-origin:300px 95px;animation-delay:.8s"><ellipse cx="300" cy="95" rx="6" ry="9" fill="#c8bfb0" opacity=".4"/></g>
+          <g class="esmoke" style="transform-origin:190px 78px;animation-delay:1.6s"><ellipse cx="190" cy="78" rx="5" ry="8" fill="#c8bfb0" opacity=".35"/></g>
+          <rect x="60" y="14" width="260" height="178" rx="12" fill="#1e1e1c"/>
+          <rect class="err-screen" x="68" y="22" width="244" height="162" rx="6" fill="#1a2a4a"/>
+          <rect x="68" y="22" width="244" height="162" rx="6" fill="url(#errScanlines)" opacity=".18"/>
+          <defs><pattern id="errScanlines" width="1" height="4" patternUnits="userSpaceOnUse"><rect width="1" height="2" fill="#fff" opacity=".12"/></pattern></defs>
+          <rect x="68" y="22" width="244" height="162" rx="6" fill="url(#errGlow)" opacity=".25"/>
+          <defs><radialGradient id="errGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#3a7fd4"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs>
+          <circle cx="190" cy="18" r="3" fill="#2a2a28"/>
+          <ellipse cx="190" cy="170" rx="12" ry="8" fill="#1e1e1c"/>
+          <rect x="68" y="150" width="244" height="6" rx="2" fill="#0d1929" opacity=".7"/>
+          <ellipse cx="174" cy="106" rx="12" ry="11" fill="#fff" opacity=".92"/>
+          <path d="M170 103 Q173 100 176 103 Q179 106 176 109 Q173 112 170 109 Q167 106 170 103" stroke="#3a2010" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          <circle cx="174" cy="105" r="2" fill="#3a2010"/>
+          <ellipse cx="208" cy="106" rx="12" ry="11" fill="#fff" opacity=".92"/>
+          <path d="M208 103 Q211 100 214 103 Q217 106 214 109 Q211 112 208 109 Q205 106 208 103" stroke="#3a2010" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          <circle cx="210" cy="105" r="2" fill="#3a2010"/>
+          <ellipse cx="188" cy="118" rx="5" ry="3" fill="#e0aa55" opacity=".5"/>
+          <ellipse cx="193" cy="118" rx="5" ry="3" fill="#e0aa55" opacity=".5"/>
+          <path d="M168 134 Q180 126 212 134" stroke="#b07030" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <ellipse cx="155" cy="122" rx="11" ry="7" fill="#e07070" opacity=".3"/>
+          <ellipse cx="225" cy="122" rx="11" ry="7" fill="#e07070" opacity=".3"/>
+          <path class="esw1" d="M144 88 Q140 78 146 74" stroke="#60b8ff" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path class="esw2" d="M148 100 Q144 92 148 88" stroke="#60b8ff" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <path class="esw3" d="M236 88 Q240 78 234 74" stroke="#60b8ff" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <circle cx="298" cy="44" r="12" fill="rgba(224,90,43,.2)" stroke="#e05a2b" stroke-width="1.5"/>
+          <line x1="293" y1="39" x2="303" y2="49" stroke="#e05a2b" stroke-width="2" stroke-linecap="round"/>
+          <line x1="303" y1="39" x2="293" y2="49" stroke="#e05a2b" stroke-width="2" stroke-linecap="round"/>
+          <g class="eel1"><rect x="68" y="172" width="80" height="5" rx="2.5" fill="rgba(224,90,43,.7)"/></g>
+          <g class="eel2"><rect x="68" y="180" width="130" height="4" rx="2" fill="rgba(255,255,255,.2)"/></g>
+          <g class="eel3"><rect x="68" y="188" width="100" height="4" rx="2" fill="rgba(255,255,255,.12)"/></g>
+          <rect x="44" y="192" width="292" height="12" rx="4" fill="#1e1e1c"/>
+          <rect x="44" y="192" width="292" height="30" rx="6" fill="#2a2a28"/>
+          <rect x="58" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="72" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="86" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="100" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="114" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="128" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="142" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="156" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="170" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="184" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="198" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="212" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="226" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="240" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="254" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="268" y="198" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="282" y="198" width="30" height="6" rx="1.5" fill="#3a3a38"/>
+          <rect x="65" y="208" width="14" height="6" rx="1.5" fill="#3a3a38"/><rect x="83" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="97" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="111" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="125" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="139" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="153" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="167" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="181" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="195" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="209" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="223" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="237" y="208" width="10" height="6" rx="1.5" fill="#3a3a38"/><rect x="251" y="208" width="26" height="6" rx="1.5" fill="#3a3a38"/>
+          <rect x="120" y="218" width="140" height="6" rx="1.5" fill="#3a3a38"/>
+          <rect x="155" y="228" width="70" height="10" rx="3" fill="#333330"/>
+          <rect x="52" y="222" width="20" height="8" rx="2" fill="#111"/>
+          <rect x="308" y="222" width="20" height="8" rx="2" fill="#111"/>
+        </svg>
+      </div>
+    </div>
+    <div class="err-txt">
+      <div class="err-code" id="errCode">4 0 4</div>
+      <div class="err-etitle" id="errTitle">Halaman Tidak Ditemukan</div>
+      <p class="err-emsg" id="errMsg">Aduh, laptopnya ikutan pusing mencari halaman ini!<br>Tim kami sudah siap — sebentar lagi kembali normal.</p>
+      <div class="err-btns">
+        <a href="/" class="err-btn err-bp">← Kembali ke Beranda</a>
+        <button class="err-btn err-bs" onclick="location.reload()">Coba Lagi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <!-- ══ WELCOME / INTRO SCREEN ══ -->
 <div id="intro-screen">
   <div class="intro-curtain-left"></div>
@@ -2692,6 +2839,78 @@ function fillRow(rowId, offset) {
 
 fillRow('row1', 0);
 fillRow('row2', 3);
+
+// ── ERROR / OFFLINE OVERLAY LOGIC ──
+(function() {
+  var overlay = document.getElementById('error-overlay');
+  var starRing = document.getElementById('errStarRing');
+  var birdRing = document.getElementById('errBirdRing');
+  var badge = document.getElementById('errBadgeText');
+  var code = document.getElementById('errCode');
+  var title = document.getElementById('errTitle');
+  var msg = document.getElementById('errMsg');
+
+  function showOffline() {
+    starRing.style.display = 'none';
+    birdRing.style.display = 'block';
+    badge.textContent = 'Koneksi Terputus';
+    code.textContent = 'OFFLINE';
+    code.style.fontSize = '50px';
+    code.style.letterSpacing = '3px';
+    title.textContent = 'Cek Koneksi Internet Anda';
+    msg.innerHTML = 'Laptopnya bingung... sinyal kemana?<br>Cek WiFi atau data selulermu, lalu muat ulang halaman.';
+    overlay.classList.add('visible');
+  }
+
+  function showError(errCode, errTitle, errMsgHtml) {
+    starRing.style.display = 'block';
+    birdRing.style.display = 'none';
+    code.style.fontSize = '';
+    code.style.letterSpacing = '';
+    badge.textContent = 'Error Server';
+    code.textContent = errCode;
+    title.textContent = errTitle;
+    msg.innerHTML = errMsgHtml;
+    overlay.classList.add('visible');
+  }
+
+  function hideOverlay() {
+    overlay.classList.remove('visible');
+  }
+
+  function checkStatus() {
+    if (!navigator.onLine) {
+      showOffline();
+      return;
+    }
+    hideOverlay();
+  }
+
+  // Intercept fetch/XHR errors to detect HTTP error codes
+  var origFetch = window.fetch;
+  window.fetch = function() {
+    return origFetch.apply(this, arguments).then(function(res) {
+      if (res.status === 404) {
+        showError('4 0 4', 'Halaman Tidak Ditemukan', 'Aduh, laptopnya ikutan pusing mencari halaman ini!<br>Tim kami sudah siap — sebentar lagi kembali normal.');
+      } else if (res.status >= 500) {
+        showError('5 0 0', 'Server Sedang Rewel', 'Server ikutan pusing juga nih!<br>Tim teknis sedang memperbaiki, coba lagi beberapa saat ya.');
+      } else if (res.status === 503) {
+        showError('503', 'Web Lagi Maintenance', 'Laptop sedang di-update biar makin kencang!<br>Website kembali online sebentar lagi. Terima kasih sabar menunggu.');
+      }
+      return res;
+    }).catch(function(err) {
+      if (!navigator.onLine) showOffline();
+      throw err;
+    });
+  };
+
+  // Listen for online/offline events
+  window.addEventListener('offline', showOffline);
+  window.addEventListener('online', checkStatus);
+
+  // Initial check on load
+  checkStatus();
+})();
 </script>
 </body>
 </html>
