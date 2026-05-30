@@ -1469,6 +1469,584 @@ footer {
   60%  { transform: scale(1.3); opacity: 1; }
   100% { transform: scale(1); }
 }
+
+/* ── PAKET BUTTON (navbar) ── */
+.btn-paket-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--gold);
+  color: var(--navy);
+  border: none;
+  padding: 7px 16px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background .2s, transform .15s;
+  position: relative;
+  white-space: nowrap;
+}
+.btn-paket-nav::after {
+  content: 'NEW';
+  position: absolute;
+  top: -8px; right: -6px;
+  background: #e05a2b;
+  color: #fff;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+.btn-paket-nav:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+/* ── PAKET BUTTON (layanan header, keep for fallback) ── */
+.btn-paket-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--gold);
+  color: var(--navy);
+  border: none;
+  padding: 12px 28px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background .2s, transform .15s, box-shadow .2s;
+  box-shadow: 0 4px 16px rgba(212,147,14,0.35);
+  position: relative;
+}
+.btn-paket-header::after {
+  content: 'PROMO';
+  position: absolute;
+  top: -9px; right: -6px;
+  background: #e05a2b;
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+.btn-paket-header:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212,147,14,0.45); }
+
+/* ── PAKET MODAL ── */
+#paketModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(8,15,30,0.80);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  overflow-y: auto;
+}
+#paketModal.open { display: flex; }
+.paket-modal-box {
+  background: var(--off-white);
+  border-radius: 8px;
+  max-width: 1100px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+  animation: modalIn .35s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.93) translateY(24px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.paket-modal-header {
+  background: var(--navy);
+  padding: 28px 36px 24px;
+  position: sticky; top: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: space-between;
+  border-radius: 8px 8px 0 0;
+}
+.paket-modal-header h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 3px;
+  color: var(--white);
+}
+.paket-modal-header .pmh-sub {
+  font-size: 11px; letter-spacing: 4px; color: var(--gold-light);
+  font-weight: 700; text-transform: uppercase; margin-top: 2px;
+}
+.paket-modal-close {
+  background: none; border: none;
+  color: rgba(255,255,255,0.6);
+  font-size: 28px; cursor: pointer; line-height: 1; padding: 0;
+  transition: color .2s;
+}
+.paket-modal-close:hover { color: #fff; }
+
+.paket-tabs {
+  display: flex; gap: 0;
+  border-bottom: 2px solid rgba(26,63,110,0.12);
+  background: var(--white);
+  padding: 0 24px;
+  overflow-x: auto;
+}
+.paket-tab {
+  padding: 14px 22px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-muted);
+  border: none; background: none;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: color .2s, border-color .2s;
+  white-space: nowrap;
+}
+.paket-tab:hover { color: var(--navy); }
+.paket-tab.active { color: var(--navy); border-bottom-color: var(--gold); }
+
+.paket-tab-content { display: none; padding: 32px 28px; }
+.paket-tab-content.active { display: block; }
+
+/* Harga Biaya Desain cards */
+.harga-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+@media (max-width: 640px) { .harga-grid { grid-template-columns: 1fr; } }
+
+.harga-card {
+  background: var(--white);
+  border: 1.5px solid rgba(26,63,110,0.12);
+  border-radius: 8px;
+  padding: 28px 24px 24px;
+  box-shadow: 0 4px 18px rgba(26,63,110,0.08);
+  position: relative;
+  overflow: hidden;
+}
+.harga-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--gold));
+}
+.harga-label {
+  font-size: 10px; letter-spacing: 4px; font-weight: 700;
+  color: var(--blue); text-transform: uppercase; margin-bottom: 12px;
+}
+.harga-type {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px; color: var(--navy); letter-spacing: 1px;
+  line-height: 1.15; margin-bottom: 16px;
+}
+.harga-price-wrap { margin-bottom: 12px; }
+.harga-old {
+  font-size: 15px; color: var(--mid-gray);
+  text-decoration: line-through;
+}
+.harga-new {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 38px; color: var(--navy);
+  letter-spacing: 1px; line-height: 1;
+}
+.harga-unit { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-left: 2px; }
+.harga-note {
+  font-size: 12px; color: #c0392b; font-weight: 600;
+  margin-bottom: 8px; line-height: 1.5;
+}
+.harga-note2 {
+  font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5;
+}
+.harga-kasus {
+  background: rgba(26,63,110,0.04);
+  border: 1px solid rgba(26,63,110,0.1);
+  border-radius: 6px; padding: 14px 16px; margin-bottom: 14px;
+  font-size: 12.5px; line-height: 1.6; color: var(--text);
+}
+.harga-kasus-title { color: var(--blue); font-weight: 700; margin-bottom: 4px; font-size: 12px; letter-spacing: 0.5px; }
+.harga-benefits { margin-top: 16px; }
+.harga-benefits-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 15px; letter-spacing: 2px; color: var(--navy); margin-bottom: 10px;
+}
+.harga-benefit-item {
+  display: flex; gap: 8px; align-items: flex-start;
+  font-size: 13px; color: var(--text); margin-bottom: 6px;
+}
+.hb-check { color: var(--gold); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+/* Paket Perumahan cards */
+.perumahan-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 18px;
+}
+@media (max-width: 700px) { .perumahan-grid { grid-template-columns: 1fr; } }
+
+.perumahan-card {
+  background: var(--white);
+  border: 1.5px solid rgba(26,63,110,0.12);
+  border-radius: 8px;
+  padding: 24px 20px 20px;
+  box-shadow: 0 4px 18px rgba(26,63,110,0.08);
+  position: relative; overflow: hidden;
+  transition: transform .2s, box-shadow .2s;
+}
+.perumahan-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(26,63,110,0.18); }
+
+.perumahan-badge-silver { background: linear-gradient(135deg,#bdbdbd,#e8e8e8); }
+.perumahan-badge-gold   { background: linear-gradient(135deg,#d4930e,#f0c040); }
+.perumahan-badge-premium{ background: linear-gradient(135deg,#6c3dbf,#e84393); }
+.perumahan-badge {
+  display: inline-block;
+  padding: 5px 16px 5px 12px;
+  border-radius: 0 20px 20px 0;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; letter-spacing: 3px; color: #fff;
+  margin-bottom: 14px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.25);
+}
+.perumahan-price-wrap { margin-bottom: 10px; }
+.perumahan-old {
+  font-size: 13px; color: var(--mid-gray);
+  text-decoration: line-through;
+}
+.perumahan-new {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px; color: var(--navy);
+  letter-spacing: 1px; line-height: 1;
+}
+.perumahan-desc { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 8px; }
+.perumahan-note { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.perumahan-note strong { color: var(--navy); }
+.perumahan-cta {
+  display: block; width: 100%;
+  margin-top: 16px;
+  background: var(--navy); color: var(--white);
+  border: none; border-radius: 2px;
+  padding: 10px 0;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; cursor: pointer;
+  transition: background .2s;
+}
+.perumahan-cta:hover { background: var(--blue); }
+
+@media (max-width: 720px) {
+  .paket-modal-header { padding: 20px 20px 16px; }
+  .paket-tab-content { padding: 20px 16px; }
+  .paket-modal-header h2 { font-size: 20px; }
+  .btn-paket-header { font-size: 11px; padding: 10px 18px; }
+}
+
+/* ── KALKULATOR PAKET SPLIT VIEW ── */
+#tab-kalkulator {
+  padding: 0 !important;
+}
+.kalk-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 520px;
+}
+.kalk-left {
+  background: var(--off-white);
+  padding: 28px 24px;
+  overflow-y: auto;
+  border-right: 1px solid rgba(26,63,110,0.12);
+}
+.kalk-right {
+  background: var(--white);
+  padding: 28px 24px;
+  overflow-y: auto;
+}
+.kalk-section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 15px;
+  letter-spacing: 2px;
+  color: var(--navy);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.kalk-section-title::before {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+
+/* Paket buttons kalkulator */
+.kalk-pkg-btn {
+  width: 100%;
+  background: var(--white);
+  border: 1.5px solid rgba(26,63,110,0.12);
+  border-radius: 6px;
+  padding: 11px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  position: relative;
+  margin-bottom: 7px;
+  font-family: 'Rajdhani', sans-serif;
+}
+.kalk-pkg-btn:hover {
+  border-color: var(--gold);
+  box-shadow: 0 2px 10px rgba(212,147,14,0.15);
+  transform: translateY(-1px);
+}
+.kalk-pkg-btn.active {
+  border-color: var(--gold);
+  background: #fffbf0;
+  box-shadow: 0 0 0 3px rgba(212,147,14,0.18);
+}
+.kalk-pkg-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 2px;
+  line-height: 1.3;
+}
+.kalk-pkg-price {
+  font-size: 12px;
+  color: var(--gold);
+  font-weight: 600;
+}
+.kalk-pkg-min {
+  font-size: 11px;
+  color: #7aadcf;
+  margin-top: 2px;
+}
+.kalk-pkg-check {
+  position: absolute;
+  top: 10px; right: 10px;
+  width: 18px; height: 18px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.kalk-pkg-check svg { width: 10px; height: 10px; }
+.kalk-pkg-btn.active .kalk-pkg-check { display: flex; }
+
+.kalk-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 14px 0 7px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.kalk-group-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(26,63,110,0.1);
+}
+.kalk-group-label:first-child { margin-top: 0; }
+.kalk-group-umum   { color: #7aadcf; }
+.kalk-group-perumahan { color: #8ac47a; }
+.kalk-group-detapo { color: var(--gold); }
+
+/* Dimensi inputs */
+.kalk-dim-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
+.kalk-dim-group {
+  flex: 1;
+}
+.kalk-dim-group label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.kalk-input-wrap {
+  position: relative;
+}
+.kalk-input-wrap input {
+  width: 100%;
+  background: var(--off-white);
+  border: 1.5px solid rgba(26,63,110,0.15);
+  border-radius: 4px;
+  padding: 11px 38px 11px 14px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy);
+  outline: none;
+  transition: border-color 0.2s;
+  -moz-appearance: textfield;
+}
+.kalk-input-wrap input::-webkit-outer-spin-button,
+.kalk-input-wrap input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.kalk-input-wrap input:focus { border-color: var(--gold); }
+.kalk-input-unit {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mid-gray);
+  pointer-events: none;
+}
+.kalk-times {
+  font-size: 22px;
+  color: rgba(26,63,110,0.2);
+  font-weight: 300;
+  font-family: 'Cormorant Garamond', serif;
+  padding-bottom: 6px;
+  flex-shrink: 0;
+}
+
+/* Result area */
+.kalk-result-box {
+  background: linear-gradient(135deg, #0a1628 0%, #1a3a6e 100%);
+  border-radius: 6px;
+  padding: 24px 20px;
+  text-align: center;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.kalk-result-box::after {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(212,147,14,0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+.kalk-res-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 4px;
+}
+.kalk-res-paket {
+  font-size: 12px;
+  color: var(--gold-light);
+  font-weight: 600;
+  margin-bottom: 2px;
+  min-height: 18px;
+  letter-spacing: 0.5px;
+}
+.kalk-res-luas {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 14px;
+  min-height: 16px;
+}
+.kalk-res-total {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(28px, 5vw, 42px);
+  color: var(--gold);
+  letter-spacing: 1px;
+  line-height: 1;
+  margin-bottom: 6px;
+  transition: all 0.3s ease;
+}
+.kalk-res-sub {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 1px;
+}
+.kalk-placeholder {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  color: rgba(255,255,255,0.35);
+  font-style: italic;
+  padding: 8px 0;
+}
+.kalk-formula-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.kalk-formula-chip {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+}
+.kalk-formula-chip span { color: var(--gold-light); font-weight: 600; }
+.kalk-formula-op { color: rgba(255,255,255,0.3); font-size: 12px; }
+
+/* Detail paket info */
+.kalk-detail-box {
+  background: var(--off-white);
+  border: 1px solid rgba(26,63,110,0.1);
+  border-radius: 6px;
+  padding: 16px;
+  margin-top: 12px;
+}
+.kalk-detail-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+.kalk-detail-item {
+  display: flex;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--text);
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+.kalk-detail-check { color: var(--gold); font-weight: 700; flex-shrink: 0; }
+.kalk-detail-empty {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: center;
+  padding: 10px 0;
+}
+
+@media (max-width: 640px) {
+  .kalk-split {
+    grid-template-columns: 1fr;
+  }
+  .kalk-left {
+    border-right: none;
+    border-bottom: 1px solid rgba(26,63,110,0.12);
+  }
+}
 </style>
 </head>
 <body>
@@ -1576,6 +2154,10 @@ footer {
     <li><a href="#layanan">Layanan<span class="nav-active-popup">Layanan Kami</span></a></li>
     <li><a href="#proyek">Proyek<span class="nav-active-popup">Proyek Kami</span></a></li>
     <li><a href="#kontak" class="nav-cta">Hubungi Kami</a></li>
+    <li><button onclick="openPaketModal()" class="btn-paket-nav">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      PAKET
+    </button></li>
   </ul>
   <button class="burger" id="burger" aria-label="Menu">
     <span></span><span></span><span></span>
@@ -1587,6 +2169,7 @@ footer {
   <a href="#layanan" onclick="closeMobile()">Layanan</a>
   <a href="#proyek" onclick="closeMobile()">Proyek</a>
   <a href="#kontak" onclick="closeMobile()">Kontak</a>
+  <a href="#" onclick="closeMobile();openPaketModal();return false;" style="color:var(--gold);font-weight:700;">🏷️ Paket Harga</a>
 </div>
 
 <!-- HERO -->
@@ -1811,6 +2394,456 @@ setTimeout(() => {
     </div>
   </div>
 </section>
+
+<!-- FOOTER -->
+<div class="gold-divider"></div>
+
+<!-- PAKET MODAL -->
+<div id="paketModal" onclick="closePaketModalOutside(event)">
+  <div class="paket-modal-box" id="paketModalBox">
+    <div class="paket-modal-header">
+      <div>
+        <div class="pmh-sub">Future Sakato Dynamics</div>
+        <h2>HARGA & PAKET LAYANAN</h2>
+      </div>
+      <button class="paket-modal-close" onclick="closePaketModal()">×</button>
+    </div>
+
+    <div class="paket-tabs">
+      <button class="paket-tab active" onclick="switchTab(event,'tab-desain')">🏠 Biaya Desain</button>
+      <button class="paket-tab" onclick="switchTab(event,'tab-perumahan')">🏆 Paket Perumahan</button>
+      <button class="paket-tab" onclick="switchTab(event,'tab-detapo')">📐 Paket Detapo</button>
+      <button class="paket-tab" onclick="switchTab(event,'tab-denah')">📋 Paket Denah</button>
+      <button class="paket-tab" onclick="switchTab(event,'tab-kalkulator')">🧮 Kalkulator Paket</button>
+    </div>
+
+    <!-- TAB 1: BIAYA DESAIN -->
+    <div class="paket-tab-content active" id="tab-desain">
+      <div class="harga-grid">
+
+        <!-- Kartu 1: Rumah Tinggal -->
+        <div class="harga-card">
+          <div class="harga-label">Harga Biaya Desain</div>
+          <div class="harga-type">RUMAH TINGGAL, VILLA, HOTEL,<br>APARTEMEN DAN LAIN-LAIN.</div>
+          <div class="harga-price-wrap">
+            <div class="harga-old">Rp 120.000,- / m²</div>
+            <div><span class="harga-new">Rp 95.000,-</span><span class="harga-unit">/ m²</span></div>
+          </div>
+          <div class="harga-note">Catatan :<br>Untuk luasan di bawah 250 m² dikenakan biaya paket desain Rp 23.700.000,-</div>
+          <div class="harga-note2">Untuk luasan lebih dari 250 m² maka,<br>(Luasan desain × Rp 95.000,-)</div>
+          <div class="harga-benefits">
+            <div class="harga-benefits-title">APA SAJA YANG DIDAPAT?</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar Kerja Lengkap Siap Bangun</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS GRATIS 3D Interior</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS GRATIS Gambar Struktur</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS GRATIS Perhitungan RAB</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS GRATIS Pengawasan</div>
+          </div>
+        </div>
+
+        <!-- Kartu 2: Kos-Kosan -->
+        <div class="harga-card">
+          <div class="harga-label">Harga Biaya Desain</div>
+          <div class="harga-type">KOS-KOSAN, RUKO, RUKAN.</div>
+          <div class="harga-price-wrap">
+            <div class="harga-old">Rp 90.000,- / m²</div>
+            <div><span class="harga-new">Rp 65.000,-</span><span class="harga-unit">/ m²</span></div>
+          </div>
+          <div class="harga-note">Catatan :<br>Untuk luasan di bawah 350 m² dikenakan biaya paket desain Rp 22.700.000,-</div>
+          <div class="harga-note2">Untuk luasan lebih dari 350 m² maka,<br>(Luasan desain × Rp 65.000,-)</div>
+          <div class="harga-benefits">
+            <div class="harga-benefits-title">APA SAJA YANG DIDAPAT?</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar Kerja Lengkap Siap Bangun</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS GRATIS 3D Interior</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS GRATIS Gambar Struktur</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS GRATIS Perhitungan RAB</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS GRATIS Pengawasan</div>
+          </div>
+        </div>
+
+      </div>
+      <div style="text-align:center;margin-top:8px;">
+        <a href="#kontak" onclick="closePaketModal()" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:var(--navy);padding:13px 32px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;border-radius:2px;text-decoration:none;transition:background .2s;">KONSULTASI GRATIS →</a>
+      </div>
+    </div>
+
+    <!-- TAB 2: PAKET PERUMAHAN -->
+    <div class="paket-tab-content" id="tab-perumahan">
+      <div style="text-align:center;margin-bottom:28px;">
+        <div style="font-size:10px;letter-spacing:5px;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:6px;">Harga Biaya</div>
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--navy);">PAKET DESAIN PERUMAHAN</h3>
+        <p style="font-size:14px;color:var(--text-muted);margin-top:6px;">Pilihan paket yang disesuaikan dengan kebutuhan anda.</p>
+      </div>
+      <div class="perumahan-grid">
+
+        <!-- Silver Paket A -->
+        <div class="perumahan-card">
+          <div class="perumahan-badge perumahan-badge-silver">⭐ PAKET A</div>
+          <div class="perumahan-price-wrap">
+            <div class="perumahan-old">Rp 185.000,- / m²</div>
+            <div><span class="perumahan-new">Rp 160.000,-</span></div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;">/ m² Luas Bangunan</div>
+          </div>
+          <div class="perumahan-desc">(Hitungan per type Bangunan)</div>
+          <div class="harga-benefits" style="margin-top:14px;">
+            <div class="harga-benefits-title">KETERANGAN PAKET :</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar 3D Eksterior (3 View)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Gambar 3D Interior — Ruang Dapur, Ruang Keluarga, Kamar Tidur Utama (3 View/Ruangan)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar Kerja Arsitektur &amp; Detail</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Gambar Struktur Bangunan (Pondasi, Kolom, Balok, Plat Lantai, Detail Pembesian)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Perhitungan RAB</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Gambar Rumah Untuk Keperluan IMB</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Pengawasan Pembangunan (1×Kunjungan)</div>
+          </div>
+          <button class="perumahan-cta" onclick="closePaketModal();document.getElementById('kontak').scrollIntoView({behavior:'smooth'});">Pilih Silver Paket A</button>
+        </div>
+
+        <!-- Gold Paket B -->
+        <div class="perumahan-card" style="border-color:rgba(212,147,14,0.3);box-shadow:0 4px 24px rgba(212,147,14,0.15);">
+          <div style="position:absolute;top:12px;right:12px;background:var(--gold);color:var(--navy);font-size:9px;font-weight:700;letter-spacing:1.5px;padding:3px 9px;border-radius:2px;">POPULER</div>
+          <div class="perumahan-badge perumahan-badge-gold">★★ PAKET B</div>
+          <div class="perumahan-price-wrap">
+            <div class="perumahan-old">Rp 320.000,- / m²</div>
+            <div><span class="perumahan-new">Rp 290.000,-</span></div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;">/ m² Luas Bangunan</div>
+          </div>
+          <div class="perumahan-desc">(Hitungan per type Bangunan)</div>
+          <div class="harga-benefits" style="margin-top:14px;">
+            <div class="harga-benefits-title">KETERANGAN PAKET :</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar 3D Eksterior (3 View)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Gambar 3D Interior — Ruang Tamu, Ruang Keluarga, Kamar Tidur Utama+WIC, Kamar Tidur Anak, Ruang Dapur (3 View/Ruangan)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Denah 3D (untuk keperluan brosur)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar Kerja Arsitektur &amp; Detail</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Gambar Struktur Bangunan (Pondasi, Kolom, Balok, Plat Lantai, Detail Pembesian)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Perhitungan RAB</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Gambar Site Plan 2D</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Gambar Gerbang Perumahan (3D, Gambar Kerja &amp; RAB)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Gambar Untuk Keperluan IMB</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Pengawasan Pembangunan (4×Kunjungan Bulan ke-1, 1×Kunjungan per bulan berikutnya)</div>
+          </div>
+          <button class="perumahan-cta" style="background:var(--gold);color:var(--navy);" onclick="closePaketModal();document.getElementById('kontak').scrollIntoView({behavior:'smooth'});">Pilih Gold Paket B</button>
+        </div>
+
+        <!-- Premium Paket C -->
+        <div class="perumahan-card" style="border-color:rgba(108,61,191,0.25);">
+          <div class="perumahan-badge perumahan-badge-premium">✦ PREMIUM PAKET C</div>
+          <div class="perumahan-price-wrap">
+            <div class="perumahan-old">Rp 520.000,- / m²</div>
+            <div><span class="perumahan-new">Rp 490.000,-</span></div>
+            <div style="font-size:12px;color:var(--text-muted);font-weight:600;">/ m² Luas Bangunan</div>
+          </div>
+          <div class="perumahan-desc">(Hitungan per type Bangunan)</div>
+          <div class="harga-benefits" style="margin-top:14px;">
+            <div class="harga-benefits-title">KETERANGAN PAKET :</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar 3D Eksterior (3 View)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Animasi 3D Perumahan</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Gambar 3D Interior — Ruang Tamu, Ruang Keluarga, Kamar Tidur Utama+WIC, Kamar Tidur Anak 1 &amp; 2, Ruang Dapur, Ruang Makan/Pantry (3 View/Ruangan)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Animasi 3D Interior Rumah</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Denah 3D (untuk keperluan brosur)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar Kerja Arsitektur &amp; Detail</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Gambar Struktur Bangunan (Pondasi, Kolom, Balok, Plat Lantai, Detail Pembesian)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Perhitungan RAB</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Gambar Site Plan 2D &amp; Site Plan 3D</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Gambar Gerbang Perumahan (3D, Gambar Kerja &amp; RAB)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Gambar Untuk Keperluan IMB</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Pembuatan Brosur Perumahan</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> BONUS Pengawasan Pembangunan (4×Kunjungan Bulan ke-1, 1×Kunjungan per bulan berikutnya)</div>
+          </div>
+          <button class="perumahan-cta" style="background:linear-gradient(135deg,#6c3dbf,#e84393);" onclick="closePaketModal();document.getElementById('kontak').scrollIntoView({behavior:'smooth'});">Pilih Premium Paket C</button>
+        </div>
+
+      </div>
+      <div style="text-align:center;margin-top:24px;">
+        <a href="#kontak" onclick="closePaketModal()" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:var(--navy);padding:13px 32px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;border-radius:2px;text-decoration:none;">HUBUNGI KAMI →</a>
+      </div>
+    </div>
+
+    <!-- TAB 3: PAKET DETAPO -->
+    <div class="paket-tab-content" id="tab-detapo">
+      <div style="text-align:center;margin-bottom:28px;">
+        <div style="font-size:10px;letter-spacing:5px;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:6px;">Harga Biaya</div>
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--navy);">PAKET DETAPO</h3>
+        <p style="font-size:14px;color:var(--text-muted);margin-top:6px;">Paket khusus gambar Denah, Tampak, dan Potongan.</p>
+      </div>
+      <div class="harga-grid">
+
+        <!-- Detapo Rumah Tinggal -->
+        <div class="harga-card">
+          <div class="harga-label">Paket Detapo</div>
+          <div class="harga-type">RUMAH TINGGAL, VILLA, HOTEL,<br>APARTEMEN DAN LAIN-LAIN.</div>
+          <div class="harga-price-wrap">
+            <div class="harga-old">Rp 60.000,- / m²</div>
+            <div><span class="harga-new">Rp 45.000,-</span><span class="harga-unit">/ m²</span></div>
+          </div>
+          <div class="harga-benefits">
+            <div class="harga-benefits-title">APA SAJA YANG DIDAPAT?</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar Denah Lengkap</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar Tampak (Depan, Belakang, Samping)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar Potongan</div>
+          </div>
+        </div>
+
+        <!-- Detapo Kos-Kosan -->
+        <div class="harga-card">
+          <div class="harga-label">Paket Detapo</div>
+          <div class="harga-type">KOS-KOSAN, RUKO, RUKAN.</div>
+          <div class="harga-price-wrap">
+            <div class="harga-old">Rp 45.000,- / m²</div>
+            <div><span class="harga-new">Rp 32.000,-</span><span class="harga-unit">/ m²</span></div>
+          </div>
+          <div class="harga-benefits">
+            <div class="harga-benefits-title">APA SAJA YANG DIDAPAT?</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar Denah Lengkap</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar Tampak (Depan, Belakang, Samping)</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar Potongan</div>
+          </div>
+        </div>
+
+      </div>
+      <div style="text-align:center;margin-top:8px;">
+        <a href="#kontak" onclick="closePaketModal()" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:var(--navy);padding:13px 32px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;border-radius:2px;text-decoration:none;transition:background .2s;">KONSULTASI GRATIS →</a>
+      </div>
+    </div>
+
+    <!-- TAB 5: KALKULATOR PAKET -->
+    <div class="paket-tab-content" id="tab-kalkulator">
+      <div class="kalk-split">
+
+        <!-- KIRI: Pilih Paket -->
+        <div class="kalk-left">
+          <div class="kalk-section-title">① Pilih Paket</div>
+
+          <div class="kalk-group-label kalk-group-umum">Paket Umum</div>
+          <button class="kalk-pkg-btn" data-kalk-id="rtha" onclick="kalkSelectPkg(this)">
+            <div class="kalk-pkg-check"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="kalk-pkg-name">Rumah Tinggal / Villa / Hotel / Apartemen</div>
+            <div class="kalk-pkg-price">Rp 95.000,- / m²</div>
+            <div class="kalk-pkg-min">Min. luas: 250 m²</div>
+          </button>
+          <button class="kalk-pkg-btn" data-kalk-id="kos" onclick="kalkSelectPkg(this)">
+            <div class="kalk-pkg-check"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="kalk-pkg-name">Kos-kosan / Ruko / Rukan</div>
+            <div class="kalk-pkg-price">Rp 65.000,- / m²</div>
+            <div class="kalk-pkg-min">Min. luas: 350 m²</div>
+          </button>
+
+          <div class="kalk-group-label kalk-group-perumahan">Paket Perumahan</div>
+          <button class="kalk-pkg-btn" data-kalk-id="pkgA" onclick="kalkSelectPkg(this)">
+            <div class="kalk-pkg-check"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="kalk-pkg-name">Paket A — Perumahan</div>
+            <div class="kalk-pkg-price">Rp 160.000,- / m²</div>
+          </button>
+          <button class="kalk-pkg-btn" data-kalk-id="pkgB" onclick="kalkSelectPkg(this)">
+            <div class="kalk-pkg-check"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="kalk-pkg-name">Paket B — Perumahan</div>
+            <div class="kalk-pkg-price">Rp 290.000,- / m²</div>
+          </button>
+          <button class="kalk-pkg-btn" data-kalk-id="pkgC" onclick="kalkSelectPkg(this)">
+            <div class="kalk-pkg-check"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="kalk-pkg-name">Paket C Premium — Perumahan</div>
+            <div class="kalk-pkg-price">Rp 490.000,- / m²</div>
+          </button>
+
+          <div class="kalk-group-label kalk-group-detapo">Paket DETAPO</div>
+          <button class="kalk-pkg-btn" data-kalk-id="detaRt" onclick="kalkSelectPkg(this)">
+            <div class="kalk-pkg-check"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="kalk-pkg-name">DETAPO – Rumah Tinggal / Villa / Hotel / Apartemen</div>
+            <div class="kalk-pkg-price">Rp 45.000,- / m²</div>
+          </button>
+          <button class="kalk-pkg-btn" data-kalk-id="detaKos" onclick="kalkSelectPkg(this)">
+            <div class="kalk-pkg-check"><svg viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="kalk-pkg-name">DETAPO – Kos-kosan / Ruko / Rukan</div>
+            <div class="kalk-pkg-price">Rp 32.000,- / m²</div>
+          </button>
+        </div>
+
+        <!-- KANAN: Kalkulator + Info Paket -->
+        <div class="kalk-right">
+          <div class="kalk-section-title">② Dimensi Bangunan</div>
+
+          <div class="kalk-dim-row">
+            <div class="kalk-dim-group">
+              <label>Panjang</label>
+              <div class="kalk-input-wrap">
+                <input type="number" id="kalkPanjang" placeholder="0" min="0" step="0.01" oninput="kalkHitung()">
+                <span class="kalk-input-unit">m</span>
+              </div>
+            </div>
+            <div class="kalk-times">×</div>
+            <div class="kalk-dim-group">
+              <label>Lebar</label>
+              <div class="kalk-input-wrap">
+                <input type="number" id="kalkLebar" placeholder="0" min="0" step="0.01" oninput="kalkHitung()">
+                <span class="kalk-input-unit">m</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result -->
+          <div class="kalk-result-box">
+            <div class="kalk-res-label">Estimasi Total Harga</div>
+            <div class="kalk-res-paket" id="kalkResPaket">—</div>
+            <div class="kalk-res-luas" id="kalkResLuas">—</div>
+            <div id="kalkResOutput"><div class="kalk-placeholder">Pilih paket & masukkan dimensi</div></div>
+          </div>
+
+          <!-- Detail paket terpilih -->
+          <div class="kalk-detail-box" id="kalkDetailBox">
+            <div class="kalk-detail-title">Detail Paket Terpilih</div>
+            <div id="kalkDetailContent">
+              <div class="kalk-detail-empty">Pilih paket di sebelah kiri untuk melihat detail layanan.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 4: PAKET DENAH SAJA -->
+    <div class="paket-tab-content" id="tab-denah">
+      <div style="text-align:center;margin-bottom:28px;">
+        <div style="font-size:10px;letter-spacing:5px;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:6px;">Harga Biaya</div>
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--navy);">PAKET DENAH SAJA</h3>
+        <p style="font-size:14px;color:var(--text-muted);margin-top:6px;">Hanya gambar denah, maksimal 3 lantai.</p>
+      </div>
+      <div style="max-width:480px;margin:0 auto;">
+        <div class="harga-card" style="text-align:center;">
+          <div class="harga-label">Paket Denah Saja</div>
+          <div class="harga-type" style="text-align:center;">1 LANTAI / 2 LANTAI / 3 LANTAI</div>
+          <div class="harga-price-wrap" style="text-align:center;margin-top:16px;">
+            <div class="harga-new" style="font-size:52px;">Rp 300.000,-</div>
+            <div style="font-size:13px;color:var(--text-muted);font-weight:600;margin-top:4px;">Flat untuk semua jumlah lantai</div>
+          </div>
+          <div class="harga-note" style="text-align:left;margin-top:16px;">Catatan :<br>Harga berlaku sama untuk bangunan 1 lantai, 2 lantai, maupun 3 lantai (maksimal 3 lantai).</div>
+          <div class="harga-benefits" style="text-align:left;margin-top:16px;">
+            <div class="harga-benefits-title">APA SAJA YANG DIDAPAT?</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar Denah 1 Lantai</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar Denah 2 Lantai</div>
+            <div class="harga-benefit-item"><span class="hb-check">✓</span> Gambar Denah 3 Lantai</div>
+          </div>
+          <button class="perumahan-cta" onclick="closePaketModal();document.getElementById('kontak').scrollIntoView({behavior:'smooth'});">Pesan Sekarang</button>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:24px;">
+        <a href="#kontak" onclick="closePaketModal()" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:var(--navy);padding:13px 32px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;border-radius:2px;text-decoration:none;">HUBUNGI KAMI →</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function openPaketModal() {
+  document.getElementById('paketModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePaketModal() {
+  document.getElementById('paketModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closePaketModalOutside(e) {
+  if (e.target === document.getElementById('paketModal')) closePaketModal();
+}
+function switchTab(e, tabId) {
+  document.querySelectorAll('.paket-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.paket-tab-content').forEach(t => t.classList.remove('active'));
+  e.currentTarget.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+// ── KALKULATOR PAKET ──
+var kalkSelected = null;
+
+var kalkPakets = {
+  rtha:    { nama: 'Rumah Tinggal / Villa / Hotel / Apartemen', harga: 95000,  minLuas: 250, hargaFlat: 23700000,
+             benefits: ['Gambar Kerja Lengkap Siap Bangun','BONUS GRATIS 3D Interior','BONUS GRATIS Gambar Struktur','BONUS GRATIS Perhitungan RAB','BONUS GRATIS Pengawasan'] },
+  kos:     { nama: 'Kos-kosan / Ruko / Rukan', harga: 65000, minLuas: 350, hargaFlat: 22700000,
+             benefits: ['Gambar Kerja Lengkap Siap Bangun','BONUS GRATIS 3D Interior','BONUS GRATIS Gambar Struktur','BONUS GRATIS Perhitungan RAB','BONUS GRATIS Pengawasan'] },
+  pkgA:    { nama: 'Paket A – Perumahan', harga: 160000,
+             benefits: ['Gambar 3D Eksterior (3 View)','BONUS Gambar 3D Interior (Dapur, Keluarga, Kamar Utama)','Gambar Kerja Arsitektur & Detail','BONUS Gambar Struktur Bangunan','Perhitungan RAB','BONUS Gambar untuk IMB','BONUS Pengawasan (1× Kunjungan)'] },
+  pkgB:    { nama: 'Paket B – Perumahan', harga: 290000,
+             benefits: ['Gambar 3D Eksterior (3 View)','BONUS Gambar 3D Interior Lengkap','BONUS Denah 3D (brosur)','Gambar Kerja Arsitektur & Detail','BONUS Gambar Struktur Bangunan','Perhitungan RAB','BONUS Site Plan 2D','BONUS Gambar Gerbang Perumahan','BONUS Gambar untuk IMB','BONUS Pengawasan (4× Kunjungan bulan ke-1)'] },
+  pkgC:    { nama: 'Paket C Premium – Perumahan', harga: 490000,
+             benefits: ['Gambar 3D Eksterior (3 View)','BONUS Animasi 3D Perumahan','BONUS Gambar 3D Interior Lengkap','BONUS Animasi 3D Interior','BONUS Denah 3D (brosur)','Gambar Kerja Arsitektur & Detail','BONUS Gambar Struktur Bangunan','Perhitungan RAB','BONUS Site Plan 2D & 3D','BONUS Gambar Gerbang Perumahan','BONUS Pembuatan Brosur Perumahan','BONUS Pengawasan (4× Kunjungan bulan ke-1)'] },
+  detaRt:  { nama: 'DETAPO – Rumah Tinggal / Villa / Hotel / Apartemen', harga: 45000,
+             benefits: ['Gambar Denah Lengkap','Gambar Tampak (Depan, Belakang, Samping)','Gambar Potongan'] },
+  detaKos: { nama: 'DETAPO – Kos-kosan / Ruko / Rukan', harga: 32000,
+             benefits: ['Gambar Denah Lengkap','Gambar Tampak (Depan, Belakang, Samping)','Gambar Potongan'] },
+};
+
+function kalkFmt(n) {
+  return new Intl.NumberFormat('id-ID', {style:'currency',currency:'IDR',minimumFractionDigits:0}).format(n);
+}
+function kalkFmtLuas(n) {
+  return new Intl.NumberFormat('id-ID', {maximumFractionDigits:2}).format(n);
+}
+
+function kalkSelectPkg(btn) {
+  document.querySelectorAll('.kalk-pkg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  kalkSelected = kalkPakets[btn.dataset.kalkId];
+  kalkHitung();
+  // Update detail box
+  var content = '';
+  kalkSelected.benefits.forEach(function(b) {
+    content += '<div class="kalk-detail-item"><span class="kalk-detail-check">✓</span><span>' + b + '</span></div>';
+  });
+  document.getElementById('kalkDetailContent').innerHTML = content;
+}
+
+function kalkHitung() {
+  var p = parseFloat(document.getElementById('kalkPanjang').value) || 0;
+  var l = parseFloat(document.getElementById('kalkLebar').value) || 0;
+  var luas = p * l;
+
+  var resPaket = document.getElementById('kalkResPaket');
+  var resLuas  = document.getElementById('kalkResLuas');
+  var resOut   = document.getElementById('kalkResOutput');
+
+  if (!kalkSelected) {
+    resPaket.textContent = '—';
+    resLuas.textContent = '—';
+    resOut.innerHTML = '<div class="kalk-placeholder">Pilih paket & masukkan dimensi</div>';
+    return;
+  }
+
+  resPaket.textContent = kalkSelected.nama;
+
+  if (luas <= 0) {
+    resLuas.textContent = kalkSelected.minLuas ? 'Min. luas: ' + kalkFmtLuas(kalkSelected.minLuas) + ' m²' : 'Masukkan panjang & lebar';
+    resOut.innerHTML = '<div class="kalk-placeholder">Masukkan dimensi bangunan</div>';
+    return;
+  }
+
+  if (kalkSelected.minLuas && luas < kalkSelected.minLuas) {
+    resLuas.textContent = 'Luas: ' + kalkFmtLuas(luas) + ' m² — di bawah minimum ' + kalkFmtLuas(kalkSelected.minLuas) + ' m²';
+    resOut.innerHTML = '<div class="kalk-res-total" style="color:#e87a5a;">' + kalkFmt(kalkSelected.hargaFlat) + '</div>' +
+      '<div class="kalk-res-sub" style="color:rgba(232,122,90,0.7);">Harga minimum berlaku</div>' +
+      '<div class="kalk-formula-row">' +
+        '<div class="kalk-formula-chip" style="border-color:rgba(232,122,90,0.3);">Luas <span style="color:#e87a5a;">' + kalkFmtLuas(luas) + ' m²</span></div>' +
+        '<span class="kalk-formula-op">→</span>' +
+        '<div class="kalk-formula-chip" style="border-color:rgba(232,122,90,0.3);">Min. <span style="color:#e87a5a;">' + kalkFmt(kalkSelected.hargaFlat) + '</span></div>' +
+      '</div>';
+    return;
+  }
+
+  var total = luas * kalkSelected.harga;
+  resLuas.textContent = 'Luas bangunan: ' + kalkFmtLuas(luas) + ' m²';
+  resOut.innerHTML =
+    '<div class="kalk-res-total">' + kalkFmt(total) + '</div>' +
+    '<div class="kalk-res-sub">Estimasi biaya desain</div>' +
+    '<div class="kalk-formula-row">' +
+      '<div class="kalk-formula-chip">Tarif <span>' + kalkFmt(kalkSelected.harga) + '/m²</span></div>' +
+      '<span class="kalk-formula-op">×</span>' +
+      '<div class="kalk-formula-chip">Luas <span>' + kalkFmtLuas(luas) + ' m²</span></div>' +
+      '<span class="kalk-formula-op">=</span>' +
+      '<div class="kalk-formula-chip"><span>' + kalkFmt(total) + '</span></div>' +
+    '</div>';
+}
+document.addEventListener('keydown', function(ev) {
+  if (ev.key === 'Escape') closePaketModal();
+});
+</script>
 
 <!-- FOOTER -->
 <div class="gold-divider"></div>
@@ -2924,8 +3957,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-</body>
-</html>
+
 <script>
 // ── PROTEKSI KONTEN ──
 document.addEventListener('contextmenu', function(e) {
@@ -2954,3 +3986,5 @@ document.addEventListener('dragstart', function(e) {
   e.preventDefault();
 });
 </script>
+</body>
+</html>
