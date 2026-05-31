@@ -1,0 +1,1901 @@
+at > /home/claude/rab_kalimarau.html << 'ENDOFFILE'
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator RAB — Kalimarau APBN 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1a1209;--sand:#f5f0e8;--warm:#ede8dc;--amber:#c47d1e;--amber-l:#e09c3a;
+  --teal:#1a6b5a;--slate:#4a5568;--line:#d5cfc3;--green:#1e7a45;--red:#c0392b;
+  --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sora',sans-serif;background:var(--sand);color:var(--ink);min-height:100vh;overflow-x:hidden}
+#topbar{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--ink);color:var(--sand);display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px}
+.tb-logo{font-family:'DM Serif Display';font-size:15px}
+.tb-sub{font-size:10px;opacity:.5;margin-top:1px}
+#sCtr{font-family:'DM Mono';font-size:12px;opacity:.7}
+#progBar{position:fixed;top:52px;left:0;right:0;height:4px;background:rgba(255,255,255,.1);z-index:99}
+#progFill{height:100%;background:var(--amber);transition:width .5s cubic-bezier(.4,0,.2,1)}
+#bMeter{position:fixed;bottom:0;left:0;right:0;z-index:90;background:var(--ink);padding:10px 20px 14px;display:none;flex-direction:column;gap:5px}
+#bMeter.visible{display:flex}
+.bm-row{display:flex;justify-content:space-between;align-items:center}
+#bMeterTxt{font-family:'DM Mono';font-size:14px;font-weight:600;color:var(--amber-l)}
+.budget-bar{height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.budget-bar-fill{height:100%;background:var(--teal);border-radius:3px;transition:width .4s ease}
+.budget-bar-fill.warn{background:var(--red)}
+#bDot{width:8px;height:8px;border-radius:50%;background:var(--teal);margin-right:8px;flex-shrink:0}
+#bDot.warn{background:var(--red)}
+.bm-label{font-size:10px;color:rgba(245,240,232,.5);font-family:'DM Mono'}
+#sdots{display:flex;gap:4px;justify-content:center;padding:8px 0;flex-wrap:wrap}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--line);transition:all .3s}
+.sdot.done{background:var(--amber-l);transform:scale(1.1)}
+.sdot.cur{background:var(--amber);transform:scale(1.3);box-shadow:0 0 0 3px rgba(196,125,30,.25)}
+#wrap{padding-top:70px;padding-bottom:100px;min-height:100vh}
+.step-card{display:none;flex-direction:column;align-items:center;gap:0;padding:0 0 20px}
+.step-card.active{animation:slideIn .38s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes slideIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.sh{background:var(--ink);color:var(--sand);width:100%;padding:24px 24px 20px;margin-bottom:24px;position:relative;overflow:hidden}
+.sh::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 50%,rgba(196,125,30,.18),transparent 60%)}
+.sh-step{font-family:'DM Mono';font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:.5;margin-bottom:6px}
+.sh-title{font-family:'DM Serif Display';font-size:24px;line-height:1.15;position:relative}
+.sh-title em{color:var(--amber-l);font-style:normal}
+.sh-desc{font-size:11px;opacity:.55;margin-top:6px;line-height:1.5;position:relative}
+.cz{width:100%;max-width:480px;padding:0 16px;display:flex;flex-direction:column;gap:16px}
+.cc{background:#fff;border:2px solid var(--line);border-radius:var(--r);padding:14px 16px;cursor:pointer;transition:all .22s;display:flex;align-items:flex-start;gap:12px;user-select:none}
+.cc:hover{border-color:var(--amber);box-shadow:0 2px 16px rgba(196,125,30,.12)}
+.cc.sel{border-color:var(--amber);background:rgba(196,125,30,.06);box-shadow:0 0 0 3px rgba(196,125,30,.15)}
+.cc-icon{font-size:26px;flex-shrink:0;line-height:1}
+.cc-label{font-size:13px;font-weight:600;color:var(--ink)}
+.cc-sub{font-size:11px;color:var(--slate);margin-top:2px;line-height:1.4}
+.cc-price{font-family:'DM Mono';font-size:11px;color:var(--amber);margin-top:3px}
+.cc-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:20px;background:var(--amber);color:#fff;margin-left:6px;vertical-align:middle}
+.sec-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--slate);padding-left:2px;margin-top:2px}
+.inp-wrap{background:#fff;border:2px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.inp-row{display:flex;align-items:center;gap:8px}
+.inp-lbl{font-size:11px;color:var(--slate);min-width:120px;flex-shrink:0;line-height:1.4}
+.inp-unit{font-family:'DM Mono';font-size:11px;color:var(--slate);white-space:nowrap}
+input[type=number],input[type=text],select{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font-family:'DM Mono';font-size:13px;color:var(--ink);background:var(--sand);width:100%;outline:none;transition:border-color .2s}
+input:focus,select:focus{border-color:var(--amber)}
+.formula-box{background:rgba(196,125,30,.06);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:8px 12px;font-size:10px;line-height:1.7;color:var(--slate)}
+.formula-box b{color:var(--amber);font-family:'DM Mono'}
+.dim-display{background:rgba(196,125,30,.08);border:1px dashed var(--amber);border-radius:8px;padding:10px 14px;display:none;flex-direction:column;gap:6px}
+.dim-row{display:flex;justify-content:space-between;font-size:12px;align-items:center}
+.dim-key{color:var(--slate);font-size:11px}
+.dim-val{font-family:'DM Mono';font-weight:600;color:var(--amber);font-size:12px}
+.sum-item{background:#fff;border-radius:8px;padding:9px 12px}
+.sum-item-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--slate)}
+.sum-item-val{font-size:12px;font-weight:600;color:var(--ink);margin-top:2px;font-family:'DM Mono'}
+.stepper-wrap{background:#fff;border:2px solid var(--line);border-radius:var(--r);padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.step-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.step-lbl{font-size:11px;color:var(--ink);flex:1;line-height:1.4}
+.step-ctrl{display:flex;align-items:center;gap:6px}
+.sbtn{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--amber);font-weight:700;transition:all .15s;line-height:1;flex-shrink:0}
+.sbtn:hover{background:var(--amber);color:#fff;border-color:var(--amber)}
+.sval{font-family:'DM Mono';font-size:15px;font-weight:600;min-width:26px;text-align:center;color:var(--ink)}
+.tbl-wrap{background:#fff;border:2px solid var(--line);border-radius:var(--r);overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead tr{background:var(--ink);color:var(--sand)}
+th{padding:7px 8px;text-align:left;font-weight:600;letter-spacing:.5px;font-size:10px}
+td{padding:6px 8px;border-bottom:1px solid var(--warm);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.tinput{border:1.5px solid var(--line);border-radius:6px;padding:4px 7px;font-family:'DM Mono';font-size:12px;background:var(--sand);color:var(--ink);outline:none;width:100%}
+.tinput:focus{border-color:var(--amber)}
+.dqctrl{display:flex;align-items:center;gap:4px}
+.dqbtn{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--line);background:#fff;cursor:pointer;font-size:14px;font-weight:700;color:var(--amber);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dqbtn:hover{background:var(--amber);color:#fff}
+.dqval{font-family:'DM Mono';font-size:13px;font-weight:600;min-width:18px;text-align:center}
+.rmbtn{border:none;background:none;cursor:pointer;color:var(--slate);font-size:13px;opacity:.5}
+.rmbtn:hover{opacity:1;color:var(--red)}
+.add-btn{display:flex;align-items:center;gap:8px;padding:9px 14px;border:2px dashed var(--amber);border-radius:8px;cursor:pointer;background:rgba(196,125,30,.04);color:var(--amber);font-size:12px;font-weight:600;transition:all .2s;width:100%;justify-content:center}
+.add-btn:hover{background:rgba(196,125,30,.1)}
+.ck-wrap{background:#fff;border:2px solid var(--line);border-radius:var(--r);padding:12px 16px;display:flex;flex-direction:column;gap:9px}
+.ck-row{display:flex;align-items:center;gap:10px;cursor:pointer}
+.ck-row input[type=checkbox]{width:17px;height:17px;accent-color:var(--amber);cursor:pointer;flex-shrink:0}
+.ck-text{font-size:11px;color:var(--ink);flex:1;line-height:1.4}
+.ck-price{font-family:'DM Mono';font-size:10px;color:var(--amber);white-space:nowrap}
+.nav-row{display:flex;gap:10px;margin-top:8px;width:100%;max-width:480px;padding:0 16px}
+.btn-back{flex:1;padding:12px;border-radius:10px;border:2px solid var(--line);background:#fff;font-family:'Sora';font-size:13px;font-weight:600;cursor:pointer;color:var(--slate);transition:all .2s}
+.btn-back:hover{border-color:var(--slate)}
+.btn-next{flex:2;padding:12px;border-radius:10px;border:none;background:var(--amber);color:#fff;font-family:'Sora';font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(196,125,30,.3)}
+.btn-next:hover{background:var(--amber-l);transform:translateY(-1px)}
+.info-box{background:rgba(26,107,90,.06);border:1.5px solid rgba(26,107,90,.2);border-radius:10px;padding:10px 14px;font-size:11px;line-height:1.5;color:var(--teal)}
+.warn-box{background:rgba(192,57,43,.06);border:1.5px solid rgba(192,57,43,.2);border-radius:10px;padding:10px 14px;font-size:11px;line-height:1.5;color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:7px 13px;border:2px solid var(--line);border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;background:#fff;color:var(--slate);transition:all .2s}
+.chip:hover{border-color:var(--amber);color:var(--amber)}
+.chip.sel{background:var(--amber);border-color:var(--amber);color:#fff}
+.divider{height:1px;background:var(--line);margin:2px 0}
+.rumus-card{background:rgba(26,107,90,.05);border:1.5px solid rgba(26,107,90,.25);border-radius:10px;padding:10px 14px;font-size:10px;line-height:1.8;color:var(--ink)}
+.rumus-card b{color:var(--teal);font-family:'DM Mono'}
+.rumus-card .r-row{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px dashed rgba(26,107,90,.15);padding:2px 0}
+.rumus-card .r-row:last-child{border-bottom:none}
+.rumus-card .r-label{color:var(--slate);font-size:9px;text-transform:uppercase;letter-spacing:.5px;flex:1}
+.rumus-card .r-formula{font-family:'DM Mono';font-size:10px;color:var(--teal);flex:2;padding:0 6px}
+.rumus-card .r-result{font-family:'DM Mono';font-size:11px;font-weight:700;color:var(--amber);white-space:nowrap}
+
+/* ── RAB SUMMARY TABLE ── */
+.rab-table-wrap{width:100%;overflow:auto;background:#fff;border:2px solid var(--line);border-radius:12px}
+.rab-table{width:100%;border-collapse:collapse;font-size:10.5px}
+.rab-table th{background:var(--ink);color:var(--sand);padding:8px 8px;text-align:left;font-size:9px;letter-spacing:.5px;font-weight:700}
+.rab-table th.num{text-align:right}
+.rab-table td{padding:5px 8px;border-bottom:1px solid var(--warm);vertical-align:top;line-height:1.4}
+.rab-table .sec-hdr td{background:var(--amber);color:#fff;font-weight:700;font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:7px 8px}
+.rab-table .subsec-hdr td{background:rgba(196,125,30,.12);font-weight:700;color:var(--amber);font-size:9px;letter-spacing:.5px;text-transform:uppercase;padding:5px 8px}
+.rab-table .sub-total td{background:rgba(26,18,9,.05);font-weight:700;font-family:'DM Mono';font-size:10px}
+.rab-table .grand-total td{background:var(--ink);color:var(--amber-l);font-weight:700;font-family:'DM Mono';font-size:12px;padding:10px 8px}
+.rab-table .item-no{color:var(--slate);font-size:9px;width:22px;white-space:nowrap}
+.rab-table .num{text-align:right;font-family:'DM Mono';white-space:nowrap}
+.rab-table .indent{padding-left:14px}
+.rab-table tr:hover td{background:rgba(196,125,30,.03)}
+.rab-table .sec-hdr:hover td,.rab-table .subsec-hdr:hover td,.rab-table .sub-total:hover td,.rab-table .grand-total:hover td{background:initial}
+
+/* summary hero */
+.sum-hero{background:var(--ink);width:100%;padding:24px;position:relative;overflow:hidden}
+.sum-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 80%,rgba(196,125,30,.25),transparent 55%),radial-gradient(circle at 80% 20%,rgba(26,107,90,.2),transparent 55%)}
+.sum-total-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:.5;color:var(--sand);position:relative}
+.sum-total{font-family:'DM Serif Display';font-size:28px;color:var(--amber-l);margin-top:4px;position:relative;line-height:1.1}
+.sum-perm2{font-family:'DM Mono';font-size:11px;color:rgba(245,240,232,.5);margin-top:5px;position:relative}
+.bstat{border-radius:10px;padding:12px 16px;margin-top:14px;position:relative}
+.bstat.ok{background:rgba(30,122,69,.15);border:1.5px solid rgba(30,122,69,.3)}
+.bstat.warn{background:rgba(192,57,43,.12);border:1.5px solid rgba(192,57,43,.3)}
+#bstatTitle{font-size:13px;font-weight:700;color:var(--sand)}
+#bstatDesc{font-size:10px;color:rgba(245,240,232,.6);margin-top:3px}
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.cetak-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--teal);color:#fff;font-family:'Sora';font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(26,107,90,.3);transition:all .2s}
+.cetak-btn:hover{opacity:.9;transform:translateY(-1px)}
+
+/* loading */
+#loading{position:fixed;inset:0;z-index:999;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .5s}
+#loading.hide{opacity:0;pointer-events:none}
+.ld-logo{font-family:'DM Serif Display';font-size:30px;color:var(--amber-l)}
+.ld-sub{font-size:10px;color:rgba(245,240,232,.4);letter-spacing:2px;text-transform:uppercase}
+.ld-bar{width:160px;height:3px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.ld-fill{height:100%;background:var(--amber);animation:ldFill 1.2s ease forwards}
+@keyframes ldFill{from{width:0}to{width:100%}}
+
+/* print */
+@media print{
+  #topbar,#progBar,#bMeter,.nav-row,#sdots,#loading,.cetak-btn,.btn-back{display:none!important}
+  body{background:#fff}
+  #wrap{padding:0}
+  .step-card{display:none!important;animation:none!important}
+  #s16{display:block!important}
+  .sum-hero{background:var(--ink)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .rab-table-wrap{border:1px solid #ccc}
+  .rab-table th{background:#333!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .rab-table .sec-hdr td{background:var(--amber)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .rab-table .grand-total td{background:#1a1209!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cz{padding:0 8px}
+  @page{margin:15mm}
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="ld-logo">RAB <em style="color:var(--amber)">2025</em></div>
+  <div class="ld-sub">Kalimarau · APBN</div>
+  <div class="ld-bar"><div class="ld-fill"></div></div>
+</div>
+
+<div id="topbar">
+  <div><div class="tb-logo">RAB Kalimarau</div><div class="tb-sub">APBN 2025 · Bangunan Operasional</div></div>
+  <div id="sCtr">1 / 17</div>
+</div>
+<div id="progBar"><div id="progFill" style="width:5.9%"></div></div>
+<div id="bMeter">
+  <div class="bm-row">
+    <div style="display:flex;align-items:center"><div id="bDot"></div><div class="bm-label">Estimasi Total RAB</div></div>
+    <div id="bMeterPct" style="font-family:'DM Mono';font-size:11px;color:rgba(245,240,232,.6)">0%</div>
+  </div>
+  <div class="budget-bar"><div class="budget-bar-fill" id="bBarFill" style="width:0%"></div></div>
+  <div class="bm-row" style="margin-top:2px">
+    <div id="bMeterTxt">Rp 0</div>
+    <div class="bm-label">dari anggaran</div>
+  </div>
+</div>
+<div id="sdots"></div>
+
+<div id="wrap">
+
+<!-- S0: ANGGARAN -->
+<div class="step-card active" id="s0" style="display:flex">
+  <div class="sh">
+    <div class="sh-step">Langkah 1 dari 17</div>
+    <div class="sh-title">Berapa <em>anggaran</em> Anda?</div>
+    <div class="sh-desc">Total dana yang tersedia untuk membangun</div>
+  </div>
+  <div class="cz">
+    <div class="chips">
+      <div class="chip" onclick="setQ(200000000,this)">200 jt</div>
+      <div class="chip" onclick="setQ(300000000,this)">300 jt</div>
+      <div class="chip" onclick="setQ(400000000,this)">400 jt</div>
+      <div class="chip" onclick="setQ(500000000,this)">500 jt</div>
+      <div class="chip" onclick="setQ(750000000,this)">750 jt</div>
+      <div class="chip" onclick="setQ(1000000000,this)">1 Miliar</div>
+    </div>
+    <div class="inp-wrap">
+      <div class="inp-row">
+        <div class="inp-lbl">Total anggaran</div>
+        <input type="text" id="iAnggaran" placeholder="350.000.000" oninput="fmtBudget(this)">
+        <div class="inp-unit">Rp</div>
+      </div>
+    </div>
+    <div class="info-box">💡 Anggaran digunakan sebagai referensi meter estimasi di setiap langkah.</div>
+  </div>
+  <div class="nav-row"><button class="btn-next" onclick="nxt(0)">Mulai →</button></div>
+</div>
+
+<!-- S1: DIMENSI -->
+<div class="step-card" id="s1">
+  <div class="sh">
+    <div class="sh-step">Langkah 2 dari 17</div>
+    <div class="sh-title">Dimensi <em>Bangunan</em></div>
+    <div class="sh-desc">Masukkan ukuran denah bangunan — sisi luar ke sisi luar</div>
+  </div>
+  <div class="cz">
+    <div class="info-box" style="font-size:11px;line-height:1.7">
+      📐 <b>a = Panjang (sisi luar)</b> arah X (horisontal)<br>
+      📐 <b>b = Lebar (sisi luar)</b> arah Y (vertikal)<br>
+      Luas bangunan = <b>a × b</b> m² · Keliling = <b>(a+b) × 2</b> m<br>
+      Contoh: bangunan 8×6 m → a=8, b=6 → luas 48 m²
+    </div>
+    <div class="inp-wrap">
+      <div class="inp-row">
+        <div class="inp-lbl">a — Panjang (sisi luar)</div>
+        <input type="number" id="iPH" placeholder="8.00" step="0.5" oninput="calcDim()">
+        <div class="inp-unit">m</div>
+      </div>
+      <div class="inp-row">
+        <div class="inp-lbl">b — Lebar (sisi luar)</div>
+        <input type="number" id="iPV" placeholder="6.00" step="0.5" oninput="calcDim()">
+        <div class="inp-unit">m</div>
+      </div>
+      <div class="divider"></div>
+      <div class="inp-row">
+        <div class="inp-lbl">Tinggi Kolom (rata-rata)</div>
+        <input type="number" id="iTK" placeholder="3.20" step="0.05" oninput="calcDim()">
+        <div class="inp-unit">m</div>
+      </div>
+      <div style="font-size:10px;color:var(--slate);line-height:1.5;padding:2px 0">
+        ℹ Tinggi dinding efektif = Tinggi kolom − 0.13 m (tinggi balok late 10×13)
+      </div>
+    </div>
+    <div class="sec-lbl">Jumlah Lantai</div>
+    <div style="display:flex;gap:10px">
+      <div class="cc sel" id="c_lt1" onclick="selLantai(1)" style="flex:1">
+        <div class="cc-icon">🏠</div>
+        <div><div class="cc-label">1 Lantai</div><div class="cc-sub">Rumah tunggal</div></div>
+      </div>
+      <div class="cc" id="c_lt2" onclick="selLantai(2)" style="flex:1">
+        <div class="cc-icon">🏢</div>
+        <div><div class="cc-label">2 Lantai</div><div class="cc-sub">Bertingkat</div></div>
+      </div>
+    </div>
+    <div class="dim-display" id="dLuas">
+      <div class="dim-row"><div class="dim-key">Panjang a × Lebar b</div><div class="dim-val" id="vDimAB">—</div></div>
+      <div class="dim-row"><div class="dim-key">Luas per lantai (a×b)</div><div class="dim-val" id="vLuasLt">—</div></div>
+      <div class="dim-row"><div class="dim-key">Total luas bangunan</div><div class="dim-val" id="vLuas">—</div></div>
+      <div class="dim-row"><div class="dim-key">Keliling (a+b)×2</div><div class="dim-val" id="vKel">—</div></div>
+      <div class="dim-row"><div class="dim-key">Tinggi dinding efektif</div><div class="dim-val" id="vTD">—</div></div>
+      <div class="dim-row"><div class="dim-key">Total tinggi bangunan</div><div class="dim-val" id="vTB">—</div></div>
+    </div>
+
+    <!-- Preview Pekerjaan Tanah -->
+    <div class="sec-lbl">Preview Pekerjaan Tanah</div>
+    <div id="gTanah" style="display:none;flex-direction:column;gap:8px">
+      <div class="rumus-card" id="rumusTanah">
+        <b>📐 RUMUS PEKERJAAN TANAH</b>
+        <div class="r-row"><span class="r-label">Galian Pondasi</span><span class="r-formula" id="rf_galian">—</span><span class="r-result" id="rv_galian">—</span></div>
+        <div class="r-row"><span class="r-label">Urugan Tanah Kembali (25%)</span><span class="r-formula" id="rf_uruganK">—</span><span class="r-result" id="rv_uruganK">—</span></div>
+        <div class="r-row"><span class="r-label">Urugan Pasir Pondasi</span><span class="r-formula" id="rf_uruganP">—</span><span class="r-result" id="rv_uruganP">—</span></div>
+        <div class="r-row"><span class="r-label">Urugan Pasir Lantai</span><span class="r-formula" id="rf_uruganL">—</span><span class="r-result" id="rv_uruganL">—</span></div>
+        <div class="r-row"><span class="r-label">Lantai Kerja</span><span class="r-formula" id="rf_lk">—</span><span class="r-result" id="rv_lk">—</span></div>
+      </div>
+      <div class="sec-lbl">Sloof 15×30 cm</div>
+      <div class="rumus-card">
+        <b>📐 RUMUS SLOOF 15×30 cm</b>
+        <div style="font-size:9px;color:var(--teal);margin-bottom:4px">
+          X = panjang (a), Y = lebar (b) · Total Panjang Sloof = (a+b) × 2 sisi
+        </div>
+        <div class="r-row"><span class="r-label">Beton K-225</span><span class="r-formula" id="rf_sloof">—</span><span class="r-result" id="rv_sloof">—</span></div>
+        <div class="r-row"><span class="r-label">Bekisting (2 sisi)</span><span class="r-formula" id="rf_sloofBek">—</span><span class="r-result" id="rv_sloofBek">—</span></div>
+        <div class="r-row"><span class="r-label">Besi D13</span><span class="r-formula" id="rf_sloofD13">—</span><span class="r-result" id="rv_sloofD13">—</span></div>
+        <div class="r-row"><span class="r-label">Besi D10 (sengkang)</span><span class="r-formula" id="rf_sloofD10">—</span><span class="r-result" id="rv_sloofD10">—</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(1)">←</button>
+    <button class="btn-next" onclick="nxt(1)">Lanjut →</button>
+  </div>
+</div>
+
+<!-- S2: PONDASI -->
+<div class="step-card" id="s2">
+  <div class="sh">
+    <div class="sh-step">Langkah 3 dari 17</div>
+    <div class="sh-title">Pekerjaan <em>Pondasi</em></div>
+    <div class="sh-desc">Galian standar 80 cm dari muka tanah · Pondasi Batu Kali 1:5</div>
+  </div>
+  <div class="cz">
+    <div class="info-box">
+      Rumah tipe &lt; 70: pondasi batu kali menerus sudah cukup (standar RAB Kalimarau APBN 2025)
+    </div>
+    <div class="rumus-card" id="rumusPondasi">
+      <b>📐 RUMUS PONDASI BATU KALI 1:5</b>
+      <div style="font-size:9px;color:var(--teal);margin-bottom:4px;line-height:1.5">
+        Pondasi menerus mengikuti keliling (a+b)×2 · Galian 80×80 cm · Pondasi 70×60 cm
+      </div>
+      <div class="r-row"><span class="r-label">Volume Pondasi</span><span class="r-formula" id="rf_pond">—</span><span class="r-result" id="rv_pond">—</span></div>
+      <div class="r-row"><span class="r-label">Biaya Pondasi</span><span class="r-formula">@ Rp 1.028.400/m³</span><span class="r-result" id="rv_pondBiaya">—</span></div>
+      <div class="r-row"><span class="r-label">Aanstamping Batu Kali</span><span class="r-formula" id="rf_aanst">—</span><span class="r-result" id="rv_aanst">—</span></div>
+      <div class="r-row"><span class="r-label">Angkur Besi D13-1000mm</span><span class="r-formula" id="rf_angkur">—</span><span class="r-result" id="rv_angkur">—</span></div>
+    </div>
+    <div class="formula-box">
+      <b>Penjelasan Formula Pondasi:</b><br>
+      Vol. Pondasi = (a+b)×2 × 0.70 m × 0.60 m (m³)<br>
+      Aanstamping = (a+b)×2 × 0.60 m (m³)<br>
+      Angkur = (a+b)×2 × 0.50 angkur/m (m²)
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(2)">←</button>
+    <button class="btn-next" onclick="nxt(2)">Lanjut →</button>
+  </div>
+</div>
+
+<!-- S3: STRUKTUR ATAS -->
+<div class="step-card" id="s3">
+  <div class="sh">
+    <div class="sh-step">Langkah 4 dari 17</div>
+    <div class="sh-title">Struktur <em>Atas</em></div>
+    <div class="sh-desc">Kolom K1 · Kolom KP · Kolom Custom · Balok · Plat · Dak</div>
+  </div>
+  <div class="cz">
+    <div class="sec-lbl">Kolom Utama K1 (20×20 cm)</div>
+    <div class="stepper-wrap">
+      <div class="step-row">
+        <div class="step-lbl">Jumlah Kolom K1</div>
+        <div class="step-ctrl"><button class="sbtn" onclick="sc('kK1',-1)">−</button><div class="sval" id="v_kK1">6</div><button class="sbtn" onclick="sc('kK1',1)">+</button></div>
+      </div>
+      <div class="inp-row">
+        <div class="inp-lbl">Tinggi Kolom K1</div>
+        <input type="number" id="iTK1" value="3.20" step="0.05" oninput="calcDim();updMeter()">
+        <div class="inp-unit">m</div>
+      </div>
+    </div>
+    <div class="rumus-card" id="rumusK1">
+      <b>📐 RUMUS KOLOM K1 (20×20 cm)</b>
+      <div style="font-size:9px;color:var(--teal);margin-bottom:4px">
+        t = tinggi kolom · n = jumlah kolom
+      </div>
+      <div class="r-row"><span class="r-label">Vol Beton K-225</span><span class="r-formula" id="rf_k1_bet">—</span><span class="r-result" id="rv_k1_bet">—</span></div>
+      <div class="r-row"><span class="r-label">Bekisting</span><span class="r-formula" id="rf_k1_bek">—</span><span class="r-result" id="rv_k1_bek">—</span></div>
+      <div class="r-row"><span class="r-label">Besi D13</span><span class="r-formula" id="rf_k1_d13">—</span><span class="r-result" id="rv_k1_d13">—</span></div>
+      <div class="r-row"><span class="r-label">Besi D10 (sengkang)</span><span class="r-formula" id="rf_k1_d10">—</span><span class="r-result" id="rv_k1_d10">—</span></div>
+    </div>
+
+    <div class="sec-lbl">Kolom Praktis KP (15×15 cm)</div>
+    <div class="stepper-wrap">
+      <div class="step-row">
+        <div class="step-lbl">Jumlah Kolom KP</div>
+        <div class="step-ctrl"><button class="sbtn" onclick="sc('kKP',-1)">−</button><div class="sval" id="v_kKP">4</div><button class="sbtn" onclick="sc('kKP',1)">+</button></div>
+      </div>
+      <div class="inp-row">
+        <div class="inp-lbl">Tinggi Kolom KP</div>
+        <input type="number" id="iTKP" value="2.50" step="0.05" oninput="calcDim();updMeter()">
+        <div class="inp-unit">m</div>
+      </div>
+    </div>
+    <div class="rumus-card" id="rumusKP">
+      <b>📐 RUMUS KOLOM KP (15×15 cm)</b>
+      <div style="font-size:9px;color:var(--teal);margin-bottom:4px">
+        t = tinggi kolom · n = jumlah kolom
+      </div>
+      <div class="r-row"><span class="r-label">Vol Beton K-225</span><span class="r-formula" id="rf_kp_bet">—</span><span class="r-result" id="rv_kp_bet">—</span></div>
+      <div class="r-row"><span class="r-label">Bekisting</span><span class="r-formula" id="rf_kp_bek">—</span><span class="r-result" id="rv_kp_bek">—</span></div>
+      <div class="r-row"><span class="r-label">Besi D13</span><span class="r-formula" id="rf_kp_d13">—</span><span class="r-result" id="rv_kp_d13">—</span></div>
+      <div class="r-row"><span class="r-label">Besi D10 (sengkang)</span><span class="r-formula" id="rf_kp_d10">—</span><span class="r-result" id="rv_kp_d10">—</span></div>
+    </div>
+
+    <div class="sec-lbl">Kolom Custom (Tipe Sendiri)</div>
+    <div id="bodyKolom" style="display:flex;flex-direction:column;gap:8px"></div>
+    <button class="add-btn" onclick="addKolomRow()">＋ Tambah Tipe Kolom Custom</button>
+
+    <div class="sec-lbl">Balok & Plat Beton</div>
+    <div class="rumus-card" id="rumusBalok">
+      <b>📐 RUMUS BALOK 15×30 cm</b>
+      <div style="font-size:9px;color:var(--teal);margin-bottom:4px">
+        Total panjang balok = (a+b)×2 · mengikuti keliling bangunan
+      </div>
+      <div class="r-row"><span class="r-label">Beton K-225</span><span class="r-formula" id="rf_balok">—</span><span class="r-result" id="rv_balok">—</span></div>
+      <div class="r-row"><span class="r-label">Bekisting (2 sisi)</span><span class="r-formula" id="rf_balokBek">—</span><span class="r-result" id="rv_balokBek">—</span></div>
+      <div class="r-row"><span class="r-label">Besi D13</span><span class="r-formula" id="rf_balokD13">—</span><span class="r-result" id="rv_balokD13">—</span></div>
+      <div class="r-row"><span class="r-label">Besi D10 (sengkang)</span><span class="r-formula" id="rf_balokD10">—</span><span class="r-result" id="rv_balokD10">—</span></div>
+      <div style="margin-top:6px;padding-top:4px;border-top:1px dashed rgba(26,107,90,.2)">
+      <b>📐 BALOK LATE 10×13 cm</b>
+      <div class="r-row"><span class="r-label">Beton K-225</span><span class="r-formula" id="rf_balokL">—</span><span class="r-result" id="rv_balokL">—</span></div>
+      </div>
+      <div style="margin-top:6px;padding-top:4px;border-top:1px dashed rgba(26,107,90,.2)">
+      <b>📐 PLAT BETON</b>
+      <div class="r-row"><span class="r-label">Plat Beton K-225</span><span class="r-formula" id="rf_platBet">—</span><span class="r-result" id="rv_platBet">—</span></div>
+      <div class="r-row"><span class="r-label">Besi Plat D10</span><span class="r-formula" id="rf_platBesi">—</span><span class="r-result" id="rv_platBesi">—</span></div>
+      </div>
+    </div>
+
+    <div class="sec-lbl">Dak Beton?</div>
+    <div style="display:flex;gap:10px">
+      <div class="cc sel" id="cc_dak_tidak" onclick="sel('dak','tidak','cc_dak_tidak')" style="flex:1">
+        <div class="cc-icon">🚫</div><div><div class="cc-label">Tidak Ada Dak</div></div>
+      </div>
+      <div class="cc" id="cc_dak_ya" onclick="sel('dak','ya','cc_dak_ya')" style="flex:1">
+        <div class="cc-icon">🏗</div><div><div class="cc-label">Ada Dak</div><div class="cc-sub">Elv. +3.000 · 15% luas</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(3)">←</button>
+    <button class="btn-next" onclick="nxt(3)">Lanjut →</button>
+  </div>
+</div>
+
+<!-- S4: ATAP -->
+<div class="step-card" id="s4">
+  <div class="sh">
+    <div class="sh-step">Langkah 5 dari 17</div>
+    <div class="sh-title">Pekerjaan <em>Atap</em></div>
+    <div class="sh-desc">Penutup atap · rangka · nok · lisplank · flashing</div>
+  </div>
+  <div class="cz">
+    <div class="sec-lbl">Penutup Atap</div>
+    <div class="cc sel" id="cc_a_gm" onclick="selAtap('genteng_metal','cc_a_gm')">
+      <div class="cc-icon">🏘</div>
+      <div><div class="cc-label">Genteng Metal Baja <div class="cc-badge">RAB</div></div><div class="cc-price">Rp 291.558/m²</div></div>
+    </div>
+    <div class="cc" id="cc_a_gk" onclick="selAtap('genteng_keramik','cc_a_gk')">
+      <div class="cc-icon">🏠</div>
+      <div><div class="cc-label">Genteng Keramik</div><div class="cc-price">Rp 220.000/m²</div></div>
+    </div>
+    <div class="cc" id="cc_a_sp" onclick="selAtap('spandek','cc_a_sp')">
+      <div class="cc-icon">🔩</div>
+      <div><div class="cc-label">Spandek / Zincalume</div><div class="cc-price">Rp 75.000/m²</div></div>
+    </div>
+    <div class="sec-lbl">Rangka Atap</div>
+    <div style="display:flex;gap:10px">
+      <div class="cc sel" id="cc_rk_bjr" onclick="selRangka('baja_ringan','cc_rk_bjr')" style="flex:1">
+        <div><div class="cc-label">🔩 Baja Ringan</div><div class="cc-sub">Standar RAB 2025</div><div class="cc-price">Sudah termasuk harga genteng metal</div></div>
+      </div>
+      <div class="cc" id="cc_rk_kayu" onclick="selRangka('kayu','cc_rk_kayu')" style="flex:1">
+        <div><div class="cc-label">🪵 Rangka Kayu</div><div class="cc-sub">Alternatif kayu ulin/meranti</div><div class="cc-price">+ Rp 135.000/m²</div></div>
+      </div>
+    </div>
+    <div class="rumus-card" id="rumusAtap">
+      <b>📐 RUMUS PEKERJAAN ATAP</b>
+      <div class="r-row"><span class="r-label">Luas Atap</span><span class="r-formula" id="rf_atapLuas">—</span><span class="r-result" id="rv_atapLuas">—</span></div>
+      <div class="r-row"><span class="r-label">Biaya Penutup Atap</span><span class="r-formula" id="rf_atapBiaya">—</span><span class="r-result" id="rv_atapBiaya">—</span></div>
+    </div>
+    <div class="sec-lbl">Panjang Komponen (Override)</div>
+    <div class="inp-wrap">
+      <div class="inp-row">
+        <div class="inp-lbl">Nok Genteng Metal</div>
+        <input type="number" id="iNok" placeholder="6.35" step="0.5" oninput="updMeter()">
+        <div class="inp-unit">m'</div>
+      </div>
+      <div class="inp-row">
+        <div class="inp-lbl">Lisplank GRC L=30cm</div>
+        <input type="number" id="iLisp" placeholder="22.04" step="1" oninput="updMeter()">
+        <div class="inp-unit">m'</div>
+      </div>
+      <div class="inp-row">
+        <div class="inp-lbl">Flashing Zincalume</div>
+        <input type="number" id="iFlash" placeholder="8.71" step="0.5" oninput="updMeter()">
+        <div class="inp-unit">m'</div>
+      </div>
+    </div>
+    <div class="sec-lbl">Tambahan Atap</div>
+    <div class="ck-wrap">
+      <label class="ck-row"><input type="checkbox" id="ck_af" onchange="updMeter()"><div class="ck-text">Alum Foil Double Side + Kawat Harmonika + Glasswool BG50</div><div class="ck-price">350.580/m²</div></label>
+      <label class="ck-row"><input type="checkbox" id="ck_wp" onchange="updMeter()"><div class="ck-text">Waterproofing Bitutene Membran Self-Adhesive 1.5mm (Dak)</div><div class="ck-price">271.951/m²</div></label>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(4)">←</button>
+    <button class="btn-next" onclick="nxt(4)">Lanjut →</button>
+  </div>
+</div>
+
+<!-- S5: DINDING -->
+<div class="step-card" id="s5">
+  <div class="sh">
+    <div class="sh-step">Langkah 6 dari 17</div>
+    <div class="sh-title">Pekerjaan <em>Dinding</em></div>
+    <div class="sh-desc">Pasangan dinding + plesteran 1:2 & 1:4</div>
+  </div>
+  <div class="cz">
+    <div class="cc sel" id="cc_d_bm" onclick="sel('dinding','bata_merah','cc_d_bm')">
+      <div class="cc-icon">🧱</div>
+      <div><div class="cc-label">Bata Merah <div class="cc-badge">RAB</div></div>
+      <div class="cc-sub">1:2 Rp 285.839/m² · 1:4 Rp 267.379/m²</div></div>
+    </div>
+    <div class="cc" id="cc_d_hb" onclick="sel('dinding','hebel','cc_d_hb')">
+      <div class="cc-icon">🪵</div><div><div class="cc-label">Hebel / Bata Ringan</div><div class="cc-price">Rp 220.000/m²</div></div>
+    </div>
+    <div class="cc" id="cc_d_bt" onclick="sel('dinding','bataco','cc_d_bt')">
+      <div class="cc-icon">🟦</div><div><div class="cc-label">Bataco</div><div class="cc-price">Rp 165.000/m²</div></div>
+    </div>
+    <div class="rumus-card" id="rumusDinding">
+      <b>📐 RUMUS DINDING</b>
+      <div class="r-row"><span class="r-label">Luas Dinding Total</span><span class="r-formula" id="rf_dLuas">—</span><span class="r-result" id="rv_dLuas">—</span></div>
+      <div class="r-row"><span class="r-label">Tinggi Efektif</span><span class="r-formula" id="rf_dTinggi">—</span><span class="r-result" id="rv_dTinggi">—</span></div>
+      <div class="r-row"><span class="r-label">Plesteran 1:2 (25%)</span><span class="r-formula" id="rf_p12">—</span><span class="r-result" id="rv_p12">—</span></div>
+      <div class="r-row"><span class="r-label">Plesteran 1:4 (75%)</span><span class="r-formula" id="rf_p14">—</span><span class="r-result" id="rv_p14">—</span></div>
+    </div>
+    <div class="sec-lbl">Override Luas Plesteran</div>
+    <div class="inp-wrap">
+      <div class="inp-row">
+        <div class="inp-lbl">Plesteran 1:2 (override)</div>
+        <input type="number" id="iP12" placeholder="Auto 25%" step="1" oninput="updMeter()">
+        <div class="inp-unit">m²</div>
+      </div>
+      <div class="inp-row">
+        <div class="inp-lbl">Plesteran 1:4 (override)</div>
+        <input type="number" id="iP14" placeholder="Auto 75%" step="1" oninput="updMeter()">
+        <div class="inp-unit">m²</div>
+      </div>
+    </div>
+    <div class="info-box">Acian (Rp 57.525/m²) & Cat Tembok (Rp 76.727/m²) dihitung otomatis dari total luas dinding</div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(5)">←</button>
+    <button class="btn-next" onclick="nxt(5)">Lanjut →</button>
+  </div>
+</div>
+
+<!-- S6: FINISHING DINDING -->
+<div class="step-card" id="s6">
+  <div class="sh">
+    <div class="sh-step">Langkah 7 dari 17</div>
+    <div class="sh-title">Finishing <em>Dinding</em></div>
+    <div class="sh-desc">Acian · cat · keramik dinding · plin · batu alam</div>
+  </div>
+  <div class="cz">
+    <div class="inp-wrap">
+      <div class="dim-row"><div class="dim-key">Acian (total dinding)</div><div class="dim-val" id="vAcian">—</div></div>
+      <div class="dim-row"><div class="dim-key">Cat Tembok</div><div class="dim-val" id="vCatT">—</div></div>
+    </div>
+    <div class="info-box">Acian: Rp 57.525/m² | Cat: Rp 76.727/m²</div>
+    <div class="sec-lbl">Keramik Dinding KM/WC (Otomatis 2 m × keliling KM)</div>
+    <div class="inp-wrap">
+      <div class="dim-row"><div class="dim-key">Total Keramik KM</div><div class="dim-val" id="vKerKM">—</div></div>
+      <div class="inp-row">
+        <div class="inp-lbl">Keramik 20×40 Tambahan (selain KM)</div>
+        <input type="number" id="iKerDind" placeholder="0" step="1" oninput="updMeter()">
+        <div class="inp-unit">m²</div>
+      </div>
+    </div>
+    <div class="sec-lbl">Plin Keramik 10×40 cm · Rp 64.640/m'</div>
+    <div class="inp-wrap">
+      <div class="inp-row">
+        <div class="inp-lbl">Panjang Plin</div>
+        <input type="number" id="iPlin" placeholder="Auto (keliling)" step="1" oninput="updMeter()">
+        <div class="inp-unit">m'</div>
+      </div>
+    </div>
+    <div class="sec-lbl">Batu Alam · Rp 654.188/m²</div>
+    <div class="stepper-wrap">
+      <div class="step-row">
+        <div class="step-lbl">Luas Batu Alam</div>
+        <div class="step-ctrl"><button class="sbtn" onclick="sc('batuAlam',-1)">−</button><div class="sval" id="v_batuAlam">0</div><button class="sbtn" onclick="sc('batuAlam',1)">+</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(6)">←</button>
+    <button class="btn-next" onclick="nxt(6)">Lanjut →</button>
+  </div>
+</div>
+
+<!-- S7: PINTU -->
+<div class="step-card" id="s7">
+  <div class="sh">
+    <div class="sh-step">Langkah 8 dari 17</div>
+    <div class="sh-title">Pekerjaan <em>Pintu</em></div>
+    <div class="sh-desc">Kusen aluminium + daun pintu teakwood + hardware Fino</div>
+  </div>
+  <div class="cz">
+    <div class="info-box" style="font-size:10px">
+      Kusen Alum: Rp 163.887/m' | Pintu Teakwood: Rp 798.721/m²<br>
+      Hardware set: Engsel × 3 + Lever + Lockcase + D.Cylinder + Door Closer ≈ Rp 2.404.182
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Kode</th><th>Tipe</th><th>L × T (m)</th><th>Kusen</th><th>Qty</th><th></th></tr></thead>
+        <tbody id="bodyP">
+          <tr data-kode="P1">
+            <td><b>P1</b></td>
+            <td><select class="tinput" id="tipe_P1" onchange="calcKusenPintu('P1');updBiayaPintu()"><option value="tunggal">Tunggal</option><option value="kupukupu">Kupu-kupu</option></select></td>
+            <td><span style="display:flex;gap:3px;align-items:center"><input class="tinput" type="number" id="lP1" value="0.80" style="width:38px" oninput="calcKusenPintu('P1');updBiayaPintu()">×<input class="tinput" type="number" id="tP1" value="2.10" style="width:38px" oninput="calcKusenPintu('P1');updBiayaPintu()"></span></td>
+            <td><span style="font-size:10px;color:var(--amber)" id="kusenP1">—</span></td>
+            <td><div class="dqctrl"><button class="dqbtn" onclick="dq('P','P1',-1)">−</button><span class="dqval" id="q_P_P1">1</span><button class="dqbtn" onclick="dq('P','P1',1)">+</button></div></td>
+            <td></td>
+          </tr>
+          <tr data-kode="P2">
+            <td><b>P2</b></td>
+            <td><select class="tinput" id="tipe_P2" onchange="calcKusenPintu('P2');updBiayaPintu()"><option value="tunggal">Tunggal</option><option value="kupukupu">Kupu-kupu</option></select></td>
+            <td><span style="display:flex;gap:3px;align-items:center"><input class="tinput" type="number" id="lP2" value="0.80" style="width:38px" oninput="calcKusenPintu('P2');updBiayaPintu()">×<input class="tinput" type="number" id="tP2" value="2.10" style="width:38px" oninput="calcKusenPintu('P2');updBiayaPintu()"></span></td>
+            <td><span style="font-size:10px;color:var(--amber)" id="kusenP2">—</span></td>
+            <td><div class="dqctrl"><button class="dqbtn" onclick="dq('P','P2',-1)">−</button><span class="dqval" id="q_P_P2">1</span><button class="dqbtn" onclick="dq('P','P2',1)">+</button></div></td>
+            <td></td>
+          </tr>
+          <tr data-kode="P3">
+            <td><b>P3</b></td>
+            <td><select class="tinput" id="tipe_P3" onchange="calcKusenPintu('P3');updBiayaPintu()"><option value="tunggal">Tunggal</option><option value="kupukupu">Kupu-kupu</option></select></td>
+            <td><span style="display:flex;gap:3px;align-items:center"><input class="tinput" type="number" id="lP3" value="0.70" style="width:38px" oninput="calcKusenPintu('P3');updBiayaPintu()">×<input class="tinput" type="number" id="tP3" value="2.00" style="width:38px" oninput="calcKusenPintu('P3');updBiayaPintu()"></span></td>
+            <td><span style="font-size:10px;color:var(--amber)" id="kusenP3">—</span></td>
+            <td><div class="dqctrl"><button class="dqbtn" onclick="dq('P','P3',-1)">−</button><span class="dqval" id="q_P_P3">1</span><button class="dqbtn" onclick="dq('P','P3',1)">+</button></div></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="add-btn" onclick="addPRow()">＋ Tambah Tipe Pintu</button>
+    <div class="inp-wrap">
+      <div class="dim-row"><div class="dim-key">Estimasi Biaya Pintu</div><div class="dim-val" id="vBiayaP">—</div></div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(7)">←</button>
+    <button class="btn-next" onclick="nxt(7)">Lanjut →</button>
+  </div>
+</div>
+
+<!-- S8: JENDELA -->
+<div class="step-card" id="s8">
+  <div class="sh">
+    <div class="sh-step">Langkah 9 dari 17</div>
+    <div class="sh-title">Pekerjaan <em>Jendela</em></div>
+    <div class="sh-desc">Kusen + rangka aluminium + kaca polos 6mm + hardware</div>
+  </div>
+  <div class="cz">
+    <div class="info-box" style="font-size:10px">
+      Kusen Alum: Rp 163.887/m' | Rangka Alum: Rp 163.887/m' | Kaca 6mm: Rp 459.376/m²<br>
+      Hardware: Casement Stay + Rambuncis ≈ Rp 623.091/set
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Kode</th><th>Ket.</th><th>L × T (m)</th><th>Kusen</th><th>Qty</th><th></th></tr></thead>
+        <tbody id="bodyJ">
+          <tr data-kode="J1">
+            <td><b>J1</b></td>
+            <td><input class="tinput" type="text" placeholder="Jendela utama" style="width:72px"></td>
+            <td><span style="display:flex;gap:3px;align-items:center"><input class="tinput" type="number" id="lJ1" value="1.20" style="width:38px" oninput="calcKusenJendela('J1');updBiayaJendela()">×<input class="tinput" type="number" id="tJ1" value="1.10" style="width:38px" oninput="calcKusenJendela('J1');updBiayaJendela()"></span></td>
+            <td><span style="font-size:10px;color:var(--amber)" id="kusenJ1">—</span></td>
+            <td><div class="dqctrl"><button class="dqbtn" onclick="dq('J','J1',-1)">−</button><span class="dqval" id="q_J_J1">2</span><button class="dqbtn" onclick="dq('J','J1',1)">+</button></div></td>
+            <td></td>
+          </tr>
+          <tr data-kode="J2">
+            <td><b>J2</b></td>
+            <td><input class="tinput" type="text" placeholder="Jendela kamar" style="width:72px"></td>
+            <td><span style="display:flex;gap:3px;align-items:center"><input class="tinput" type="number" id="lJ2" value="1.00" style="width:38px" oninput="calcKusenJendela('J2');updBiayaJendela()">×<input class="tinput" type="number" id="tJ2" value="1.10" style="width:38px" oninput="calcKusenJendela('J2');updBiayaJendela()"></span></td>
+            <td><span style="font-size:10px;color:var(--amber)" id="kusenJ2">—</span></td>
+            <td><div class="dqctrl"><button class="dqbtn" onclick="dq('J','J2',-1)">−</button><span class="dqval" id="q_J_J2">1</span><button class="dqbtn" onclick="dq('J','J2',1)">+</button></div></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="add-btn" onclick="addJRow()">＋ Tambah Tipe Jendela</button>
+    <div class="sec-lbl">Bovenlicht / Ventilasi (BV1)</div>
+    <div class="stepper-wrap">
+      <div class="step-row">
+        <div class="step-lbl">BV1 — Kusen 2.56m' + Kaca Es 5mm 0.34m²</div>
+        <div class="step-ctrl"><button class="sbtn" onclick="sc('BV1',-1)">−</button><div class="sval" id="v_BV1">1</div><button class="sbtn" onclick="sc('BV1',1)">+</button></div>
+      </div>
+    </div>
+    <div class="inp-wrap">
+      <div class="dim-row"><div class="dim-key">Estimasi Biaya Jendela & BV</div><div class="dim-val" id="vBiayaJ">—</div></div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(8)">←</button>
+    <button class="btn-next" onclick="nxt(8)">Lanjut →</button>
+  </div>
+</div>
+
+<!-- S9: LANTAI -->
+<div class="step-card" id="s9">
+  <div class="sh">
+    <div class="sh-step">Langkah 10 dari 17</div>
+    <div class="sh-title">Pekerjaan <em>Lantai</em></div>
+  </div>
+  <div class="cz">
+    <div class="inp-wrap">
+      <div class="dim-row"><div class="dim-key">Total Luas Lantai (a×b)</div><div class="dim-val" id="vRabat">—</div></div>
+    </div>
+    <div class="cc sel" id="cc_l_k40" onclick="sel('lantai_mat','k40','cc_l_k40')">
+      <div class="cc-icon">🟫</div>
+      <div><div class="cc-label">Keramik 40×40 cm Roman <div class="cc-badge">RAB</div></div><div class="cc-sub">G449537 D'Panarea Bruno Gol C</div><div class="cc-price">Rp 131.010/m²</div></div>
+    </div>
+    <div class="cc" id="cc_l_k20" onclick="sel('lantai_mat','k20','cc_l_k20')">
+      <div class="cc-icon">⬜</div>
+      <div><div class="cc-label">Keramik 20×20 cm Roman</div><div class="cc-sub">Graniti Smoke Gol A</div><div class="cc-price">Rp 130.137/m²</div></div>
+    </div>
+    <div class="cc" id="cc_l_k60" onclick="sel('lantai_mat','k60','cc_l_k60')">
+      <div class="cc-icon">🟦</div>
+      <div><div class="cc-label">Keramik 60×60 cm</div><div class="cc-price">Rp 180.000/m²</div></div>
+    </div>
+    <div class="cc" id="cc_l_gr" onclick="sel('lantai_mat','granit','cc_l_gr')">
+      <div class="cc-icon">💎</div>
+      <div><div class="cc-label">Granit / Homogeneous Tile</div><div class="cc-price">Rp 280.000/m²</div></div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(9)">←</button>
+    <button class="btn-next" onclick="nxt(9)">Lanjut →</button>
+  </div>
+</div>
+
+<!-- S10: PLAFON -->
+<div class="step-card" id="s10">
+  <div class="sh">
+    <div class="sh-step">Langkah 11 dari 17</div>
+    <div class="sh-title">Pekerjaan <em>Plafon</em></div>
+  </div>
+  <div class="cz">
+    <div class="inp-wrap">
+      <div class="dim-row"><div class="dim-key">Total Luas Plafon (a×b)</div><div class="dim-val" id="vPlafon">—</div></div>
+    </div>
+    <div class="cc sel" id="cc_pl_gypsum" onclick="sel('plafon','gypsum','cc_pl_gypsum')">
+      <div class="cc-icon">🟨</div>
+      <div><div class="cc-label">Plafon Gypsum + Rangka Hollo <div class="cc-badge">RAB</div></div><div class="cc-price">Rp 211.770/m²</div></div>
+    </div>
+    <div class="cc" id="cc_pl_kalsi" onclick="sel('plafon','kalsiboard','cc_pl_kalsi')">
+      <div class="cc-icon">🟫</div>
+      <div><div class="cc-label">Plafon Kalsiboard + Rangka Hollo <div class="cc-badge">RAB</div></div><div class="cc-price">Rp 230.172/m²</div></div>
+    </div>
+    <div class="cc" id="cc_pl_mix" onclick="sel('plafon','mix','cc_pl_mix')">
+      <div class="cc-icon">🔀</div>
+      <div><div class="cc-label">Mix Gypsum + Kalsiboard</div></div>
+    </div>
+    <div class="inp-wrap">
+      <div class="inp-row">
+        <div class="inp-lbl">List Cornice Gypsum 5-10cm</div>
+        <input type="number" id="iCornice" placeholder="Auto (keliling)" step="1" oninput="updMeter()">
+        <div class="inp-unit">m'</div>
+      </div>
+    </div>
+    <div class="info-box">Cat Plafon: Rp 60.837/m² | List Cornice: Rp 71.460/m'</div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(10)">←</button>
+    <button class="btn-next" onclick="nxt(10)">Lanjut →</button>
+  </div>
+</div>
+
+<!-- S11: SANITASI -->
+<div class="step-card" id="s11">
+  <div class="sh">
+    <div class="sh-step">Langkah 12 dari 17</div>
+    <div class="sh-title">Mekanikal <em>Sanitasi</em></div>
+  </div>
+  <div class="cz">
+    <div class="stepper-wrap">
+      <div class="step-row">
+        <div class="step-lbl">Jumlah KM/WC</div>
+        <div class="step-ctrl"><button class="sbtn" onclick="sc('kmMandi',-1)">−</button><div class="sval" id="v_kmMandi">1</div><button class="sbtn" onclick="sc('kmMandi',1)">+</button></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <div class="cc sel" id="cc_kl_jg" onclick="sel('kloset','jongkok','cc_kl_jg')" style="flex:1">
+        <div><div class="cc-label">🚽 Jongkok</div><div class="cc-sub">TOTO CE6</div><div class="cc-price">Rp 4.424.226</div></div>
+      </div>
+      <div class="cc" id="cc_kl_dd" onclick="sel('kloset','duduk','cc_kl_dd')" style="flex:1">
+        <div><div class="cc-label">🚽 Duduk</div><div class="cc-price">Rp 5.500.000</div></div>
+      </div>
+    </div>
+    <div class="ck-wrap">
+      <label class="ck-row"><input type="checkbox" id="ck_fd" checked onchange="updMeter()"><div class="ck-text">Floor Drain SS TOTO TX1BV1</div><div class="ck-price">444.080/unit</div></label>
+      <label class="ck-row"><input type="checkbox" id="ck_kr" checked onchange="updMeter()"><div class="ck-text">Kran Leher Angsa SS TOTO</div><div class="ck-price">660.189/unit</div></label>
+      <label class="ck-row"><input type="checkbox" id="ck_bf" checked onchange="updMeter()"><div class="ck-text">Bak Fiberglass 0.3 m³</div><div class="ck-price">1.839.986/unit</div></label>
+      <label class="ck-row"><input type="checkbox" id="ck_bcp" onchange="updMeter()"><div class="ck-text">Bak Cuci Piring Stainless</div><div class="ck-price">480.468</div></label>
+      <label class="ck-row"><input type="checkbox" id="ck_kv" onchange="updMeter()"><div class="ck-text">Kran ¾" Stainless TOTO T23B13</div><div class="ck-price">8.000.000</div></label>
+    </div>
+    <div class="sec-lbl">Pipa Air Bersih (PPR PN10)</div>
+    <div class="stepper-wrap">
+      <div class="step-row"><div class="step-lbl">Pipa PPR ¾" · Rp 69.674/m'</div><div class="step-ctrl"><button class="sbtn" onclick="sc('pb34',-1)">−</button><div class="sval" id="v_pb34">15</div><button class="sbtn" onclick="sc('pb34',1)">+</button></div></div>
+      <div class="step-row"><div class="step-lbl">Pipa PPR ½" · Rp 55.775/m'</div><div class="step-ctrl"><button class="sbtn" onclick="sc('pb12',-1)">−</button><div class="sval" id="v_pb12">12</div><button class="sbtn" onclick="sc('pb12',1)">+</button></div></div>
+    </div>
+    <div class="sec-lbl">Pipa Air Kotor (PVC AW)</div>
+    <div class="stepper-wrap">
+      <div class="step-row"><div class="step-lbl">Pipa PVC 4" · Rp 282.479/m'</div><div class="step-ctrl"><button class="sbtn" onclick="sc('pk4',-1)">−</button><div class="sval" id="v_pk4">11</div><button class="sbtn" onclick="sc('pk4',1)">+</button></div></div>
+      <div class="step-row"><div class="step-lbl">Pipa PVC 3" · Rp 197.179/m'</div><div class="step-ctrl"><button class="sbtn" onclick="sc('pk3',-1)">−</button><div class="sval" id="v_pk3">12</div><button class="sbtn" onclick="sc('pk3',1)">+</button></div></div>
+      <div class="step-row"><div class="step-lbl">Pipa PVC 2" · Rp 103.565/m'</div><div class="step-ctrl"><button class="sbtn" onclick="sc('pk2',-1)">−</button><div class="sval" id="v_pk2">7</div><button class="sbtn" onclick="sc('pk2',1)">+</button></div></div>
+    </div>
+    <div class="info-box">💡 PVC 4" buangannya ke septictank komunal (Type 36 & 50)</div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(11)">←</button>
+    <button class="btn-next" onclick="nxt(11)">Lanjut →</button>
+  </div>
+</div>
+
+<!-- S12: ELEKTRIKAL -->
+<div class="step-card" id="s12">
+  <div class="sh">
+    <div class="sh-step">Langkah 13 dari 17</div>
+    <div class="sh-title">Sistem <em>Elektrikal</em></div>
+  </div>
+  <div class="cz">
+    <div class="sec-lbl">Titik Lampu & Stop Kontak</div>
+    <div id="bodyElek" style="display:flex;flex-direction:column;gap:8px">
+      <div class="stepper-wrap" id="elekWrap_lampu">
+        <div class="step-row">
+          <div class="step-lbl">Lampu Downlight 7W <span style="font-size:9px;color:var(--slate);display:block">Rp 124.519 + Inst. Rp 302.092 / titik</span></div>
+          <div class="step-ctrl"><button class="sbtn" onclick="sc('titikL',-1)">−</button><div class="sval" id="v_titikL">8</div><button class="sbtn" onclick="sc('titikL',1)">+</button></div>
+        </div>
+      </div>
+      <div class="stepper-wrap" id="elekWrap_stop">
+        <div class="step-row">
+          <div class="step-lbl">Stop Kontak 1Ph 200W <span style="font-size:9px;color:var(--slate);display:block">Rp 136.712 + Inst. Rp 298.955 / titik</span></div>
+          <div class="step-ctrl"><button class="sbtn" onclick="sc('stopK',-1)">−</button><div class="sval" id="v_stopK">5</div><button class="sbtn" onclick="sc('stopK',1)">+</button></div>
+        </div>
+      </div>
+      <div class="stepper-wrap" id="elekWrap_sakS">
+        <div class="step-row">
+          <div class="step-lbl">Saklar Single Broco <span style="font-size:9px;color:var(--slate);display:block">Rp 122.965 / buah</span></div>
+          <div class="step-ctrl"><button class="sbtn" onclick="sc('sakS',-1)">−</button><div class="sval" id="v_sakS">4</div><button class="sbtn" onclick="sc('sakS',1)">+</button></div>
+        </div>
+      </div>
+      <div class="stepper-wrap" id="elekWrap_sakD">
+        <div class="step-row">
+          <div class="step-lbl">Saklar Double Broco <span style="font-size:9px;color:var(--slate);display:block">Rp 126.180 / buah</span></div>
+          <div class="step-ctrl"><button class="sbtn" onclick="sc('sakD',-1)">−</button><div class="sval" id="v_sakD">2</div><button class="sbtn" onclick="sc('sakD',1)">+</button></div>
+        </div>
+      </div>
+    </div>
+    <button class="add-btn" onclick="addElekRow()">＋ Tambah Item Elektrikal</button>
+    <div class="sec-lbl">Panel LV-MDP</div>
+    <div class="stepper-wrap">
+      <div class="step-row"><div class="step-lbl">MCCB 10A 1P 10KA · Rp 605.198</div><div class="step-ctrl"><button class="sbtn" onclick="sc('mccb10',-1)">−</button><div class="sval" id="v_mccb10">1</div><button class="sbtn" onclick="sc('mccb10',1)">+</button></div></div>
+      <div class="step-row"><div class="step-lbl">MCB 6A 1P 10KA · Rp 955.385</div><div class="step-ctrl"><button class="sbtn" onclick="sc('mcb6',-1)">−</button><div class="sval" id="v_mcb6">4</div><button class="sbtn" onclick="sc('mcb6',1)">+</button></div></div>
+      <div class="step-row"><div class="step-lbl">Pilot Lamp 220V · Rp 39.139</div><div class="step-ctrl"><button class="sbtn" onclick="sc('pilotL',-1)">−</button><div class="sval" id="v_pilotL">3</div><button class="sbtn" onclick="sc('pilotL',1)">+</button></div></div>
+    </div>
+    <div class="info-box" style="font-size:10px">
+      ✅ Box Panel 500×400×200mm: Rp 390.792<br>
+      ✅ CT.50/5: Rp 199.616 | Busbar CU 12×2mm: Rp 338.800<br>
+      ✅ Grounding BC10mm² Maks.2Ω: Rp 860.668<br>
+      ✅ Testing & Commissioning: Rp 1.500.000
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(12)">←</button>
+    <button class="btn-next" onclick="nxt(12)">Lanjut →</button>
+  </div>
+</div>
+
+<!-- S13: LAIN-LAIN -->
+<div class="step-card" id="s13">
+  <div class="sh">
+    <div class="sh-step">Langkah 14 dari 17</div>
+    <div class="sh-title">Pekerjaan <em>Lain-lain</em></div>
+  </div>
+  <div class="cz">
+    <div class="ck-wrap">
+      <label class="ck-row"><input type="checkbox" id="ck_mk" checked onchange="updMeter()"><div class="ck-text">Meja Kitchen Zinc 60×100 cm</div><div class="ck-price">1.000.000</div></label>
+      <label class="ck-row"><input type="checkbox" id="ck_sep" onchange="updMeter()"><div class="ck-text">Septictank (Individual)</div><div class="ck-price">8.000.000</div></label>
+      <label class="ck-row"><input type="checkbox" id="ck_pag" onchange="updMeter()"><div class="ck-text">Pagar Permanen</div><div class="ck-price">3.500.000</div></label>
+      <label class="ck-row"><input type="checkbox" id="ck_car" onchange="updMeter()"><div class="ck-text">Carport</div><div class="ck-price">5.000.000</div></label>
+    </div>
+    <div class="sec-lbl">Pagar Sementara Seng · Rp 606.096/m'</div>
+    <div class="stepper-wrap">
+      <div class="step-row">
+        <div class="step-lbl">Panjang Pagar Seng Gelombang H=2m</div>
+        <div class="step-ctrl"><button class="sbtn" onclick="sc('pagarLen',-5)">−</button><div class="sval" id="v_pagarLen">50</div><button class="sbtn" onclick="sc('pagarLen',5)">+</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(13)">←</button>
+    <button class="btn-next" onclick="nxt(13)">Lanjut →</button>
+  </div>
+</div>
+
+<!-- S14: KUALITAS -->
+<div class="step-card" id="s14">
+  <div class="sh">
+    <div class="sh-step">Langkah 15 dari 17</div>
+    <div class="sh-title">Tingkat <em>Kualitas</em></div>
+    <div class="sh-desc">Multiplier diterapkan ke semua pekerjaan kecuali Persiapan & Lain-lain</div>
+  </div>
+  <div class="cz">
+    <div class="cc sel" id="cc_q_st" onclick="sel('kualitas','standar','cc_q_st')">
+      <div class="cc-icon">🏠</div><div><div class="cc-label">Standar <div class="cc-badge">×1.0</div></div><div class="cc-sub">Harga satuan RAB APBN 2025 Kalimarau</div></div>
+    </div>
+    <div class="cc" id="cc_q_mn" onclick="sel('kualitas','menengah','cc_q_mn')">
+      <div class="cc-icon">🏡</div><div><div class="cc-label">Menengah <div class="cc-badge">×1.2</div></div><div class="cc-sub">Material & finishing lebih baik</div></div>
+    </div>
+    <div class="cc" id="cc_q_pm" onclick="sel('kualitas','premium','cc_q_pm')">
+      <div class="cc-icon">🏛</div><div><div class="cc-label">Premium <div class="cc-badge">×1.5</div></div><div class="cc-sub">Material premium, finishing tinggi</div></div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(14)">←</button>
+    <button class="btn-next" onclick="nxt(14)">Lanjut →</button>
+  </div>
+</div>
+
+<!-- S15: OVERHEAD -->
+<div class="step-card" id="s15">
+  <div class="sh">
+    <div class="sh-step">Langkah 16 dari 17</div>
+    <div class="sh-title">Biaya <em>Tambahan</em></div>
+    <div class="sh-desc">Overhead, keuntungan, contingency, PPN</div>
+  </div>
+  <div class="cz">
+    <div class="ck-wrap">
+      <label class="ck-row"><input type="checkbox" id="ck_ovh" onchange="updMeter()"><div class="ck-text">Overhead & Profit Kontraktor</div><div class="ck-price">+10%</div></label>
+      <label class="ck-row"><input type="checkbox" id="ck_tt" onchange="updMeter()"><div class="ck-text">Biaya Tak Terduga (Contingency)</div><div class="ck-price">+5%</div></label>
+      <label class="ck-row"><input type="checkbox" id="ck_pr" onchange="updMeter()"><div class="ck-text">Biaya Perizinan & Administrasi</div><div class="ck-price">+3%</div></label>
+      <label class="ck-row"><input type="checkbox" id="ck_ppn" onchange="updMeter()"><div class="ck-text">PPN 11%</div><div class="ck-price">×1.11</div></label>
+    </div>
+    <div class="warn-box">⚠️ PPN diterapkan setelah semua biaya tambahan</div>
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" onclick="bck(15)">←</button>
+    <button class="btn-next" onclick="nxt(15)">Hitung RAB →</button>
+  </div>
+</div>
+
+<!-- S16: SUMMARY -->
+<div class="step-card" id="s16">
+  <div class="sum-hero">
+    <div class="sum-total-lbl">ESTIMASI TOTAL RAB</div>
+    <div class="sum-total" id="vTotalRAB">—</div>
+    <div class="sum-perm2">≈ <span id="vPerM2">—</span>/m² · Durasi: <span id="vDurasi">—</span></div>
+    <div class="bstat" id="bstatBox" style="display:none">
+      <div id="bstatTitle">—</div><div id="bstatDesc">—</div>
+    </div>
+  </div>
+  <div class="cz" style="padding-top:16px">
+    <div class="sec-lbl">Rincian Parameter</div>
+    <div class="sum-grid" id="sumGrid"></div>
+
+    <div class="sec-lbl">RENCANA ANGGARAN BIAYA (RAB)</div>
+    <div style="font-size:10px;color:var(--slate);margin-top:-8px">Harga Satuan RAB APBN 2025 · Kalimarau · Berau, Kaltim</div>
+    <div class="rab-table-wrap">
+      <table class="rab-table" id="rabTable">
+        <thead>
+          <tr>
+            <th style="width:26px">No.</th>
+            <th>Uraian Pekerjaan</th>
+            <th style="width:32px">Sat</th>
+            <th class="num" style="width:52px">Vol.</th>
+            <th class="num" style="width:72px">Hrg Sat (Rp)</th>
+            <th class="num" style="width:78px">Jumlah (Rp)</th>
+          </tr>
+        </thead>
+        <tbody id="rabBody"></tbody>
+      </table>
+    </div>
+
+    <button class="cetak-btn" onclick="cetakRAB()">🖨 Cetak / Export PDF</button>
+    <button class="btn-back" style="margin-top:8px;width:100%;padding:12px;border-radius:10px;font-size:13px;cursor:pointer" onclick="bck(16)">← Revisi</button>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+const HS={
+  pagar_seng:606096,
+  galian:74540,urugan_kembali:87689,urugan_pasir_pond:317753,urugan_pasir_lantai:317753,lantai_kerja:959564,
+  batu_kali:1028400,aanstamping:661730,angkur_besi:23917,
+  beton_k225:1320612,bekisting_sloof:290052,besi_d10:22036,besi_d13:22036,
+  bekisting_kolom:259947,bekisting_dak:273439,bekisting_balok:271061,
+  genteng_metal_baja:291559,genteng_keramik:220000,spandek:75000,kayu_rangka:135000,
+  nok:131176,lisplank:140790,cat_lisplank:117644,alum_foil:350580,flashing:100654,waterproofing:271951,
+  bata_12:285839,bata_14:267379,hebel:220000,bataco:165000,
+  plester_12:77855,plester_14:68012,acian:57525,cat_tembok:76727,
+  keramik_dinding_2040:345746,plin_keramik:64640,batu_alam:654188,
+  keramik_40:131010,keramik_20:130137,keramik_60:180000,granit:280000,
+  plafon_gypsum:211770,plafon_kalsi:230172,cat_plafon:60837,list_cornice:71460,
+  kusen_alum:163887,rangka_alum:163887,pintu_teakwood:798721,kaca_6mm:459376,kaca_es_5mm:436268,
+  clear_sealant:30900,hardware_pintu:2404182,hardware_jendela:623091,
+  pipa_ppr_34:69674,pipa_ppr_12:55775,pipa_pvc_4:282479,pipa_pvc_3:197179,pipa_pvc_2:103565,
+  bak_fiberglass:1839986,bak_cuci:480468,kran_leher:660189,kloset_jongkok:4424226,kloset_duduk:5500000,
+  floor_drain:444080,kran_34:8000000,
+  lampu_dl:124519,inst_lampu:302092,stop_kontak:136712,inst_stop:298955,saklar_s:122965,saklar_d:126180,
+  box_panel:390792,mccb_10a:605198,mcb_6a:955385,pilot_lamp:39139,ct50:199616,busbar:338800,
+  grounding:860668,testing:1500000,
+  meja_kitchen:1000000,septik:8000000,pagar_perm:3500000,carport:5000000
+};
+const MULT={standar:1.0,menengah:1.2,premium:1.5};
+const TOTAL_STEPS=17;
+
+const D={anggaran:0,pH:0,pV:0,lantai:1,tk:3.20,
+  dinding:'bata_merah',atap:'genteng_metal',rangka:'baja_ringan',
+  lantai_mat:'k40',plafon:'gypsum',kloset:'jongkok',kualitas:'standar',dak:'tidak'};
+const ST={pagarLen:50,kK1:6,kKP:4,BV1:1,batuAlam:0,
+  kmMandi:1,pb34:15,pb12:12,pk4:11,pk3:12,pk2:7,
+  titikL:8,stopK:5,sakS:4,sakD:2,mcb6:4,mccb10:1,pilotL:3};
+const QP={P1:1,P2:1,P3:1};
+const QJ={J1:2,J2:1};
+const customKolom=[];
+let kolomCtr=0;
+const customElek=[];
+let elekCtr=0;
+let pCtr=4,jCtr=3,curStep=0;
+
+const rp=v=>'Rp '+Math.round(v).toLocaleString('id-ID');
+const rpN=v=>Math.round(v).toLocaleString('id-ID');
+const f3=v=>parseFloat(v).toFixed(3);
+const f2=v=>parseFloat(v).toFixed(2);
+const f1=v=>parseFloat(v).toFixed(1);
+const fKg=v=>Math.round(v);
+
+window.addEventListener('load',()=>{
+  setTimeout(()=>{document.getElementById('loading').classList.add('hide');setTimeout(()=>document.getElementById('loading').remove(),600);},1300);
+});
+
+function fmtBudget(inp){
+  let v=inp.value.replace(/\D/g,'');D.anggaran=parseInt(v)||0;
+  inp.value=v?parseInt(v).toLocaleString('id-ID'):'';
+}
+function setQ(val,el){
+  D.anggaran=val;document.getElementById('iAnggaran').value=val.toLocaleString('id-ID');
+  document.querySelectorAll('#s0 .chip').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');
+}
+
+function nxt(s){
+  document.getElementById('s'+s).style.display='none';
+  curStep=s+1;
+  const n=document.getElementById('s'+curStep);
+  n.style.display='flex';n.classList.remove('active');void n.offsetWidth;n.classList.add('active');
+  document.getElementById('progFill').style.width=((curStep+1)/TOTAL_STEPS*100).toFixed(1)+'%';
+  buildDots();
+  document.getElementById('sCtr').textContent=(curStep+1)+' / '+TOTAL_STEPS;
+  if(curStep===16)buildSummary();
+  updMeter();window.scrollTo(0,0);
+}
+function bck(s){
+  document.getElementById('s'+s).style.display='none';
+  curStep=s-1;
+  const p=document.getElementById('s'+curStep);
+  p.style.display='flex';p.classList.remove('active');void p.offsetWidth;p.classList.add('active');
+  buildDots();document.getElementById('sCtr').textContent=(curStep+1)+' / '+TOTAL_STEPS;
+  window.scrollTo(0,0);
+}
+
+function buildDots(){
+  const sd=document.getElementById('sdots');sd.innerHTML='';
+  for(let i=0;i<TOTAL_STEPS;i++){
+    const d=document.createElement('div');
+    d.className='sdot'+(i<curStep?' done':i===curStep?' cur':'');
+    sd.appendChild(d);
+  }
+}
+buildDots();
+
+const prefixMap={dinding:'cc_d_',atap:'cc_a_',lantai_mat:'cc_l_',plafon:'cc_pl_',kloset:'cc_kl_',dak:'cc_dak_',kualitas:'cc_q_'};
+function sel(key,val,id){
+  D[key]=val;
+  const px=prefixMap[key];
+  if(px)document.querySelectorAll('[id^="'+px+'"]').forEach(e=>e.classList.remove('sel'));
+  const el=document.getElementById(id);if(el)el.classList.add('sel');
+  if(key==='dinding')calcDim();
+  updMeter();
+}
+function selAtap(val,id){
+  D.atap=val;
+  ['cc_a_gm','cc_a_gk','cc_a_sp'].forEach(x=>document.getElementById(x)?.classList.remove('sel'));
+  document.getElementById(id)?.classList.add('sel');
+  updAtapRumus();updMeter();
+}
+function selRangka(val,id){
+  D.rangka=val;
+  ['cc_rk_bjr','cc_rk_kayu'].forEach(x=>document.getElementById(x)?.classList.remove('sel'));
+  document.getElementById(id)?.classList.add('sel');
+  updAtapRumus();updMeter();
+}
+function selLantai(n){
+  D.lantai=n;
+  document.getElementById('c_lt1').classList.toggle('sel',n===1);
+  document.getElementById('c_lt2').classList.toggle('sel',n===2);
+  calcDim();
+}
+selLantai(1);
+
+function sc(key,delta){
+  ST[key]=Math.max(0,(ST[key]||0)+delta);
+  const el=document.getElementById('v_'+key);if(el)el.textContent=ST[key];
+  if(key==='kmMandi')calcKerKM();
+  if(key==='kK1'||key==='kKP')calcDim();
+  updMeter();
+}
+
+function setText(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
+
+// ════════════════════════════════════════════════
+// RUMUS BESI D10 SENGKANG (tetap konstan per batang besi)
+// besi_d10_sengkang = (0.24×2)+(0.12×2)+(0.08×2) = 0.88 kg per sengkang
+// Diasumsikan jarak sengkang 0.15 m → per meter panjang = 0.88/0.15 ≈ 5.87 kg/m
+// ════════════════════════════════════════════════
+const D10_SENGKANG_PER_M = ((0.24*2)+(0.12*2)+(0.08*2)) / 0.15; // ≈ 5.867 kg/m per batang keliling
+
+// ════════════════════════════════════════════════
+// MAIN DIMENSION CALC
+// Variabel: a = panjang (pH), b = lebar (pV)
+// Keliling = (a+b) × 2
+// ════════════════════════════════════════════════
+function calcDim(){
+  const a=parseFloat(document.getElementById('iPH')?.value)||0; // panjang sisi luar
+  const b=parseFloat(document.getElementById('iPV')?.value)||0; // lebar sisi luar
+  const tk=parseFloat(document.getElementById('iTK')?.value)||3.20;
+  D.pH=a;D.pV=b;D.tk=tk;
+
+  const luasLt=a*b;                  // a × b
+  const luasTotal=luasLt*D.lantai;   // total semua lantai
+  const kel=(a+b)*2;                 // keliling = (a+b)×2
+  const tDind=Math.max(0,tk-0.13);   // tinggi dinding efektif
+  const lDind=kel*tDind*D.lantai;    // luas dinding total
+
+  if(a>0&&b>0){
+    document.getElementById('dLuas').style.display='flex';
+    setText('vDimAB','a='+a+' m, b='+b+' m');
+    setText('vLuasLt','a×b = '+a+'×'+b+' = '+f2(luasLt)+' m²');
+    setText('vLuas',f2(luasLt)+' × '+D.lantai+' lt = '+f2(luasTotal)+' m²');
+    setText('vKel','('+a+'+'+b+')×2 = '+f1(kel)+' m');
+    setText('vTD',tk+' − 0.13 = '+f3(tDind)+' m');
+    setText('vTB',tk+' × '+D.lantai+' = '+(tk*D.lantai).toFixed(2)+' m');
+
+    document.getElementById('gTanah').style.display='flex';
+
+    // ── GALIAN PONDASI: (a+b)×2 × 0.8 × 0.8 ──
+    const galian=kel*0.80*0.80;
+    setText('rf_galian',`(${a}+${b})×2 × 0.80 × 0.80`);
+    setText('rv_galian',f3(galian)+' m³');
+
+    // ── URUGAN TANAH KEMBALI: galian × 25% ──
+    const uruK=galian*0.25;
+    setText('rf_uruganK',f3(galian)+' m³ × 25%');
+    setText('rv_uruganK',f3(uruK)+' m³');
+
+    // ── URUGAN PASIR PONDASI: (a+b)×2 × 0.1 × 0.1 ──
+    const uruP=kel*0.10*0.10;
+    setText('rf_uruganP',`(${a}+${b})×2 × 0.10 × 0.10`);
+    setText('rv_uruganP',f3(uruP)+' m³');
+
+    // ── URUGAN PASIR LANTAI: 0.1 × (a×b) ──
+    const uruL=0.10*luasTotal;
+    setText('rf_uruganL',`0.10 × (${a}×${b}×${D.lantai})`);
+    setText('rv_uruganL',f3(uruL)+' m³');
+
+    // ── LANTAI KERJA: luas × 0.12 ──
+    const lkrj=luasTotal*0.12;
+    setText('rf_lk',`${f2(luasTotal)} m² × 0.12 m`);
+    setText('rv_lk',f3(lkrj)+' m³');
+
+    // ────────────────────────────────────────────
+    // SLOOF 15×30 cm
+    // Total panjang sloof = (a+b)×2 = keliling
+    // ────────────────────────────────────────────
+    const vSloof=kel*0.15*0.30;
+    setText('rf_sloof',`(${a}+${b})×2 × 0.15 × 0.30`);
+    setText('rv_sloof',f3(vSloof)+' m³');
+
+    // Bekisting sloof: ((a+b)×2 × 0.30) × 2 sisi
+    const bekSloof=kel*0.30*2;
+    setText('rf_sloofBek',`((${a}+${b})×2 × 0.30) × 2`);
+    setText('rv_sloofBek',f2(bekSloof)+' m²');
+
+    // Besi D13 sloof: ((L×4) + (L×4)×25%) × 0.006165
+    // L = keliling, 4 batang utama
+    const bD13sloof=((kel*4)+(kel*4*0.25))*0.006165;
+    setText('rf_sloofD13',`(${f1(kel)}×4 + ${f1(kel)}×4×25%) × 0.006165`);
+    setText('rv_sloofD13',f3(bD13sloof)+' kg');
+
+    // Besi D10 sengkang: (0.24×2)+(0.12×2)+(0.08×2) per sengkang, tiap 0.15m
+    const d10PerSengkang=(0.24*2)+(0.12*2)+(0.08*2); // = 0.88 m
+    const jmlSengkangSloof=Math.ceil(kel/0.15);
+    const bD10sloof=jmlSengkangSloof*d10PerSengkang*0.006165*1000; // konversi ke kg (density besi 7850 kg/m³, D10 ~0.617kg/m)
+    // Sederhanakan: pakai pendekatan berat langsung
+    // D10 = 0.617 kg/m → per sengkang = 0.88m × 0.617 = 0.543 kg
+    const bD10sloofKg=jmlSengkangSloof*(d10PerSengkang*0.617);
+    setText('rf_sloofD10',`${jmlSengkangSloof} sengkang × 0.88m × 0.617kg/m`);
+    setText('rv_sloofD10',f2(bD10sloofKg)+' kg');
+
+    // ────────────────────────────────────────────
+    // KOLOM K1 (20×20 cm)
+    // ────────────────────────────────────────────
+    const kK1=ST.kK1||6,tkK1=parseFloat(document.getElementById('iTK1')?.value)||3.20;
+
+    // Vol beton: t × (0.20×0.20) × n
+    const vBetK1=kK1*tkK1*(0.20*0.20);
+    setText('rf_k1_bet',`${kK1} × ${tkK1}m × (0.20×0.20)`);
+    setText('rv_k1_bet',f3(vBetK1)+' m³');
+
+    // Bekisting: t × 0.20 × 4 (sisi) × n
+    const bekK1=kK1*tkK1*0.20*4;
+    setText('rf_k1_bek',`${kK1} × ${tkK1}m × 0.20 × 4`);
+    setText('rv_k1_bek',f2(bekK1)+' m²');
+
+    // Besi D13: ((t×4)+(t×4)×25%) × 0.006165 × n
+    const bD13K1=kK1*((tkK1*4)+(tkK1*4*0.25))*0.006165;
+    setText('rf_k1_d13',`${kK1}×((${tkK1}×4)+(${tkK1}×4×25%))×0.006165`);
+    setText('rv_k1_d13',f3(bD13K1)+' kg');
+
+    // Besi D10 sengkang per kolom: sama dengan formula di atas
+    const jmlSengkangK1=Math.ceil(tkK1/0.15);
+    const bD10K1=kK1*jmlSengkangK1*(d10PerSengkang*0.617);
+    setText('rf_k1_d10',`${kK1}×${jmlSengkangK1} sengkang × 0.88m × 0.617kg/m`);
+    setText('rv_k1_d10',f2(bD10K1)+' kg');
+
+    // ────────────────────────────────────────────
+    // KOLOM KP (15×15 cm)
+    // ────────────────────────────────────────────
+    const kKP=ST.kKP||4,tkKP=parseFloat(document.getElementById('iTKP')?.value)||2.50;
+
+    // Vol beton: t × (0.15×0.15) × n
+    const vBetKP=kKP*tkKP*(0.15*0.15);
+    setText('rf_kp_bet',`${kKP} × ${tkKP}m × (0.15×0.15)`);
+    setText('rv_kp_bet',f3(vBetKP)+' m³');
+
+    // Bekisting: t × 0.15 × 2 × n  (catatan: rumus asli 0.15×2, bukan 4)
+    const bekKP=kKP*tkKP*0.15*2;
+    setText('rf_kp_bek',`${kKP} × ${tkKP}m × 0.15 × 2`);
+    setText('rv_kp_bek',f2(bekKP)+' m²');
+
+    // Besi D13: ((t×4)+(t×4)×25%) × 0.006165 × n
+    const bD13KP=kKP*((tkKP*4)+(tkKP*4*0.25))*0.006165;
+    setText('rf_kp_d13',`${kKP}×((${tkKP}×4)+(${tkKP}×4×25%))×0.006165`);
+    setText('rv_kp_d13',f3(bD13KP)+' kg');
+
+    // Besi D10 sengkang per kolom
+    const jmlSengkangKP=Math.ceil(tkKP/0.15);
+    const bD10KP=kKP*jmlSengkangKP*(d10PerSengkang*0.617);
+    setText('rf_kp_d10',`${kKP}×${jmlSengkangKP} sengkang × 0.88m × 0.617kg/m`);
+    setText('rv_kp_d10',f2(bD10KP)+' kg');
+
+    // ────────────────────────────────────────────
+    // BALOK 15×30 cm — rumus sama dgn sloof tapi pakai kel per lantai
+    // ────────────────────────────────────────────
+    const vBalok=kel*0.15*0.30;
+    setText('rf_balok',`(${a}+${b})×2 × 0.15 × 0.30`);
+    setText('rv_balok',f3(vBalok)+' m³');
+
+    // Bekisting balok: ((a+b)×2 × 0.30) × 2
+    const bekBalok=kel*0.30*2;
+    setText('rf_balokBek',`((${a}+${b})×2 × 0.30) × 2`);
+    setText('rv_balokBek',f2(bekBalok)+' m²');
+
+    // Besi D13 balok: sama rumus dengan sloof
+    const bD13Balok=((kel*4)+(kel*4*0.25))*0.006165;
+    setText('rf_balokD13',`((${f1(kel)}×4)+(${f1(kel)}×4×25%))×0.006165`);
+    setText('rv_balokD13',f3(bD13Balok)+' kg');
+
+    // Besi D10 sengkang balok
+    const jmlSengkangBalok=Math.ceil(kel/0.15);
+    const bD10Balok=jmlSengkangBalok*(d10PerSengkang*0.617);
+    setText('rf_balokD10',`${jmlSengkangBalok} sengkang × 0.88m × 0.617kg/m`);
+    setText('rv_balokD10',f2(bD10Balok)+' kg');
+
+    // ── BALOK LATE 10×13 ──
+    const vBalokL=kel*D.lantai*0.10*0.13;
+    setText('rf_balokL',`(${a}+${b})×2 × ${D.lantai}lt × 0.10×0.13`);
+    setText('rv_balokL',f3(vBalokL)+' m³');
+
+    // ── PLAT BETON ──
+    const vPlat=luasTotal*0.12;
+    setText('rf_platBet',`${f2(luasTotal)} m² × 0.12 m tebal`);
+    setText('rv_platBet',f3(vPlat)+' m³');
+    const bPlat=luasTotal*54;
+    setText('rf_platBesi',`${f2(luasTotal)} m² × 54 kg/m²`);
+    setText('rv_platBesi',fKg(bPlat)+' kg');
+
+    // ── PONDASI ──
+    const volPond=kel*0.70*0.60;
+    setText('rf_pond',`(${a}+${b})×2 × 0.70 × 0.60`);
+    setText('rv_pond',f3(volPond)+' m³');
+    setText('rv_pondBiaya',rp(volPond*HS.batu_kali));
+    const vAanst=kel*0.60;
+    setText('rf_aanst',`(${a}+${b})×2 × 0.60 m`);
+    setText('rv_aanst',f3(vAanst)+' m³');
+    const vAngkur=kel*0.5;
+    setText('rf_angkur',`(${a}+${b})×2 × 0.50 angkur/m`);
+    setText('rv_angkur',f3(vAngkur)+' m²');
+
+    // ── ATAP ──
+    updAtapRumus(luasTotal);
+
+    // ── DINDING ──
+    const p12=lDind*0.25,p14=lDind*0.75;
+    setText('rf_dLuas',`(${a}+${b})×2 × ${f3(tDind)} × ${D.lantai}lt`);
+    setText('rv_dLuas',f1(lDind)+' m²');
+    setText('rf_dTinggi',`tk ${tk}m − balok 0.13m`);
+    setText('rv_dTinggi',f3(tDind)+' m');
+    setText('rf_p12',`${f1(lDind)} m² × 25%`);
+    setText('rv_p12',f1(p12)+' m²');
+    setText('rf_p14',`${f1(lDind)} m² × 75%`);
+    setText('rv_p14',f1(p14)+' m²');
+
+    setText('vAcian',f1(lDind)+' m²');
+    setText('vCatT',f1(lDind)+' m²');
+    setText('vRabat',f2(luasTotal)+' m²');
+    setText('vPlafon',f2(luasTotal)+' m²');
+    calcKerKM();
+  }else{
+    document.getElementById('dLuas').style.display='none';
+    document.getElementById('gTanah').style.display='none';
+  }
+  updMeter();
+}
+
+function updAtapRumus(luasTotal){
+  const a=D.pH||0,b=D.pV||0;
+  const lt=luasTotal||a*b*D.lantai;
+  const lAtap=lt*1.30;
+  const hAtap=D.atap==='genteng_keramik'?HS.genteng_keramik:D.atap==='spandek'?HS.spandek:HS.genteng_metal_baja;
+  const kayu=D.rangka==='kayu'?HS.kayu_rangka:0;
+  const labelAtap=D.atap==='genteng_keramik'?'Genteng Keramik':D.atap==='spandek'?'Spandek':'Genteng Metal';
+  const labelRangka=D.rangka==='kayu'?'+ Rangka Kayu':'(+Rangka Baja Ringan)';
+  setText('rf_atapLuas',`${f2(lt)} m² × 1.30`);
+  setText('rv_atapLuas',f1(lAtap)+' m²');
+  setText('rf_atapBiaya',`${f1(lAtap)}m² × Rp${rpN(hAtap+kayu)} ${labelAtap} ${labelRangka}`);
+  setText('rv_atapBiaya',rp(lAtap*(hAtap+kayu)));
+}
+
+function calcKerKM(){
+  const km=ST.kmMandi||1;
+  setText('vKerKM',km*12+' m² ('+km+' KM × 12 m²)');
+}
+
+// ── PINTU & JENDELA ──
+function calcKusenPintu(kode){
+  const tipe=document.getElementById('tipe_'+kode)?.value||'tunggal';
+  const l=parseFloat(document.getElementById('l'+kode)?.value)||0;
+  const t=parseFloat(document.getElementById('t'+kode)?.value)||0;
+  let kusen=tipe==='kupukupu'?(2*t+2*l):(2*t+l);
+  setText('kusen'+kode,f3(kusen)+" m'");
+  return{tipe,l,t,kusen};
+}
+function calcKusenJendela(kode){
+  const l=parseFloat(document.getElementById('l'+kode)?.value)||0;
+  const t=parseFloat(document.getElementById('t'+kode)?.value)||0;
+  const kusen=2*(l+t);
+  setText('kusen'+kode,f3(kusen)+" m'");
+  return{l,t,kusen};
+}
+function updBiayaPintu(){
+  let total=0;
+  Object.keys(QP).forEach(k=>{
+    const{tipe,l,t,kusen}=calcKusenPintu(k);
+    const areaDaun=l*t*(tipe==='kupukupu'?2:1);
+    total+=(kusen*HS.kusen_alum+areaDaun*HS.pintu_teakwood+HS.hardware_pintu)*(QP[k]||0);
+  });
+  setText('vBiayaP',rp(total));updMeter();
+}
+function updBiayaJendela(){
+  let total=0;
+  Object.keys(QJ).forEach(k=>{
+    const{l,t,kusen}=calcKusenJendela(k);
+    total+=(kusen*HS.kusen_alum+kusen*HS.rangka_alum+l*t*HS.kaca_6mm+HS.hardware_jendela)*(QJ[k]||0);
+  });
+  total+=(ST.BV1||1)*(2.56*HS.kusen_alum+0.34*HS.kaca_es_5mm+4.72*HS.clear_sealant);
+  setText('vBiayaJ',rp(total));updMeter();
+}
+function dq(cat,kode,delta){
+  if(cat==='P'){QP[kode]=Math.max(0,(QP[kode]||0)+delta);setText('q_P_'+kode,QP[kode]);updBiayaPintu();}
+  else{QJ[kode]=Math.max(0,(QJ[kode]||0)+delta);setText('q_J_'+kode,QJ[kode]);updBiayaJendela();}
+}
+function addPRow(){
+  const idx=pCtr++;const kode='P'+idx;QP[kode]=1;
+  const tr=document.createElement('tr');tr.dataset.kode=kode;
+  tr.innerHTML=`<td><b>${kode}</b></td>
+    <td><select class="tinput" id="tipe_${kode}" onchange="calcKusenPintu('${kode}');updBiayaPintu()"><option value="tunggal">Tunggal</option><option value="kupukupu">Kupu-kupu</option></select></td>
+    <td><span style="display:flex;gap:3px;align-items:center"><input class="tinput" type="number" id="l${kode}" placeholder="0.80" style="width:38px" oninput="calcKusenPintu('${kode}');updBiayaPintu()">×<input class="tinput" type="number" id="t${kode}" placeholder="2.10" style="width:38px" oninput="calcKusenPintu('${kode}');updBiayaPintu()"></span></td>
+    <td><span style="font-size:10px;color:var(--amber)" id="kusen${kode}">—</span></td>
+    <td><div class="dqctrl"><button class="dqbtn" onclick="dq('P','${kode}',-1)">−</button><span class="dqval" id="q_P_${kode}">1</span><button class="dqbtn" onclick="dq('P','${kode}',1)">+</button></div></td>
+    <td><button class="rmbtn" onclick="this.closest('tr').remove();delete QP['${kode}'];updBiayaPintu()">✕</button></td>`;
+  document.getElementById('bodyP').appendChild(tr);
+}
+function addJRow(){
+  const idx=jCtr++;const kode='J'+idx;QJ[kode]=1;
+  const tr=document.createElement('tr');tr.dataset.kode=kode;
+  tr.innerHTML=`<td><b>${kode}</b></td>
+    <td><input class="tinput" type="text" placeholder="Ket..." style="width:60px"></td>
+    <td><span style="display:flex;gap:3px;align-items:center"><input class="tinput" type="number" id="l${kode}" placeholder="0.90" style="width:38px" oninput="calcKusenJendela('${kode}');updBiayaJendela()">×<input class="tinput" type="number" id="t${kode}" placeholder="1.10" style="width:38px" oninput="calcKusenJendela('${kode}');updBiayaJendela()"></span></td>
+    <td><span style="font-size:10px;color:var(--amber)" id="kusen${kode}">—</span></td>
+    <td><div class="dqctrl"><button class="dqbtn" onclick="dq('J','${kode}',-1)">−</button><span class="dqval" id="q_J_${kode}">1</span><button class="dqbtn" onclick="dq('J','${kode}',1)">+</button></div></td>
+    <td><button class="rmbtn" onclick="this.closest('tr').remove();delete QJ['${kode}'];updBiayaJendela()">✕</button></td>`;
+  document.getElementById('bodyJ').appendChild(tr);
+}
+
+// ── KOLOM CUSTOM ──
+function addKolomRow(){
+  const id='KC'+(kolomCtr++);
+  customKolom.push({id,n:1});
+  const wrap=document.createElement('div');wrap.id='kWrap_'+id;wrap.className='stepper-wrap';
+  wrap.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:12px;font-weight:600;color:var(--amber)">${id} — Kolom Custom</div>
+      <button class="rmbtn" onclick="removeKolom('${id}')">✕ Hapus</button>
+    </div>
+    <div class="inp-row"><div class="inp-lbl">Lebar (m)</div>
+      <input class="tinput" type="number" id="kW_${id}" placeholder="0.20" value="0.20" step="0.05" oninput="updMeter()">
+      <div class="inp-unit">m</div>
+    </div>
+    <div class="inp-row"><div class="inp-lbl">Tinggi penampang (m)</div>
+      <input class="tinput" type="number" id="kH_${id}" placeholder="0.20" value="0.20" step="0.05" oninput="updMeter()">
+      <div class="inp-unit">m</div>
+    </div>
+    <div class="inp-row"><div class="inp-lbl">Tinggi kolom (m)</div>
+      <input class="tinput" type="number" id="kT_${id}" placeholder="3.20" value="3.20" step="0.05" oninput="updMeter()">
+      <div class="inp-unit">m</div>
+    </div>
+    <div class="step-row">
+      <div class="step-lbl">Jumlah kolom</div>
+      <div class="step-ctrl"><button class="sbtn" onclick="chgKolom('${id}',-1)">−</button><span class="sval" id="kN_${id}">1</span><button class="sbtn" onclick="chgKolom('${id}',1)">+</button></div>
+    </div>
+    <div class="rumus-card" id="kRumus_${id}" style="margin-top:4px">
+      <b>📐 Rumus ${id}</b>
+      <div class="r-row"><span class="r-label">Vol Beton</span><span class="r-formula" id="krf_${id}">—</span><span class="r-result" id="krv_${id}">—</span></div>
+    </div>`;
+  document.getElementById('bodyKolom').appendChild(wrap);
+}
+function removeKolom(id){
+  const idx=customKolom.findIndex(k=>k.id===id);
+  if(idx>-1)customKolom.splice(idx,1);
+  document.getElementById('kWrap_'+id)?.remove();
+  updMeter();
+}
+function chgKolom(id,delta){
+  const obj=customKolom.find(k=>k.id===id);
+  if(!obj)return;
+  obj.n=Math.max(0,(obj.n||1)+delta);
+  setText('kN_'+id,obj.n);
+  updMeter();
+}
+
+// ── ELEK CUSTOM ──
+function addElekRow(){
+  const id='EK'+(elekCtr++);
+  customElek.push({id,qty:1});
+  const wrap=document.createElement('div');wrap.id='elekWrap_'+id;wrap.className='stepper-wrap';
+  wrap.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <input class="tinput" type="text" id="elekLabel_${id}" placeholder="Nama item elektrikal..." style="flex:1;margin-right:8px" oninput="updMeter()">
+      <button class="rmbtn" onclick="removeElek('${id}')">✕</button>
+    </div>
+    <div class="inp-row"><div class="inp-lbl">Harga Satuan (Rp)</div>
+      <input class="tinput" type="number" id="elekHS_${id}" placeholder="0" oninput="updMeter()">
+      <div class="inp-unit">Rp</div>
+    </div>
+    <div class="step-row">
+      <div class="step-lbl">Quantity</div>
+      <div class="step-ctrl"><button class="sbtn" onclick="chgElek('${id}',-1)">−</button><span class="sval" id="elekQty_${id}">1</span><button class="sbtn" onclick="chgElek('${id}',1)">+</button></div>
+    </div>`;
+  document.getElementById('bodyElek').appendChild(wrap);
+}
+function removeElek(id){
+  const idx=customElek.findIndex(e=>e.id===id);
+  if(idx>-1)customElek.splice(idx,1);
+  document.getElementById('elekWrap_'+id)?.remove();
+  updMeter();
+}
+function chgElek(id,delta){
+  const obj=customElek.find(e=>e.id===id);
+  if(!obj)return;
+  obj.qty=Math.max(0,(obj.qty||1)+delta);
+  setText('elekQty_'+id,obj.qty);
+  updMeter();
+}
+
+// ════════════════════════════════════════════════
+// COST ENGINE — menggunakan rumus yang telah diperbarui
+// ════════════════════════════════════════════════
+function calcTotal(){
+  const a=D.pH||8,b=D.pV||6;
+  const luasLt=a*b;
+  const luasTotal=luasLt*D.lantai;
+  const kel=(a+b)*2;              // (a+b)×2
+  const tk=D.tk||3.20;
+  const tDind=Math.max(0,tk-0.13);
+  const mult=MULT[D.kualitas]||1.0;
+  const lDind=kel*tDind*D.lantai;
+  const km=ST.kmMandi||1;
+  const lAtap=luasTotal*1.30;
+  const d10PerSengkang=0.88; // (0.24×2)+(0.12×2)+(0.08×2)
+  const rows=[];
+
+  function addSec(label,isMajor){rows.push({type:isMajor?'sec':'subsec',label});}
+  function addItem(no,uraian,sat,vol,hs,noMult){
+    const jml=(noMult?1:mult)*vol*hs;
+    rows.push({type:'item',no,uraian,sat,vol,hs,jml});
+    return jml;
+  }
+  function addSub(label,val){rows.push({type:'subtotal',label,val});}
+
+  let grandTotal=0;
+
+  // ── A. STRUKTUR ──
+  addSec('A. PEKERJAAN STRUKTUR',true);
+  addSec('I. Pekerjaan Persiapan');
+  let subA1=0;
+  subA1+=addItem('1','Pagar sementara seng gelombang H=2m',"m'",ST.pagarLen||50,HS.pagar_seng,true);
+  addSub('Sub Total A.I Persiapan',subA1);
+
+  addSec('II. Pekerjaan Tanah');
+  let subA2=0;
+  // Galian: (a+b)×2 × 0.8 × 0.8
+  const galian=kel*0.80*0.80;
+  subA2+=addItem('1','Galian Tanah Pondasi','m³',galian,HS.galian);
+  // Urugan kembali: galian × 25%
+  subA2+=addItem('2','Urugan Tanah Kembali & Meratakan','m³',galian*0.25,HS.urugan_kembali);
+  // Urugan pasir pondasi: (a+b)×2 × 0.1 × 0.1
+  subA2+=addItem('3','Urugan Pasir Bawah Pondasi','m³',kel*0.10*0.10,HS.urugan_pasir_pond);
+  // Urugan pasir lantai: 0.1 × (a×b)
+  subA2+=addItem('4','Urugan Pasir Bawah Lantai','m³',0.10*luasTotal,HS.urugan_pasir_lantai);
+  subA2+=addItem('5','Lantai Kerja di bawah Lantai','m³',luasTotal*0.12,HS.lantai_kerja);
+  addSub('Sub Total A.II Pekerjaan Tanah',subA2);
+
+  addSec('III. Pondasi Batu Kali');
+  let subA3=0;
+  const volPond=kel*0.70*0.60;
+  subA3+=addItem('1','Pasangan Pondasi Batu Kali 1:5','m³',volPond,HS.batu_kali);
+  subA3+=addItem('2','Pasangan Aanstamping Batu Kali','m³',kel*0.60,HS.aanstamping);
+  subA3+=addItem('3','Pasangan Angkur Besi D13-1000mm','m²',kel*0.5,HS.angkur_besi);
+  addSub('Sub Total A.III Pondasi',subA3);
+
+  // ── SLOOF ──
+  addSec('IV. Beton Sloof 15×30 cm');
+  let subA4=0;
+  const vSloof=kel*0.15*0.30;
+  const bekSloof=kel*0.30*2;
+  const bD13sloof=((kel*4)+(kel*4*0.25))*0.006165;
+  const jmlSengkangSloof=Math.ceil(kel/0.15);
+  const bD10sloofKg=jmlSengkangSloof*(d10PerSengkang*0.617);
+  subA4+=addItem('1','Beton K-225','m³',vSloof,HS.beton_k225);
+  subA4+=addItem('2','Bekisting','m²',bekSloof,HS.bekisting_sloof);
+  subA4+=addItem('3','Besi D13','kg',bD13sloof,HS.besi_d13);
+  subA4+=addItem('4','Besi D10 (sengkang)','kg',bD10sloofKg,HS.besi_d10);
+  addSub('Sub Total A.IV Sloof',subA4);
+
+  addSec('V. Struktur Atas — Beton Bertulang');
+  let subA5=0;
+
+  // Plat lantai
+  subA5+=addItem('1a','Plat Lantai — Beton K-225','m³',luasTotal*0.12,HS.beton_k225);
+  subA5+=addItem('1b','Plat Lantai — Besi D10','kg',luasTotal*54,HS.besi_d10);
+
+  // Kolom K1
+  const kK1=ST.kK1,tkK1=parseFloat(document.getElementById('iTK1')?.value)||3.20;
+  const vBetK1=kK1*tkK1*(0.20*0.20);
+  const bekK1=kK1*tkK1*0.20*4;
+  const bD13K1=kK1*((tkK1*4)+(tkK1*4*0.25))*0.006165;
+  const jmlSengkK1=Math.ceil(tkK1/0.15);
+  const bD10K1=kK1*jmlSengkK1*(d10PerSengkang*0.617);
+  subA5+=addItem('2a','Kolom K1 20×20 — Beton K-225','m³',vBetK1,HS.beton_k225);
+  subA5+=addItem('2b','Kolom K1 20×20 — Bekisting','m²',bekK1,HS.bekisting_kolom);
+  subA5+=addItem('2c','Kolom K1 20×20 — Besi D13','kg',bD13K1,HS.besi_d13);
+  subA5+=addItem('2d','Kolom K1 20×20 — Besi D10','kg',bD10K1,HS.besi_d10);
+
+  // Kolom KP
+  const kKP=ST.kKP,tkKP=parseFloat(document.getElementById('iTKP')?.value)||2.50;
+  const vBetKP=kKP*tkKP*(0.15*0.15);
+  const bekKP=kKP*tkKP*0.15*2;
+  const bD13KP=kKP*((tkKP*4)+(tkKP*4*0.25))*0.006165;
+  const jmlSengkKP=Math.ceil(tkKP/0.15);
+  const bD10KP=kKP*jmlSengkKP*(d10PerSengkang*0.617);
+  subA5+=addItem('3a','Kolom KP 15×15 — Beton K-225','m³',vBetKP,HS.beton_k225);
+  subA5+=addItem('3b','Kolom KP 15×15 — Bekisting','m²',bekKP,HS.bekisting_kolom);
+  subA5+=addItem('3c','Kolom KP 15×15 — Besi D13','kg',bD13KP,HS.besi_d13);
+  subA5+=addItem('3d','Kolom KP 15×15 — Besi D10','kg',bD10KP,HS.besi_d10);
+
+  // Kolom custom
+  customKolom.forEach((kc,i)=>{
+    const w=parseFloat(document.getElementById('kW_'+kc.id)?.value)||0.20;
+    const hh=parseFloat(document.getElementById('kH_'+kc.id)?.value)||0.20;
+    const ktk=parseFloat(document.getElementById('kT_'+kc.id)?.value)||3.20;
+    const kn=parseInt(document.getElementById('kN_'+kc.id)?.textContent)||1;
+    const vol=kn*w*hh*ktk;
+    setText('krf_'+kc.id,`${kn} × ${ktk}m × (${w}×${hh})`);
+    setText('krv_'+kc.id,f3(vol)+' m³');
+    subA5+=addItem((i+4)+'a',`Kolom ${kc.id} (${w}×${hh}m) — Beton K-225`,'m³',vol,HS.beton_k225);
+    subA5+=addItem((i+4)+'b',`Kolom ${kc.id} — Bekisting`,'m²',kn*2*(w+hh)*ktk,HS.bekisting_kolom);
+  });
+
+  // Balok 15×30
+  const vBalok=kel*0.15*0.30;
+  const bekBalok=kel*0.30*2;
+  const bD13Balok=((kel*4)+(kel*4*0.25))*0.006165;
+  const jmlSengkBalok=Math.ceil(kel/0.15);
+  const bD10Balok=jmlSengkBalok*(d10PerSengkang*0.617);
+  subA5+=addItem('5a','Balok 15×30 — Beton K-225','m³',vBalok,HS.beton_k225);
+  subA5+=addItem('5b','Balok 15×30 — Bekisting','m²',bekBalok,HS.bekisting_balok);
+  subA5+=addItem('5c','Balok 15×30 — Besi D13','kg',bD13Balok,HS.besi_d13);
+  subA5+=addItem('5d','Balok 15×30 — Besi D10','kg',bD10Balok,HS.besi_d10);
+
+  // Balok late
+  const vBalokL=kel*D.lantai*0.10*0.13;
+  subA5+=addItem('6a','Balok Late 10×13 — Beton K-225','m³',vBalokL,HS.beton_k225);
+  subA5+=addItem('6b','Balok Late 10×13 — Bekisting','m²',kel*D.lantai*0.5,HS.bekisting_balok);
+
+  if(D.dak==='ya'){
+    const dA=luasTotal*0.15;
+    subA5+=addItem('7a','Dak Beton Elv.+3.000 — Beton K-225','m³',dA*0.12,HS.beton_k225);
+    subA5+=addItem('7b','Dak Beton — Bekisting','m²',dA,HS.bekisting_dak);
+    subA5+=addItem('7c','Dak Beton — Besi D10','kg',dA*20,HS.besi_d10);
+  }
+  addSub('Sub Total A.V Struktur Atas',subA5);
+  const totalA=subA1+subA2+subA3+subA4+subA5;
+  addSub('★ TOTAL A — PEKERJAAN STRUKTUR',totalA);
+  grandTotal+=totalA;
+
+  // ── B. ARSITEK ──
+  addSec('B. PEKERJAAN ARSITEKTUR',true);
+  addSec('I. Pekerjaan Atap');
+  let subB1=0;
+  const hAtap=D.atap==='genteng_keramik'?HS.genteng_keramik:D.atap==='spandek'?HS.spandek:HS.genteng_metal_baja;
+  const kayu=D.rangka==='kayu'?HS.kayu_rangka:0;
+  const atapLabel=D.atap==='genteng_keramik'?'Genteng Keramik':D.atap==='spandek'?'Spandek/Zincalume':'Genteng Metal Baja + Rangka Baja Ringan';
+  subB1+=addItem('1',atapLabel,'m²',lAtap,hAtap);
+  if(D.rangka==='kayu')subB1+=addItem('1a','Tambahan Rangka Kayu Atap','m²',lAtap,kayu);
+  const nokLen=parseFloat(document.getElementById('iNok')?.value)||6.35;
+  const lispLen=parseFloat(document.getElementById('iLisp')?.value)||22.04;
+  const flashLen=parseFloat(document.getElementById('iFlash')?.value)||8.71;
+  subB1+=addItem('2','Nok Genteng Metal',"m'",nokLen,HS.nok);
+  subB1+=addItem('3','Lisplank GRC T=10mm L=30cm',"m'",lispLen,HS.lisplank);
+  subB1+=addItem('4','Pengecatan Lisplank GRC','m²',lispLen*0.2,HS.cat_lisplank);
+  if(document.getElementById('ck_af')?.checked)subB1+=addItem('5','Alum Foil + Kawat + Glasswool BG50','m²',luasTotal,HS.alum_foil);
+  subB1+=addItem('6','Flashing Zincalume 0.45TCT L=610mm',"m'",flashLen,HS.flashing);
+  if(document.getElementById('ck_wp')?.checked)subB1+=addItem('7','Waterproofing Bitutene Membran 1.5mm','m²',luasTotal*0.15,HS.waterproofing);
+  addSub('Sub Total B.I Pekerjaan Atap',subB1);
+
+  addSec('II. Pekerjaan Dinding');
+  let subB2=0;
+  const p12Ov=parseFloat(document.getElementById('iP12')?.value);
+  const p14Ov=parseFloat(document.getElementById('iP14')?.value);
+  const p12=isNaN(p12Ov)?lDind*0.25:p12Ov;
+  const p14=isNaN(p14Ov)?lDind*0.75:p14Ov;
+  if(D.dinding==='bata_merah'){
+    subB2+=addItem('1','Pasangan Dinding Bata adukan 1:2','m²',p12,HS.bata_12);
+    subB2+=addItem('2','Pasangan Dinding Bata adukan 1:4','m²',p14,HS.bata_14);
+  }else if(D.dinding==='hebel'){
+    subB2+=addItem('1','Pasangan Dinding Hebel/Bata Ringan','m²',lDind,HS.hebel);
+  }else{
+    subB2+=addItem('1','Pasangan Dinding Bataco','m²',lDind,HS.bataco);
+  }
+  addSub('Sub Total B.II Pekerjaan Dinding',subB2);
+
+  addSec('III. Pekerjaan Pintu & Jendela');
+  let subB3=0,pIdx=1;
+  Object.keys(QP).forEach(k=>{
+    const{tipe,l,t,kusen}=calcKusenPintu(k);
+    const qty=QP[k]||0;if(!qty)return;
+    const areaDaun=l*t*(tipe==='kupukupu'?2:1);
+    subB3+=addItem(pIdx+'a',`Type ${k} (${qty}x) ${tipe} — Kusen Alum`,"m'",kusen*qty,HS.kusen_alum);
+    subB3+=addItem(pIdx+'b',`Type ${k} — Daun Pintu Teakwood`,'m²',areaDaun*qty,HS.pintu_teakwood);
+    const hwJml=HS.hardware_pintu*qty*mult;
+    rows.push({type:'item',no:pIdx+'c',uraian:`Type ${k} — Hardware Set`,sat:'set',vol:qty,hs:HS.hardware_pintu,jml:hwJml});
+    subB3+=hwJml;pIdx++;
+  });
+  Object.keys(QJ).forEach(k=>{
+    const{l,t,kusen}=calcKusenJendela(k);
+    const qty=QJ[k]||0;if(!qty)return;
+    subB3+=addItem(pIdx+'a',`Type ${k} (${qty}x) — Kusen Alum`,"m'",kusen*qty,HS.kusen_alum);
+    subB3+=addItem(pIdx+'b',`Type ${k} — Rangka Alum`,"m'",kusen*qty,HS.rangka_alum);
+    subB3+=addItem(pIdx+'c',`Type ${k} — Kaca Polos 6mm`,'m²',l*t*qty,HS.kaca_6mm);
+    const hwJJml=HS.hardware_jendela*qty*mult;
+    rows.push({type:'item',no:pIdx+'d',uraian:`Type ${k} — Hardware Set`,sat:'set',vol:qty,hs:HS.hardware_jendela,jml:hwJJml});
+    subB3+=hwJJml;pIdx++;
+  });
+  const bv1=ST.BV1||1;
+  subB3+=addItem(pIdx+'a',`BV1 (${bv1}x) — Kusen Alum`,"m'",2.56*bv1,HS.kusen_alum);
+  subB3+=addItem(pIdx+'b','BV1 — Kaca Es 5mm','m²',0.34*bv1,HS.kaca_es_5mm);
+  subB3+=addItem(pIdx+'c','BV1 — Clear Sealant',"m'",4.72*bv1,HS.clear_sealant);
+  addSub('Sub Total B.III Pintu & Jendela',subB3);
+
+  addSec('IV. Pekerjaan Lantai');
+  let subB4=0;
+  const hLan=D.lantai_mat==='k20'?HS.keramik_20:D.lantai_mat==='k60'?HS.keramik_60:D.lantai_mat==='granit'?HS.granit:HS.keramik_40;
+  const lanLabel=D.lantai_mat==='k20'?'Keramik 20×20 Roman Gol A':D.lantai_mat==='k60'?'Keramik 60×60':D.lantai_mat==='granit'?'Granit/Homogeneous Tile':'Keramik 40×40 Roman Gol C';
+  subB4+=addItem('1',lanLabel,'m²',luasTotal,hLan);
+  addSub('Sub Total B.IV Pekerjaan Lantai',subB4);
+
+  addSec('V. Finishing Dinding');
+  let subB5=0;
+  subB5+=addItem('1','Plesteran adukan 1:2','m²',p12,HS.plester_12);
+  subB5+=addItem('2','Plesteran adukan 1:4','m²',p14,HS.plester_14);
+  subB5+=addItem('3','Acian','m²',lDind,HS.acian);
+  subB5+=addItem('4','Cat Tembok','m²',lDind,HS.cat_tembok);
+  subB5+=addItem('5','Keramik Dinding 20×40 KM/WC','m²',km*12,HS.keramik_dinding_2040);
+  const kdTambahan=parseFloat(document.getElementById('iKerDind')?.value)||0;
+  if(kdTambahan>0)subB5+=addItem('6','Keramik Dinding 20×40 Tambahan','m²',kdTambahan,HS.keramik_dinding_2040);
+  const plinLen=parseFloat(document.getElementById('iPlin')?.value)||kel;
+  subB5+=addItem('7','Plin Keramik 10×40',"m'",plinLen,HS.plin_keramik);
+  if(ST.batuAlam>0)subB5+=addItem('8','Finishing Dinding Batu Alam','m²',ST.batuAlam,HS.batu_alam);
+  addSub('Sub Total B.V Finishing Dinding',subB5);
+
+  addSec('VI. Pekerjaan Plafon');
+  let subB6=0;
+  const hPlaf=D.plafon==='kalsiboard'?HS.plafon_kalsi:D.plafon==='mix'?((HS.plafon_gypsum+HS.plafon_kalsi)/2):HS.plafon_gypsum;
+  const plafLabel=D.plafon==='kalsiboard'?'Plafon Kalsiboard + Rangka Hollo':D.plafon==='mix'?'Plafon Mix Gypsum + Kalsiboard':'Plafon Gypsum Board + Rangka Hollo';
+  subB6+=addItem('1',plafLabel,'m²',luasTotal,hPlaf);
+  subB6+=addItem('2','Cat Plafon','m²',luasTotal,HS.cat_plafon);
+  const cornLen=parseFloat(document.getElementById('iCornice')?.value)||kel;
+  subB6+=addItem('3','List Profil Cornice Gypsum 5-10cm',"m'",cornLen,HS.list_cornice);
+  addSub('Sub Total B.VI Pekerjaan Plafon',subB6);
+
+  addSec('VII. Pekerjaan Lain-lain');
+  let subB7=0;
+  if(document.getElementById('ck_mk')?.checked)subB7+=addItem('1','Meja Kitchen Zinc 60×100','unit',1,HS.meja_kitchen,true);
+  if(document.getElementById('ck_sep')?.checked)subB7+=addItem('2','Septictank Individual','unit',1,HS.septik,true);
+  if(document.getElementById('ck_pag')?.checked)subB7+=addItem('3','Pagar Permanen','ls',1,HS.pagar_perm,true);
+  if(document.getElementById('ck_car')?.checked)subB7+=addItem('4','Carport','ls',1,HS.carport,true);
+  addSub('Sub Total B.VII Lain-lain',subB7);
+  const totalB=subB1+subB2+subB3+subB4+subB5+subB6+subB7;
+  addSub('★ TOTAL B — PEKERJAAN ARSITEKTUR',totalB);
+  grandTotal+=totalB;
+
+  // ── C. MEKANIKAL ──
+  addSec('C. MEKANIKAL — SANITASI / PLUMBING',true);
+  let subC=0;
+  subC+=addItem('1','Pipa PPR PN10 ¾" (D25)',"m'",ST.pb34,HS.pipa_ppr_34);
+  subC+=addItem('2','Pipa PPR PN10 ½" (D20)',"m'",ST.pb12,HS.pipa_ppr_12);
+  subC+=addItem('3','Pipa PVC AW 4"',"m'",ST.pk4,HS.pipa_pvc_4);
+  subC+=addItem('4','Pipa PVC AW 3"',"m'",ST.pk3,HS.pipa_pvc_3);
+  subC+=addItem('5','Pipa PVC AW 2"',"m'",ST.pk2,HS.pipa_pvc_2);
+  const hKl=D.kloset==='duduk'?HS.kloset_duduk:HS.kloset_jongkok;
+  subC+=addItem('6',D.kloset==='duduk'?'Closet Duduk':'Closet Jongkok TOTO CE6','bh',km,hKl);
+  if(document.getElementById('ck_fd')?.checked)subC+=addItem('7','Floor Drain SS TOTO TX1BV1','bh',km,HS.floor_drain);
+  if(document.getElementById('ck_kr')?.checked)subC+=addItem('8','Kran Leher Angsa SS TOTO','bh',km,HS.kran_leher);
+  if(document.getElementById('ck_bf')?.checked)subC+=addItem('9','Bak Fiberglass 0.3m³','bh',km,HS.bak_fiberglass);
+  if(document.getElementById('ck_bcp')?.checked)subC+=addItem('10','Bak Cuci Piring Stainless','bh',1,HS.bak_cuci);
+  if(document.getElementById('ck_kv')?.checked)subC+=addItem('11','Kran ¾" Stainless TOTO T23B13','bh',1,HS.kran_34);
+  addSub('★ TOTAL C — MEKANIKAL SANITASI',subC);
+  grandTotal+=subC;
+
+  // ── D. ELEKTRIKAL ──
+  addSec('D. SISTEM ELEKTRIKAL',true);
+  let subD=0;
+  subD+=addItem('1','Lampu Downlight DL PL 1×7W','bh',ST.titikL,HS.lampu_dl);
+  subD+=addItem('','Instalasi Titik Lampu NYY 3×2.5mm²','ttk',ST.titikL,HS.inst_lampu);
+  subD+=addItem('2','Stop Kontak 1Ph 200W','bh',ST.stopK,HS.stop_kontak);
+  subD+=addItem('','Instalasi Titik Stop Kontak','ttk',ST.stopK,HS.inst_stop);
+  subD+=addItem('3','Saklar Single Broco','bh',ST.sakS,HS.saklar_s);
+  subD+=addItem('4','Saklar Double Broco','bh',ST.sakD,HS.saklar_d);
+  subD+=addItem('5','Box Panel Wallmounted 500×400×200mm','unit',1,HS.box_panel);
+  subD+=addItem('6','MCCB 10A 1P 10KA','bh',ST.mccb10,HS.mccb_10a);
+  subD+=addItem('7','MCB 6A 1P 10KA','bh',ST.mcb6,HS.mcb_6a);
+  subD+=addItem('8','Pilot Lamp 220V','bh',ST.pilotL,HS.pilot_lamp);
+  subD+=addItem('9','CT.50/5','bh',1,HS.ct50);
+  subD+=addItem('10','Busbar CU Ø12×2mm','bls',1,HS.busbar);
+  subD+=addItem('11','Grounding BC10mm² Maks.2Ω','lot',1,HS.grounding);
+  subD+=addItem('12','Testing & Commissioning','lot',1,HS.testing);
+  customElek.forEach((e,i)=>{
+    const hs=parseFloat(document.getElementById('elekHS_'+e.id)?.value)||0;
+    const qty=parseInt(document.getElementById('elekQty_'+e.id)?.textContent)||1;
+    const label=document.getElementById('elekLabel_'+e.id)?.value||'Item Elektrikal';
+    subD+=addItem(13+i,label,'bh',qty,hs);
+  });
+  addSub('★ TOTAL D — ELEKTRIKAL',subD);
+  grandTotal+=subD;
+
+  // Additional %
+  const base=grandTotal;let additional=0;
+  const ovh=document.getElementById('ck_ovh')?.checked;
+  const tt=document.getElementById('ck_tt')?.checked;
+  const pr=document.getElementById('ck_pr')?.checked;
+  const ppn=document.getElementById('ck_ppn')?.checked;
+  if(ovh){additional+=base*0.10;rows.push({type:'overhead',label:'Overhead & Profit Kontraktor (10%)',val:base*0.10});}
+  if(tt){additional+=base*0.05;rows.push({type:'overhead',label:'Biaya Tak Terduga — Contingency (5%)',val:base*0.05});}
+  if(pr){additional+=base*0.03;rows.push({type:'overhead',label:'Biaya Perizinan & Administrasi (3%)',val:base*0.03});}
+  let sub=grandTotal+additional;
+  if(ppn){const ppnVal=sub*0.11;rows.push({type:'overhead',label:'PPN 11%',val:ppnVal});sub*=1.11;}
+
+  return{sub,luas:luasTotal,rows,mult,kel,tDind,lDind,base,grandTotal};
+}
+
+// ── BUDGET METER ──
+function updMeter(){
+  if(curStep<1)return;
+  try{
+    const{sub}=calcTotal();
+    document.getElementById('bMeter').classList.add('visible');
+    const pct=D.anggaran>0?Math.min((sub/D.anggaran)*100,100):0;
+    const warn=sub>D.anggaran&&D.anggaran>0;
+    setText('bMeterTxt','Rp '+(sub/1e6).toFixed(1)+' jt');
+    document.getElementById('bBarFill').style.width=pct+'%';
+    document.getElementById('bBarFill').className='budget-bar-fill'+(warn?' warn':'');
+    document.getElementById('bDot').className=warn?'warn':'';
+    setText('bMeterPct',Math.round(pct)+'%');
+  }catch(e){}
+}
+
+// ── SUMMARY ──
+function buildSummary(){
+  const{sub,luas,rows,mult,kel,tDind}=calcTotal();
+  const a=D.pH,b=D.pV;
+  const hM2=luas>0?sub/luas:0;
+  const dur=luas<=36?'3–4':luas<=54?'4–5':luas<=72?'5–6':'6–9';
+  setText('vTotalRAB',rp(sub));
+  setText('vPerM2',rp(hM2));
+  setText('vDurasi',dur+' bulan');
+  const bBox=document.getElementById('bstatBox');
+  if(D.anggaran>0){
+    bBox.style.display='block';
+    const sel2=D.anggaran-sub;
+    if(sel2>=0){bBox.className='bstat ok';setText('bstatTitle','✅ Anggaran Mencukupi!');setText('bstatDesc','Sisa anggaran: '+rp(sel2));}
+    else{bBox.className='bstat warn';setText('bstatTitle','⚠️ Anggaran Kurang');const maxL=hM2>0?D.anggaran/hM2:0;setText('bstatDesc','Kurang '+rp(Math.abs(sel2))+'. Maks luas ±'+Math.round(maxL)+' m²');}
+  }
+  const items=[
+    ['Panjang a × Lebar b',a+'m × '+b+'m'],
+    ['Luas Total (a×b)',f2(luas)+' m²'],
+    ['Keliling (a+b)×2',f2(kel)+' m'],
+    ['Jumlah Lantai',D.lantai+' lantai'],
+    ['Tinggi Kolom',D.tk+' m'],
+    ['Tinggi Dinding',f3(tDind)+' m'],
+    ['Pondasi','Batu Kali 1:5'],
+    ['Dinding',D.dinding],
+    ['Atap',D.atap+' / '+D.rangka],
+    ['Lantai',D.lantai_mat],
+    ['Plafon',D.plafon],
+    ['Kualitas',D.kualitas+' (×'+mult+')'],
+    ['KM/WC',(ST.kmMandi||1)+' unit'],
+    ['Lampu',(ST.titikL||8)+' titik'],
+  ];
+  document.getElementById('sumGrid').innerHTML=items.map(([l,v])=>
+    `<div class="sum-item"><div class="sum-item-lbl">${l}</div><div class="sum-item-val">${v}</div></div>`).join('');
+
+  // ── BUILD RAB TABLE ──
+  const tbody=document.getElementById('rabBody');
+  tbody.innerHTML='';
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    if(r.type==='sec'){
+      tr.className='sec-hdr';
+      tr.innerHTML=`<td colspan="6">${r.label}</td>`;
+    }else if(r.type==='subsec'){
+      tr.className='subsec-hdr';
+      tr.innerHTML=`<td colspan="6">${r.label}</td>`;
+    }else if(r.type==='subtotal'){
+      tr.className='sub-total';
+      const isGrand=r.label.startsWith('★');
+      if(isGrand){
+        tr.innerHTML=`<td colspan="5" style="text-align:right;padding-right:10px;font-style:italic;color:var(--amber)">${r.label}</td><td class="num" style="color:var(--amber)">${rpN(r.val)}</td>`;
+      }else{
+        tr.innerHTML=`<td colspan="5" style="text-align:right;padding-right:10px;font-style:italic">${r.label}</td><td class="num">${rpN(r.val)}</td>`;
+      }
+    }else if(r.type==='overhead'){
+      tr.innerHTML=`<td></td><td class="indent" colspan="4" style="color:var(--teal)">${r.label}</td><td class="num" style="color:var(--teal)">${rpN(r.val)}</td>`;
+    }else{
+      const volFmt=typeof r.vol==='number'?r.vol.toFixed(3):r.vol;
+      tr.innerHTML=`<td class="item-no">${r.no||''}</td><td class="indent">${r.uraian}</td><td style="white-space:nowrap">${r.sat}</td><td class="num">${volFmt}</td><td class="num">${rpN(r.hs)}</td><td class="num">${rpN(r.jml)}</td>`;
+    }
+    tbody.appendChild(tr);
+  });
+
+  const tf=document.createElement('tr');
+  tf.className='grand-total';
+  tf.innerHTML=`<td colspan="5" style="text-align:right;padding-right:12px;letter-spacing:1px">TOTAL RENCANA ANGGARAN BIAYA</td><td class="num">${rpN(sub)}</td>`;
+  tbody.appendChild(tf);
+}
+
+function cetakRAB(){window.print();}
+
+document.getElementById('progFill').style.width='5.9%';
+document.getElementById('sCtr').textContent='1 / '+TOTAL_STEPS;
+setTimeout(()=>{updBiayaPintu();updBiayaJendela();},300);
+</script>
+</body>
+</html>
+ENDOFFILE
+echo "Done: $(wc -c < /home/claude/rab_kalimarau.html) bytes"
+Keluaran
+
+Command argument is 107_348 bytes, exceeding the 100_000-byte per-argument limit. For large content, pipe via stdin or use a file-write API instead of embedding the content inline in the command. Argument preview: 'cat > /home/claude/rab_kalimarau.html << \'ENDOFFILE\'\n<!DOCTYPE html>\n<html lang="id">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>Kalkul'
