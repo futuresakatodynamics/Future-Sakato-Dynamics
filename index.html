@@ -4844,11 +4844,20 @@ document.addEventListener('cut', function(e) {
   e.preventDefault();
 });
 document.addEventListener('keydown', function(e) {
-  if ((e.ctrlKey || e.metaKey) && ['a','c','x','s','u'].includes(e.key)) {
+  // Blokir Ctrl/Cmd + A, C, X, S, U, P, J (save, copy, select all, view-source, print, devtools)
+  if ((e.ctrlKey || e.metaKey) && ['a','c','x','s','u','p','j'].includes(e.key.toLowerCase())) {
     e.preventDefault();
+    return false;
   }
+  // Blokir Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (DevTools)
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i','j','c'].includes(e.key.toLowerCase())) {
+    e.preventDefault();
+    return false;
+  }
+  // Blokir F12 (DevTools)
   if (e.key === 'F12') {
     e.preventDefault();
+    return false;
   }
 });
 document.addEventListener('selectstart', function(e) {
