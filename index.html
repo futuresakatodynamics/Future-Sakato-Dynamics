@@ -748,6 +748,60 @@ section { padding: 100px 48px; }
 #layanan .layanan-card:hover .layanan-title { color: var(--navy); }
 #layanan .layanan-card:hover .layanan-desc { color: var(--text); }
 #layanan .layanan-card:hover .layanan-num { color: rgba(26,63,110,0.08); }
+
+/* ── BADGE HARGA SESUAI PROYEK ── */
+.layanan-price-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 5px 12px;
+  background: rgba(26,63,110,0.07);
+  border: 1px solid rgba(26,63,110,0.15);
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: all .3s;
+}
+.layanan-price-badge::before {
+  content: '💬';
+  font-size: 11px;
+}
+.layanan-card:hover .layanan-price-badge {
+  background: rgba(212,147,14,0.15);
+  border-color: rgba(212,147,14,0.4);
+  color: var(--gold-light);
+}
+.layanan-price-badge-hunian {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 5px 12px;
+  background: rgba(212,147,14,0.1);
+  border: 1px solid rgba(212,147,14,0.3);
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  transition: all .3s;
+  cursor: pointer;
+  text-decoration: none;
+}
+.layanan-price-badge-hunian::before {
+  content: '🏷️';
+  font-size: 11px;
+}
+.layanan-card:hover .layanan-price-badge-hunian {
+  background: rgba(212,147,14,0.25);
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
 #layanan .layanan-card.active,
 #layanan .layanan-card:focus {
   background: rgba(255,255,255,0.98) !important;
@@ -2280,30 +2334,35 @@ setTimeout(() => {
       <span class="layanan-icon">🏠</span>
       <h3 class="layanan-title">Desain Hunian</h3>
       <p class="layanan-desc">Perencanaan rumah tinggal, perumahan, apartemen, dan fasilitas hunian lainnya dengan desain modern dan konsep ruang yang optimal.</p>
+      <a class="layanan-price-badge-hunian" href="#" onclick="openPaketModal();return false;">Lihat Paket Harga</a>
     </div>
     <div class="layanan-card">
       <span class="layanan-num">02</span>
       <span class="layanan-icon">🏢</span>
       <h3 class="layanan-title">Perencanaan Perkantoran & Komersial</h3>
       <p class="layanan-desc">Perancangan gedung kantor, ruko, pusat perbelanjaan, dan kawasan komersial yang representatif, fungsional, dan bernilai tinggi.</p>
+      <span class="layanan-price-badge">Harga Sesuai Proyek — Konsultasi Gratis</span>
     </div>
     <div class="layanan-card">
       <span class="layanan-num">03</span>
       <span class="layanan-icon">🏭</span>
       <h3 class="layanan-title">Perencanaan Kawasan Industri</h3>
       <p class="layanan-desc">Perancangan pabrik, gudang, dan fasilitas industri yang disesuaikan dengan kebutuhan operasional spesifik klien.</p>
+      <span class="layanan-price-badge">Harga Sesuai Proyek — Konsultasi Gratis</span>
     </div>
     <div class="layanan-card">
       <span class="layanan-num">04</span>
       <span class="layanan-icon">🏥</span>
       <h3 class="layanan-title">Desain Fasilitas Publik & Kesehatan</h3>
       <p class="layanan-desc">Perencanaan gedung kesehatan, pendidikan, penginapan, dan fasilitas publik yang memenuhi standar keselamatan dan kenyamanan.</p>
+      <span class="layanan-price-badge">Harga Sesuai Proyek — Konsultasi Gratis</span>
     </div>
     <div class="layanan-card">
       <span class="layanan-num">05</span>
       <span class="layanan-icon">🔧</span>
       <h3 class="layanan-title">Perencanaan Sipil & Infrastruktur</h3>
       <p class="layanan-desc">Perencanaan infrastruktur pengolahan air bersih dan pekerjaan sipil khusus sesuai standar teknis yang berlaku.</p>
+      <span class="layanan-price-badge">Harga Sesuai Proyek — Konsultasi Gratis</span>
     </div>
     <div class="layanan-card">
       <span class="layanan-num">06</span>
