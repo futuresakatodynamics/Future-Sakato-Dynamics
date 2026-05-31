@@ -3,9 +3,9 @@ var CACHE_NAME = 'fusako-v1';
 
 // File-file yang di-cache saat pertama kali install
 var ASSETS = [
-  '/Future-Sakato-Dynamics/',
-  '/Future-Sakato-Dynamics/index.html',
-  '/Future-Sakato-Dynamics/404.html'
+  '/',
+  '/index.html',
+  '/404.html'
 ];
 
 // ── INSTALL: simpan semua aset ke cache ──
@@ -51,7 +51,7 @@ self.addEventListener('fetch', function(e) {
         return caches.match(e.request).then(function(cached) {
           if (cached) return cached;
           // Kalau tidak ada di cache, tampilkan index.html (dengan overlay offline)
-          return caches.match('/Future-Sakato-Dynamics/index.html');
+          return caches.match('/index.html');
         });
       })
   );
