@@ -99,6 +99,442 @@ body {
 ::-webkit-scrollbar-track { background: var(--off-white); }
 ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 2px; }
 
+/* ── VISI MISI ── */
+#visi-misi {
+  background: var(--off-white);
+  padding: 100px 48px;
+  position: relative;
+  overflow: hidden;
+}
+#visi-misi::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(26,95,180,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,95,180,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+.vm-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+.vm-header {
+  margin-bottom: 64px;
+}
+.vm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+.vm-visi-box {
+  background: linear-gradient(135deg, #0a1628 0%, #1a3a6e 100%);
+  border-radius: 6px;
+  padding: 48px 44px;
+  position: relative;
+  overflow: hidden;
+}
+.vm-visi-box::before {
+  content: 'V';
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 200px;
+  color: rgba(255,255,255,0.03);
+  position: absolute;
+  bottom: -30px; right: -10px;
+  line-height: 1;
+  pointer-events: none;
+}
+.vm-visi-box::after {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(212,147,14,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.vm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(212,147,14,0.15);
+  border: 1px solid rgba(212,147,14,0.35);
+  border-radius: 2px;
+  padding: 5px 14px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 28px;
+}
+.vm-badge-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.vm-visi-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.vm-visi-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 300;
+  color: var(--white);
+  line-height: 1.65;
+  font-style: italic;
+  position: relative;
+  z-index: 1;
+}
+.vm-visi-text strong {
+  font-weight: 600;
+  color: var(--gold-light);
+  font-style: normal;
+}
+.vm-misi-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--light-gray);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.vm-misi-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 28px 32px 0;
+  background: var(--white);
+}
+.vm-misi-item {
+  background: var(--white);
+  padding: 20px 32px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--light-gray);
+  transition: background 0.25s, transform 0.25s;
+  cursor: default;
+}
+.vm-misi-item:last-child { border-bottom: none; }
+.vm-misi-item:hover {
+  background: var(--navy);
+}
+.vm-misi-item:hover .vm-misi-num { color: rgba(212,147,14,0.4); }
+.vm-misi-item:hover .vm-misi-title { color: var(--white); }
+.vm-misi-item:hover .vm-misi-desc { color: rgba(255,255,255,0.5); }
+.vm-misi-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  color: rgba(26,63,110,0.1);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 32px;
+  transition: color 0.25s;
+}
+.vm-misi-content { flex: 1; }
+.vm-misi-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: var(--navy);
+  margin-bottom: 4px;
+  transition: color 0.25s;
+}
+.vm-misi-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  transition: color 0.25s;
+}
+@media (max-width: 768px) {
+  #visi-misi { padding: 72px 24px; }
+  .vm-grid { grid-template-columns: 1fr; }
+  .vm-visi-box { padding: 36px 28px; }
+  .vm-misi-item { padding: 18px 24px; }
+  .vm-misi-label { padding: 22px 24px 0; }
+}
+
+/* ── NAV DROPDOWN ── */
+.nav-dropdown-wrap {
+  position: relative;
+}
+.nav-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  padding-bottom: 18px;
+  margin-bottom: -18px;
+}
+.nav-dropdown-trigger svg {
+  transition: transform 0.25s;
+  opacity: 0.6;
+}
+.nav-dropdown-wrap:hover .nav-dropdown-trigger svg {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+.nav-dropdown {
+  position: absolute;
+  top: calc(100% + 0px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  background: #fff;
+  border: 1px solid rgba(26,63,110,0.12);
+  border-radius: 6px;
+  box-shadow: 0 12px 40px rgba(26,58,110,0.15);
+  min-width: 180px;
+  padding: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 1000;
+}
+.nav-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 0; right: 0;
+  height: 10px;
+  background: transparent;
+}
+.nav-dropdown::after {
+  display: none;
+}
+.nav-dropdown-wrap:hover .nav-dropdown {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--navy);
+  text-decoration: none;
+  transition: background 0.18s, color 0.18s;
+  white-space: nowrap;
+}
+.nav-dropdown-item:hover {
+  background: var(--navy);
+  color: #fff;
+}
+.nav-dropdown-item svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: opacity 0.18s;
+}
+.nav-dropdown-item:hover svg {
+  opacity: 1;
+  stroke: var(--gold-light);
+}
+
+/* ── MODAL VISI MISI ── */
+#visiMisiModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 99000;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+#visiMisiModal.open {
+  display: flex;
+}
+.vm-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 15, 30, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: vmFadeIn 0.25s ease;
+}
+@keyframes vmFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.vm-modal-box {
+  position: relative;
+  z-index: 1;
+  background: var(--off-white);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 900px;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 32px 80px rgba(10,22,40,0.45);
+  animation: vmSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes vmSlideUp {
+  from { opacity: 0; transform: translateY(32px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.vm-modal-box::-webkit-scrollbar { width: 4px; }
+.vm-modal-box::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 2px; }
+.vm-modal-head {
+  background: linear-gradient(135deg, #0a1628 0%, #1a3a6e 100%);
+  padding: 36px 44px 32px;
+  position: relative;
+  overflow: hidden;
+}
+.vm-modal-head::after {
+  content: 'FSD';
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 120px;
+  color: rgba(255,255,255,0.04);
+  position: absolute;
+  right: 20px; bottom: -10px;
+  line-height: 1;
+  pointer-events: none;
+}
+.vm-modal-close {
+  position: absolute;
+  top: 18px; right: 18px;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+  z-index: 2;
+}
+.vm-modal-close:hover {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border-color: rgba(255,255,255,0.5);
+}
+.vm-modal-eyebrow {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.vm-modal-eyebrow::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--gold);
+}
+.vm-modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(32px, 5vw, 52px);
+  color: #fff;
+  letter-spacing: 3px;
+  line-height: 1;
+  position: relative; z-index: 1;
+}
+.vm-modal-body {
+  padding: 36px 44px 44px;
+}
+.vm-modal-visi {
+  background: #fff;
+  border: 1px solid rgba(26,63,110,0.1);
+  border-left: 4px solid var(--gold);
+  border-radius: 4px;
+  padding: 24px 28px;
+  margin-bottom: 32px;
+}
+.vm-modal-visi-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+.vm-modal-visi-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--navy);
+  line-height: 1.65;
+}
+.vm-modal-visi-text strong {
+  font-weight: 600;
+  font-style: normal;
+  color: var(--blue);
+}
+.vm-modal-misi-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+.vm-modal-misi-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--light-gray);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.vm-modal-misi-item {
+  background: #fff;
+  padding: 18px 24px;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  transition: background 0.2s;
+  cursor: default;
+}
+.vm-modal-misi-item:hover { background: var(--navy); }
+.vm-modal-misi-item:hover .vm-modal-misi-num { color: rgba(212,147,14,0.3); }
+.vm-modal-misi-item:hover .vm-modal-misi-title { color: #fff; }
+.vm-modal-misi-item:hover .vm-modal-misi-desc  { color: rgba(255,255,255,0.48); }
+.vm-modal-misi-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  color: rgba(26,63,110,0.1);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 28px;
+  transition: color 0.2s;
+}
+.vm-modal-misi-content { flex: 1; }
+.vm-modal-misi-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.8px;
+  color: var(--navy);
+  margin-bottom: 3px;
+  transition: color 0.2s;
+}
+.vm-modal-misi-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  transition: color 0.2s;
+}
+@media (max-width: 600px) {
+  .vm-modal-head { padding: 28px 24px 24px; }
+  .vm-modal-body { padding: 24px 20px 32px; }
+  .vm-modal-misi-item { padding: 16px 18px; gap: 12px; }
+}
+
 /* ── ERROR / OFFLINE OVERLAY ── */
 #error-overlay {
   display: none;
@@ -2205,7 +2641,19 @@ footer {
     </div>
   </a>
   <ul class="nav-links">
-    <li><a href="#tentang">Tentang<span class="nav-active-popup">Tentang Kami</span></a></li>
+    <li class="nav-dropdown-wrap">
+      <a href="#tentang" class="nav-dropdown-trigger">Tentang <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-left:2px;"><polyline points="6 9 12 15 18 9"/></svg><span class="nav-active-popup">Tentang Kami</span></a>
+      <div class="nav-dropdown">
+        <a href="#tentang" class="nav-dropdown-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Siapa Kami
+        </a>
+        <a href="#" onclick="openVisiMisiModal();return false;" class="nav-dropdown-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Visi &amp; Misi
+        </a>
+      </div>
+    </li>
     <li><a href="#layanan">Layanan<span class="nav-active-popup">Layanan Kami</span></a></li>
     <li><a href="#proyek">Proyek<span class="nav-active-popup">Proyek Kami</span></a></li>
     <li><a href="#kontak" class="nav-cta">Hubungi Kami</a></li>
@@ -2220,7 +2668,8 @@ footer {
 </nav>
 
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#tentang" onclick="closeMobile()">Tentang Kami</a>
+  <a href="#tentang" onclick="closeMobile()">Siapa Kami</a>
+  <a href="#" onclick="closeMobile();openVisiMisiModal();return false;">Visi &amp; Misi</a>
   <a href="#layanan" onclick="closeMobile()">Layanan</a>
   <a href="#proyek" onclick="closeMobile()">Proyek</a>
   <a href="#kontak" onclick="closeMobile()">Kontak</a>
@@ -4409,6 +4858,89 @@ document.addEventListener('selectstart', function(e) {
 });
 document.addEventListener('dragstart', function(e) {
   e.preventDefault();
+});
+</script>
+
+<!-- MODAL VISI MISI -->
+<div id="visiMisiModal">
+  <div class="vm-modal-backdrop" onclick="closeVisiMisiModal()"></div>
+  <div class="vm-modal-box">
+    <div class="vm-modal-head">
+      <button class="vm-modal-close" onclick="closeVisiMisiModal()" aria-label="Tutup">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="vm-modal-eyebrow">Identitas Perusahaan</div>
+      <div class="vm-modal-title">VISI &amp; MISI</div>
+    </div>
+    <div class="vm-modal-body">
+      <!-- VISI -->
+      <div class="vm-modal-visi">
+        <div class="vm-modal-visi-label">Visi · Our Vision</div>
+        <p class="vm-modal-visi-text">
+          Menjadi studio desain dan perencanaan <strong>bertaraf nasional</strong> yang lahir dari Sumatera Barat, menghadirkan solusi arsitektur modern, berkelanjutan, dan <strong>berdampak luas</strong> bagi pembangunan Indonesia.
+        </p>
+      </div>
+      <!-- MISI -->
+      <div class="vm-modal-misi-label">Misi · Our Mission</div>
+      <div class="vm-modal-misi-list">
+        <div class="vm-modal-misi-item">
+          <div class="vm-modal-misi-num">01</div>
+          <div class="vm-modal-misi-content">
+            <div class="vm-modal-misi-title">Merancang Tanpa Batas Wilayah</div>
+            <div class="vm-modal-misi-desc">Menghadirkan layanan desain dan perencanaan profesional untuk proyek di seluruh penjuru Indonesia, dari skala hunian hingga kawasan industri berskala besar.</div>
+          </div>
+        </div>
+        <div class="vm-modal-misi-item">
+          <div class="vm-modal-misi-num">02</div>
+          <div class="vm-modal-misi-content">
+            <div class="vm-modal-misi-title">Membangun Reputasi Nasional dari Daerah</div>
+            <div class="vm-modal-misi-desc">Membuktikan bahwa studio yang lahir di Sijunjung mampu bersaing dan berkontribusi pada proyek-proyek strategis nasional dengan kualitas setara studio ibu kota.</div>
+          </div>
+        </div>
+        <div class="vm-modal-misi-item">
+          <div class="vm-modal-misi-num">03</div>
+          <div class="vm-modal-misi-content">
+            <div class="vm-modal-misi-title">Menjadi Mitra Perencanaan Terpercaya</div>
+            <div class="vm-modal-misi-desc">Memberikan solusi teknis yang presisi, transparan, dan tepat waktu kepada klien dari berbagai sektor — swasta, pemerintah, maupun industri — di seluruh Indonesia.</div>
+          </div>
+        </div>
+        <div class="vm-modal-misi-item">
+          <div class="vm-modal-misi-num">04</div>
+          <div class="vm-modal-misi-content">
+            <div class="vm-modal-misi-title">Mendorong Pembangunan yang Merata</div>
+            <div class="vm-modal-misi-desc">Turut serta dalam pemerataan infrastruktur dan fasilitas publik berkualitas di seluruh wilayah Indonesia.</div>
+          </div>
+        </div>
+        <div class="vm-modal-misi-item">
+          <div class="vm-modal-misi-num">05</div>
+          <div class="vm-modal-misi-content">
+            <div class="vm-modal-misi-title">Mengintegrasikan Inovasi dengan Konteks Lokal</div>
+            <div class="vm-modal-misi-desc">Menggabungkan standar desain modern dan teknologi perencanaan terkini dengan pemahaman mendalam terhadap kondisi geografis, budaya, dan regulasi di setiap daerah proyek.</div>
+          </div>
+        </div>
+        <div class="vm-modal-misi-item">
+          <div class="vm-modal-misi-num">06</div>
+          <div class="vm-modal-misi-content">
+            <div class="vm-modal-misi-title">Mengutamakan Kepuasan Klien</div>
+            <div class="vm-modal-misi-desc">Memastikan setiap proyek selesai dengan hasil yang melampaui ekspektasi, melalui pendampingan penuh dari konsep awal hingga dokumen siap bangun.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function openVisiMisiModal() {
+  document.getElementById('visiMisiModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeVisiMisiModal() {
+  document.getElementById('visiMisiModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeVisiMisiModal();
 });
 </script>
 </body>
