@@ -1966,18 +1966,18 @@ footer {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--gold);
-  color: var(--navy);
+  background: none;
+  color: var(--text-muted);
   border: none;
-  padding: 7px 16px;
+  padding: 0;
   font-family: 'Rajdhani', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
   letter-spacing: 2px;
   text-transform: uppercase;
-  border-radius: 2px;
+  border-radius: 0;
   cursor: pointer;
-  transition: background .2s, transform .15s;
+  transition: color .2s;
   position: relative;
   white-space: nowrap;
 }
@@ -1993,7 +1993,7 @@ footer {
   padding: 1px 5px;
   border-radius: 2px;
 }
-.btn-paket-nav:hover { background: var(--gold-light); transform: translateY(-1px); }
+.btn-paket-nav:hover { background: none; color: var(--navy); transform: none; }
 
 /* ── PAKET BUTTON (layanan header, keep for fallback) ── */
 .btn-paket-header {
@@ -2657,10 +2657,8 @@ footer {
     <li><a href="#layanan">Layanan<span class="nav-active-popup">Layanan Kami</span></a></li>
     <li><a href="#proyek">Proyek<span class="nav-active-popup">Proyek Kami</span></a></li>
     <li><a href="#kontak" class="nav-cta">Hubungi Kami</a></li>
-    <li><button onclick="openPaketModal()" class="btn-paket-nav">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-      PAKET
-    </button></li>
+
+    <li><a href="https://sivilhub.com" target="_blank" rel="noopener">SipilHub</a></li>
   </ul>
   <button class="burger" id="burger" aria-label="Menu">
     <span></span><span></span><span></span>
