@@ -4604,6 +4604,15 @@ Tugasmu:
     if (btn && btn.style.display === 'none') btn.style.display = 'flex';
   }
 
+  // Jika masuk dari promo popup → setelah 5x bot reply, langsung berikan nomor HP manusia
+  if (typeof fsdPromoEntry !== 'undefined' && fsdPromoEntry && waBotReplyCount === 5) {
+    setTimeout(() => {
+      addWAMsg('📞 Untuk memastikan slot promo Anda, silakan hubungi tim kami langsung:\n\n<strong>WhatsApp: +62 851-1703-1202</strong>\n\nSebutkan kode <strong>PROMO TIPE50</strong> saat menghubungi agar langsung ditangani. 🙏', 'bot');
+      const btn = document.getElementById('waHumanBtn');
+      if (btn) btn.style.display = 'flex';
+    }, 600);
+  }
+
   // Deteksi topik serius → tampilkan tombol manusia
   if (ESCALATE_KEYS.test(userMsg)) {
     const btn = document.getElementById('waHumanBtn');
@@ -4950,5 +4959,303 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeVisiMisiModal();
 });
 </script>
+<!-- ===== POPUP PROMO FUTURE SAKATO ===== -->
+<style>
+#fsd-overlay{
+  position:fixed;inset:0;background:rgba(10,22,40,.75);
+  z-index:9999;display:flex;align-items:center;justify-content:center;
+  padding:16px;opacity:0;transition:opacity .3s;
+}
+#fsd-overlay.show{opacity:1;}
+#fsd-popup{
+  background:#fff;border-radius:16px;width:100%;max-width:340px;
+  overflow:hidden;font-family:'Rajdhani',sans-serif;
+  transform:translateY(20px);transition:transform .3s;
+  box-shadow:0 24px 60px rgba(26,58,110,.28);
+}
+#fsd-overlay.show #fsd-popup{transform:translateY(0);}
+#fsd-popup-top{
+  background:linear-gradient(135deg,#0a1628 0%,#1a3a6e 100%);
+  padding:18px 20px 14px;position:relative;text-align:center;
+}
+#fsd-close{
+  position:absolute;top:10px;right:14px;background:none;border:none;
+  color:#d4930e;font-size:18px;cursor:pointer;line-height:1;padding:2px 6px;
+}
+#fsd-badge{
+  display:inline-block;background:#d4930e;color:#fff;
+  font-weight:700;font-size:10px;letter-spacing:2.5px;
+  padding:3px 12px;border-radius:2px;margin-bottom:8px;
+}
+#fsd-headline{
+  font-family:'Bebas Neue',sans-serif;font-size:28px;
+  color:#fff;line-height:1.1;margin:0 0 2px;
+}
+#fsd-headline span{color:#d4930e;}
+#fsd-sub{font-size:11px;color:#7a9ab8;letter-spacing:.3px;}
+#fsd-body{padding:16px 20px 20px;text-align:center;}
+.fsd-service{font-weight:700;font-size:14px;color:#1a3a6e;letter-spacing:1px;margin-bottom:2px;}
+.fsd-desc{font-size:11px;color:#888;margin-bottom:12px;}
+.fsd-price-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:4px;}
+.fsd-price-old{font-size:13px;color:#aaa;text-decoration:line-through;text-decoration-color:#c0392b;text-decoration-thickness:2px;}
+.fsd-price-new{font-family:'Bebas Neue',sans-serif;font-size:32px;color:#d4930e;line-height:1;}
+.fsd-save{
+  background:#fff8ee;border:1px solid #f5d79e;color:#b8720a;
+  font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;
+  letter-spacing:1px;margin-bottom:12px;display:inline-block;
+}
+.fsd-slots{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:14px;}
+.fsd-dot{width:10px;height:10px;border-radius:50%;background:#d4930e;border:1.5px solid #b8720a;}
+.fsd-slot-text{font-size:11px;color:#888;}
+.fsd-slot-text strong{color:#1a3a6e;font-weight:700;}
+#fsd-cta{
+  display:block;width:100%;background:linear-gradient(135deg,#0a1628 0%,#1a3a6e 100%);
+  color:#d4930e;border:none;border-radius:8px;padding:13px;
+  font-family:'Rajdhani',sans-serif;font-size:13px;
+  font-weight:700;letter-spacing:2px;cursor:pointer;margin-bottom:8px;
+  transition:opacity .2s;
+}
+#fsd-cta:hover{opacity:.88;}
+#fsd-skip{
+  display:block;width:100%;background:none;color:#aaa;border:none;
+  font-family:'Rajdhani',sans-serif;font-size:12px;
+  cursor:pointer;padding:4px;letter-spacing:1px;
+}
+#fsd-skip:hover{color:#555;}
+#fsd-tnc-link{
+  display:block;text-align:center;margin-top:8px;
+  font-family:'Rajdhani',sans-serif;font-size:10px;
+  color:#bbb;letter-spacing:.5px;cursor:pointer;
+  text-decoration:underline;text-underline-offset:2px;
+}
+#fsd-tnc-link:hover{color:#888;}
+#fsd-overlay.hidden,#fsd-ty.hidden{display:none!important;}
+.hidden{display:none!important;}
+#fsd-ty{padding:30px 20px;text-align:center;}
+#fsd-ty-icon{font-size:36px;color:#d4930e;margin-bottom:8px;}
+#fsd-ty-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#1a3a6e;margin-bottom:4px;}
+#fsd-ty-sub{font-size:12px;color:#888;}
+
+/* ── POPUP SYARAT & KETENTUAN ── */
+#fsd-tnc-overlay{
+  position:fixed;inset:0;background:rgba(10,22,40,.82);
+  z-index:10000;display:none;align-items:center;justify-content:center;
+  padding:16px;opacity:0;transition:opacity .3s;
+}
+#fsd-tnc-overlay.show{opacity:1;}
+#fsd-tnc-box{
+  background:#fff;border-radius:14px;width:100%;max-width:340px;
+  overflow:hidden;font-family:'Rajdhani',sans-serif;
+  transform:translateY(20px);transition:transform .3s;
+}
+#fsd-tnc-overlay.show #fsd-tnc-box{transform:translateY(0);}
+#fsd-tnc-header{
+  background:linear-gradient(135deg,#0a1628 0%,#1a3a6e 100%);
+  padding:14px 20px;display:flex;align-items:center;justify-content:space-between;
+}
+#fsd-tnc-title{
+  font-family:'Bebas Neue',sans-serif;font-size:18px;
+  color:#d4930e;letter-spacing:1px;margin:0;
+}
+#fsd-tnc-close{
+  background:none;border:none;color:#7a9ab8;font-size:18px;
+  cursor:pointer;line-height:1;padding:2px 4px;
+}
+#fsd-tnc-close:hover{color:#d4930e;}
+#fsd-tnc-content{
+  padding:18px 20px 22px;max-height:65vh;overflow-y:auto;
+}
+#fsd-tnc-content::-webkit-scrollbar{width:4px;}
+#fsd-tnc-content::-webkit-scrollbar-track{background:#f0f0f0;}
+#fsd-tnc-content::-webkit-scrollbar-thumb{background:#d4930e;border-radius:2px;}
+.tnc-section{margin-bottom:14px;}
+.tnc-section-title{
+  font-size:11px;font-weight:700;color:#1a3a6e;
+  letter-spacing:1.5px;text-transform:uppercase;
+  border-bottom:1px solid #eee;padding-bottom:4px;margin-bottom:8px;
+}
+.tnc-item{
+  display:flex;gap:8px;align-items:flex-start;
+  font-size:11.5px;color:#555;line-height:1.5;margin-bottom:6px;
+}
+.tnc-bullet{
+  flex-shrink:0;width:16px;height:16px;background:#d4930e;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  margin-top:1px;
+}
+.tnc-bullet svg{width:8px;height:8px;fill:#fff;}
+.tnc-highlight{
+  background:#fffbf0;border:1px solid #f0d990;border-radius:6px;
+  padding:10px 12px;margin-top:4px;
+}
+.tnc-highlight p{font-size:11.5px;color:#7a5c00;margin:0;line-height:1.5;}
+.tnc-highlight strong{color:#1a3a6e;}
+</style>
+
+<div id="fsd-overlay">
+  <div id="fsd-popup">
+    <div id="fsd-popup-top">
+      <button id="fsd-close" onclick="fsdClose()" aria-label="Tutup">&#x2715;</button>
+      <div id="fsd-badge">PROMO JUNI</div>
+      <div id="fsd-headline">Spesial<br><span id="fsd-month">Juni</span> Ini</div>
+      <div id="fsd-sub">Hanya untuk 3 orang pertama</div>
+    </div>
+    <div id="fsd-body">
+      <div class="fsd-service">Desain Bangunan Tipe 50</div>
+      <div class="fsd-price-row">
+        <div class="fsd-price-old">Rp 8.000.000</div>
+        <div class="fsd-price-new">4.499.000</div>
+      </div>
+      <div class="fsd-save">HEMAT 44%</div>
+      <div class="fsd-slots">
+        <div class="fsd-dot"></div>
+        <div class="fsd-dot"></div>
+        <div class="fsd-dot"></div>
+        <div class="fsd-slot-text"><strong>3 orang</strong> pertama bulan ini</div>
+      </div>
+      <button id="fsd-cta" onclick="fsdGoChat()">KLAIM PROMO — HUBUNGI KAMI</button>
+      <button id="fsd-skip" onclick="fsdClose()">Nanti saja</button>
+      <span id="fsd-tnc-link" onclick="fsdOpenTnc()">*Syarat &amp; Ketentuan berlaku</span>
+    </div>
+    <div id="fsd-ty" class="hidden">
+      <div id="fsd-ty-icon">&#10003;</div>
+      <div id="fsd-ty-title">Menghubungkan...</div>
+      <div id="fsd-ty-sub">Membuka chat konsultasi&hellip;</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── POPUP SYARAT & KETENTUAN ── -->
+<div id="fsd-tnc-overlay">
+  <div id="fsd-tnc-box">
+    <div id="fsd-tnc-header">
+      <div id="fsd-tnc-title">Syarat &amp; Ketentuan</div>
+      <button id="fsd-tnc-close" onclick="fsdCloseTnc()" aria-label="Tutup">&#x2715;</button>
+    </div>
+    <div id="fsd-tnc-content">
+      <div class="tnc-section">
+        <div class="tnc-section-title">Layanan</div>
+        <div class="tnc-item">
+          <div class="tnc-bullet"><svg viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div>Gambar kerja lengkap (denah, tampak, potongan, detail) + RAB</div>
+        </div>
+        <div class="tnc-item">
+          <div class="tnc-bullet"><svg viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div>Revisi desain maksimal <strong>2&times;</strong> sesuai masukan klien</div>
+        </div>
+      </div>
+      <div class="tnc-section">
+        <div class="tnc-section-title">Kuota &amp; Masa Berlaku</div>
+        <div class="tnc-item">
+          <div class="tnc-bullet"><svg viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div>Promo hanya berlaku untuk <strong>3 (tiga) orang pertama</strong> yang melakukan konfirmasi dan pembayaran uang muka di bulan ini</div>
+        </div>
+        <div class="tnc-item">
+          <div class="tnc-bullet"><svg viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div>Harga promo berlaku hingga akhir bulan berjalan dan tidak dapat diperpanjang</div>
+        </div>
+        <div class="tnc-item">
+          <div class="tnc-bullet"><svg viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div>Kuota yang sudah terpenuhi tidak dapat digantikan atau dipindahkan ke bulan berikutnya</div>
+        </div>
+      </div>
+      <div class="tnc-section">
+        <div class="tnc-section-title">Ketentuan Umum</div>
+        <div class="tnc-item">
+          <div class="tnc-bullet"><svg viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div>Promo berlaku untuk luas bangunan maksimal <strong>50 m²</strong></div>
+        </div>
+        <div class="tnc-item">
+          <div class="tnc-bullet"><svg viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div>Promo tidak dapat digabungkan dengan diskon atau penawaran lain yang sedang berjalan</div>
+        </div>
+        <div class="tnc-item">
+          <div class="tnc-bullet"><svg viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div>Future Sakato Dynamics berhak membatalkan promo sewaktu-waktu jika terdapat kondisi di luar kendali</div>
+        </div>
+      </div>
+      <div class="tnc-highlight">
+        <p>Ada pertanyaan lebih lanjut? Hubungi kami langsung melalui chat atau WhatsApp — tim kami siap membantu.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var months=['Januari','Februari','Maret','April','Mei','Juni',
+    'Juli','Agustus','September','Oktober','November','Desember'];
+  var m = months[new Date().getMonth()];
+  document.getElementById('fsd-month').textContent = m;
+  document.getElementById('fsd-badge').textContent = 'PROMO ' + m.toUpperCase();
+
+  /* Tampil otomatis setelah 1.5 detik */
+  setTimeout(function(){
+    var o = document.getElementById('fsd-overlay');
+    o.style.display = 'flex';
+    setTimeout(function(){ o.classList.add('show'); }, 30);
+  }, 1500);
+
+  /* Tutup klik overlay (bukan popup) */
+  document.getElementById('fsd-overlay').addEventListener('click', function(e){
+    if (e.target === this) fsdClose();
+  });
+
+  /* Tutup klik overlay S&K */
+  document.getElementById('fsd-tnc-overlay').addEventListener('click', function(e){
+    if (e.target === this) fsdCloseTnc();
+  });
+})();
+
+/* Flag: user masuk dari promo */
+var fsdPromoEntry = false;
+
+function fsdClose(){
+  var o = document.getElementById('fsd-overlay');
+  o.classList.remove('show');
+  setTimeout(function(){ o.style.display = 'none'; }, 300);
+}
+
+function fsdGoChat(){
+  /* Tampil pesan transisi dulu */
+  document.getElementById('fsd-body').classList.add('hidden');
+  document.getElementById('fsd-ty').classList.remove('hidden');
+
+  fsdPromoEntry = true; /* tandai user masuk dari promo */
+
+  setTimeout(function(){
+    fsdClose();
+    /* Buka chatbot WA */
+    var popup = document.getElementById('waPopup');
+    if (popup) {
+      if (!popup.classList.contains('open')) {
+        if (typeof toggleWA === 'function') toggleWA();
+      }
+      /* Kirim pesan awal otomatis tentang promo */
+      setTimeout(function(){
+        var input = document.getElementById('waInput');
+        if (input) {
+          input.value = 'Halo, saya ingin klaim Promo Desain Tipe 50 — Rp 4.499.000';
+          if (typeof sendBotMsg === 'function') sendBotMsg();
+        }
+      }, 700);
+    }
+  }, 1200);
+}
+
+function fsdOpenTnc(){
+  var o = document.getElementById('fsd-tnc-overlay');
+  o.style.display = 'flex';
+  setTimeout(function(){ o.classList.add('show'); }, 30);
+}
+
+function fsdCloseTnc(){
+  var o = document.getElementById('fsd-tnc-overlay');
+  o.classList.remove('show');
+  setTimeout(function(){ o.style.display = 'none'; }, 300);
+}
+</script>
+<!-- ===== END POPUP PROMO ===== -->
+
 </body>
 </html>
