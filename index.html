@@ -4997,11 +4997,12 @@ document.addEventListener('keydown', function(e) {
 .fsd-service{font-weight:700;font-size:14px;color:#1a3a6e;letter-spacing:1px;margin-bottom:2px;}
 .fsd-desc{font-size:11px;color:#888;margin-bottom:12px;}
 .fsd-price-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:4px;}
-.fsd-price-old{font-size:13px;color:#aaa;text-decoration:line-through;text-decoration-color:#c0392b;text-decoration-thickness:2px;}
+.fsd-price-old{font-size:30px;color:#aaa;position:relative;display:inline-block;}
+.fsd-price-old::after{content:'';position:absolute;left:-4px;right:-4px;top:50%;height:2.5px;background:#c0392b;transform:translateY(-50%) rotate(-12deg);border-radius:2px;}
 .fsd-price-new{font-family:'Bebas Neue',sans-serif;font-size:32px;color:#d4930e;line-height:1;}
 .fsd-save{
-  background:#fff8ee;border:1px solid #f5d79e;color:#b8720a;
-  font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;
+  background:#fff0f0;border:1px solid #f5b8b8;color:#c0392b;
+  font-size:35px;font-weight:700;padding:2px 8px;border-radius:3px;
   letter-spacing:1px;margin-bottom:12px;display:inline-block;
 }
 .fsd-slots{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:14px;}
@@ -5098,7 +5099,7 @@ document.addEventListener('keydown', function(e) {
       <button id="fsd-close" onclick="fsdClose()" aria-label="Tutup">&#x2715;</button>
       <div id="fsd-badge">PROMO JUNI</div>
       <div id="fsd-headline">Spesial<br><span id="fsd-month">Juni</span> Ini</div>
-      <div id="fsd-sub">Hanya untuk 3 orang pertama</div>
+      <div id="fsd-sub">Hanya untuk 2 orang pertama</div>
     </div>
     <div id="fsd-body">
       <div class="fsd-service">Desain Bangunan Tipe 50</div>
@@ -5110,8 +5111,7 @@ document.addEventListener('keydown', function(e) {
       <div class="fsd-slots">
         <div class="fsd-dot"></div>
         <div class="fsd-dot"></div>
-        <div class="fsd-dot"></div>
-        <div class="fsd-slot-text"><strong>3 orang</strong> pertama bulan ini</div>
+        <div class="fsd-slot-text"><strong>2 orang</strong> pertama bulan ini</div>
       </div>
       <button id="fsd-cta" onclick="fsdGoChat()">KLAIM PROMO — HUBUNGI KAMI</button>
       <button id="fsd-skip" onclick="fsdClose()">Nanti saja</button>
@@ -5148,7 +5148,7 @@ document.addEventListener('keydown', function(e) {
         <div class="tnc-section-title">Kuota &amp; Masa Berlaku</div>
         <div class="tnc-item">
           <div class="tnc-bullet"><svg viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div>Promo hanya berlaku untuk <strong>3 (tiga) orang pertama</strong> yang melakukan konfirmasi dan pembayaran uang muka di bulan ini</div>
+          <div>Promo hanya berlaku untuk <strong>2 (dua) orang pertama</strong> yang melakukan konfirmasi dan pembayaran uang muka di bulan ini</div>
         </div>
         <div class="tnc-item">
           <div class="tnc-bullet"><svg viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
