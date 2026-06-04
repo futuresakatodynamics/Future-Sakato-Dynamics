@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SipilHub — Pusat Ilmu Teknik Sipil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c0f;
+  --bg2:#12151a;
+  --bg3:#1a1e26;
+  --card:#1e222c;
+  --card2:#242836;
+  --accent:#e8b84b;
+  --accent2:#c9921a;
+  --text:#f0f2f5;
+  --muted:#8a9ab0;
+  --muted2:#5c6b7f;
+  --border:#2a3040;
+  --red:#e84b4b;
+  --blue:#4b8de8;
+  --green:#4bcf8a;
+  --teal:#4bbfe8;
+}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;overflow-x:hidden;min-height:100vh}
+
+/* ── NAVBAR ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;gap:0;padding:0 2rem;height:64px;background:linear-gradient(to bottom,rgba(10,12,15,0.98) 0%,rgba(10,12,15,0.0) 100%)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;margin-right:2.5rem}
+.nav-logo-icon{width:38px;height:38px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-logo-icon svg{width:22px;height:22px;fill:#0a0c0f}
+.nav-logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:2px;color:var(--text);line-height:1}
+.nav-logo-text span{color:var(--accent)}
+.nav-links{display:flex;gap:0.1rem;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.85rem;font-weight:600;letter-spacing:0.5px;padding:0.4rem 0.85rem;border-radius:6px;transition:color .2s,background .2s;text-transform:uppercase}
+.nav-links a:hover{color:var(--text);background:rgba(255,255,255,0.05)}
+.nav-links a.active{color:var(--accent)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:0.75rem}
+.nav-search{background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:0.4rem 0.9rem;color:var(--text);font-family:'Barlow',sans-serif;font-size:0.85rem;width:280px;outline:none;transition:border .2s,background .2s}
+.nav-search::placeholder{color:var(--muted2)}
+.nav-search:focus{border-color:var(--accent);background:rgba(232,184,75,0.06)}
+.nav-btn{padding:0.4rem 1.2rem;border-radius:8px;font-family:'Barlow',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:0.5px;cursor:pointer;text-transform:uppercase;border:none;transition:all .2s}
+.btn-outline{background:transparent;border:1.5px solid var(--muted2);color:var(--text)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-solid{background:var(--accent);color:#0a0c0f}
+.btn-solid:hover{background:var(--accent2)}
+
+/* ── HERO ── */
+.hero{position:relative;height:100vh;min-height:600px;max-height:860px;display:flex;align-items:flex-end;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:
+  linear-gradient(to right, rgba(10,12,15,0.95) 0%, rgba(10,12,15,0.6) 55%, rgba(10,12,15,0.15) 100%),
+  linear-gradient(to top, rgba(10,12,15,1) 0%, rgba(10,12,15,0) 40%);
+  z-index:1}
+.hero-img{position:absolute;inset:0;background:
+  radial-gradient(ellipse at 70% 40%, #1e3a5f 0%, #0a0c0f 70%);
+  z-index:0}
+.hero-img::after{content:'';position:absolute;inset:0;background-image:
+  repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.008) 2px,rgba(255,255,255,0.008) 4px),
+  repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(255,255,255,0.004) 40px,rgba(255,255,255,0.004) 41px)}
+.hero-visual{position:absolute;right:8%;top:50%;transform:translateY(-50%);z-index:0;opacity:0.18}
+.hero-visual svg{width:480px;height:480px}
+.hero-content{position:relative;z-index:2;padding:0 4rem 5rem;max-width:700px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(232,184,75,0.12);border:1px solid rgba(232,184,75,0.3);border-radius:30px;padding:0.3rem 1rem;margin-bottom:1.2rem}
+.hero-badge-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.hero-badge span{font-size:0.75rem;font-weight:700;letter-spacing:1px;color:var(--accent);text-transform:uppercase}
+.hero-tag{font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:0.5rem;opacity:0.8}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:5.5rem;line-height:0.92;letter-spacing:2px;margin-bottom:1rem;color:var(--text)}
+.hero h1 em{color:var(--accent);font-style:normal}
+.hero-desc{font-size:1rem;line-height:1.65;color:var(--muted);max-width:480px;margin-bottom:1.8rem;font-weight:300}
+.hero-meta{display:flex;gap:1.5rem;margin-bottom:1.8rem;flex-wrap:wrap}
+.hero-meta-item{display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--muted);font-weight:600;letter-spacing:0.5px;text-transform:uppercase}
+.hero-meta-item span.dot{width:5px;height:5px;border-radius:50%;background:var(--muted2)}
+.hero-meta-item strong{color:var(--text)}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap}
+.hero-btn{display:inline-flex;align-items:center;gap:8px;padding:0.8rem 1.8rem;border-radius:10px;font-family:'Barlow',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.5px;cursor:pointer;text-transform:uppercase;text-decoration:none;border:none;transition:all .25s}
+.hero-btn-primary{background:var(--accent);color:#0a0c0f}
+.hero-btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.hero-btn-secondary{background:rgba(255,255,255,0.08);color:var(--text);border:1px solid rgba(255,255,255,0.15)}
+.hero-btn-secondary:hover{background:rgba(255,255,255,0.14)}
+.hero-btn svg{width:18px;height:18px;flex-shrink:0}
+
+/* ── MAIN ── */
+main{padding-top:1rem;padding-bottom:4rem}
+section.row-section{margin-bottom:0.5rem}
+
+/* ── SECTION HEADER ── */
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:0 3rem;margin-bottom:1.2rem}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:1.5px;color:var(--text);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';width:3px;height:20px;background:var(--accent);border-radius:2px;flex-shrink:0}
+.section-more{font-size:0.78rem;font-weight:700;letter-spacing:1px;color:var(--accent);text-transform:uppercase;text-decoration:none;opacity:0.8;transition:opacity .2s}
+.section-more:hover{opacity:1}
+
+/* ── HORIZONTAL SCROLL ROW ── */
+.scroll-row{display:flex;gap:1rem;overflow-x:auto;padding:0.5rem 3rem 1.2rem;scroll-behavior:smooth}
+.scroll-row::-webkit-scrollbar{height:4px}
+.scroll-row::-webkit-scrollbar-track{background:transparent}
+.scroll-row::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* ── CARD BASE ── */
+.card{flex-shrink:0;border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .25s;position:relative;background:var(--card)}
+.card:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 16px 40px rgba(0,0,0,0.5)}
+.card-thumb{position:relative;overflow:hidden}
+.card-thumb img,.card-thumb .thumb-placeholder{width:100%;display:block;object-fit:cover}
+.thumb-placeholder{background:var(--bg3);display:flex;align-items:center;justify-content:center}
+.card-badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#0a0c0f;font-size:0.62rem;font-weight:800;letter-spacing:1px;padding:3px 8px;border-radius:4px;text-transform:uppercase}
+.card-badge.new{background:#4bcf8a;color:#0a0c0f}
+.card-badge.hot{background:var(--red);color:#fff}
+.card-badge.coming{background:var(--muted2);color:#fff}
+.card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,12,15,0.9) 0%,transparent 60%);opacity:0;transition:opacity .3s}
+.card:hover .card-overlay{opacity:1}
+.card-play{position:absolute;bottom:12px;right:12px;width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0.7);transition:all .3s}
+.card:hover .card-play{opacity:1;transform:scale(1)}
+.card-play svg{width:16px;height:16px;fill:#0a0c0f;margin-left:2px}
+.card-info{padding:0.75rem 0.85rem 1rem}
+.card-label{font-size:0.65rem;font-weight:700;letter-spacing:1.5px;color:var(--accent);text-transform:uppercase;margin-bottom:4px;opacity:0.85}
+.card-title{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;line-height:1.2;color:var(--text);margin-bottom:4px;letter-spacing:0.3px}
+.card-sub{font-size:0.72rem;color:var(--muted);font-weight:400;line-height:1.4}
+
+/* ── CARD SIZES ── */
+.card-lg{width:300px}
+.card-lg .thumb-placeholder{height:170px}
+.card-md{width:220px}
+.card-md .thumb-placeholder{height:130px}
+.card-sm{width:175px}
+.card-sm .thumb-placeholder{height:105px}
+.card-wide{width:380px}
+.card-wide .thumb-placeholder{height:215px}
+
+/* ── HERO BANNER CARDS (featured row) ── */
+.featured-row{display:flex;gap:1rem;padding:0 3rem 1.5rem;overflow-x:auto}
+.featured-row::-webkit-scrollbar{height:4px}
+.featured-row::-webkit-scrollbar-track{background:transparent}
+.featured-row::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.feat-card{flex-shrink:0;width:320px;border-radius:14px;overflow:hidden;position:relative;cursor:pointer;transition:transform .25s}
+.feat-card:hover{transform:scale(1.02)}
+.feat-bg{height:200px;position:relative;display:flex;align-items:flex-end}
+.feat-content{position:absolute;bottom:0;left:0;right:0;padding:1rem 1.2rem;background:linear-gradient(to top,rgba(10,12,15,0.98),transparent)}
+.feat-tag{font-size:0.62rem;font-weight:800;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:4px}
+.feat-title{font-family:'Barlow Condensed',sans-serif;font-size:1.15rem;font-weight:700;line-height:1.15;color:var(--text)}
+.feat-sub{font-size:0.72rem;color:var(--muted);margin-top:3px}
+
+/* ── CATEGORY GRID ── */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.75rem;padding:0 3rem}
+.cat-card{border-radius:12px;padding:1.3rem 1rem;cursor:pointer;transition:all .25s;text-align:center;border:1px solid var(--border);background:var(--card)}
+.cat-card:hover{transform:translateY(-3px);border-color:var(--accent);background:var(--card2)}
+.cat-icon{width:46px;height:46px;border-radius:12px;margin:0 auto 0.7rem;display:flex;align-items:center;justify-content:center}
+.cat-icon svg{width:24px;height:24px}
+.cat-name{font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:1px;color:var(--text);text-transform:uppercase;margin-bottom:2px}
+.cat-count{font-size:0.68rem;color:var(--muted);font-weight:400}
+
+/* ── MARQUEE / TICKER ── */
+.ticker{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.55rem 0;overflow:hidden;margin-bottom:2rem}
+.ticker-inner{display:flex;gap:0;white-space:nowrap;animation:ticker 28s linear infinite}
+.ticker-inner:hover{animation-play-state:paused}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-item{display:inline-flex;align-items:center;gap:10px;padding:0 2.5rem;font-size:0.75rem;font-weight:600;letter-spacing:0.5px;color:var(--muted);text-transform:uppercase}
+.ticker-item strong{color:var(--accent)}
+.ticker-sep{color:var(--border);font-size:1rem}
+
+/* ── LARGE PROMO BANNER ── */
+.promo-banner{margin:0 3rem 2.5rem;border-radius:16px;overflow:hidden;position:relative;display:flex;align-items:center;min-height:180px;background:var(--bg3);border:1px solid var(--border)}
+.promo-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0d2137 0%,#0a1628 50%,#0f1a2a 100%)}
+.promo-pattern{position:absolute;inset:0;opacity:0.06;background-image:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(232,184,75,0.5) 20px,rgba(232,184,75,0.5) 21px)}
+.promo-content{position:relative;z-index:1;padding:2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;width:100%}
+.promo-text .promo-tag{font-size:0.65rem;font-weight:800;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:0.4rem}
+.promo-text h2{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:2px;color:var(--text);line-height:1;margin-bottom:0.5rem}
+.promo-text p{font-size:0.85rem;color:var(--muted);max-width:400px;line-height:1.5}
+.promo-btn{flex-shrink:0;padding:0.75rem 2rem;background:var(--accent);color:#0a0c0f;border-radius:10px;font-weight:800;font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:none;transition:all .2s;white-space:nowrap}
+.promo-btn:hover{background:var(--accent2)}
+
+/* ── RUMUS CARD SPECIAL ── */
+.rumus-card{flex-shrink:0;width:280px;border-radius:12px;overflow:hidden;background:var(--card);border:1px solid var(--border);cursor:pointer;transition:all .25s}
+.rumus-card:hover{transform:translateY(-4px);border-color:rgba(232,184,75,0.4);box-shadow:0 12px 32px rgba(0,0,0,0.4)}
+.rumus-header{padding:1rem 1.1rem 0.6rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.rumus-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rumus-icon svg{width:18px;height:18px}
+.rumus-cat{font-size:0.65rem;font-weight:800;letter-spacing:1.5px;color:var(--accent);text-transform:uppercase}
+.rumus-name{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.rumus-body{padding:0.9rem 1.1rem}
+.rumus-formula{background:var(--bg2);border-radius:8px;padding:0.8rem 1rem;text-align:center;margin-bottom:0.75rem;font-family:'Courier New',monospace;font-size:1rem;color:var(--accent);letter-spacing:1px;border:1px solid rgba(232,184,75,0.15)}
+.rumus-vars{display:flex;flex-direction:column;gap:3px}
+.rumus-var{font-size:0.72rem;color:var(--muted);line-height:1.4}
+.rumus-var strong{color:var(--text);font-weight:600}
+
+/* ── STATS STRIP ── */
+.stats-strip{display:flex;gap:0;margin:0 3rem 2.5rem;border-radius:14px;overflow:hidden;border:1px solid var(--border)}
+.stat-item{flex:1;padding:1.3rem 1.5rem;background:var(--card);text-align:center;border-right:1px solid var(--border)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--accent);letter-spacing:2px;line-height:1}
+.stat-label{font-size:0.7rem;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:4px}
+
+/* ── FOOTER ── */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:2px;color:var(--text)}
+.footer-logo span{color:var(--accent)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+.footer-links a{font-size:0.75rem;font-weight:600;letter-spacing:0.5px;color:var(--muted);text-decoration:none;text-transform:uppercase;transition:color .2s}
+.footer-links a:hover{color:var(--accent)}
+.footer-copy{font-size:0.72rem;color:var(--muted2)}
+
+/* ── THUMB COLORS ── */
+.t-blue{background:linear-gradient(135deg,#0d2648,#1a3a6b)}
+.t-amber{background:linear-gradient(135deg,#2a1a00,#4a2f00)}
+.t-green{background:linear-gradient(135deg,#0a1f0e,#12341a)}
+.t-red{background:linear-gradient(135deg,#2a0a0a,#451010)}
+.t-teal{background:linear-gradient(135deg,#071f2a,#0d3345)}
+.t-purple{background:linear-gradient(135deg,#160d2a,#261545)}
+.t-gray{background:linear-gradient(135deg,#111418,#1c2028)}
+
+/* ── THUMB SVG ICONS ── */
+.thumb-icon{display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;height:100%}
+.thumb-icon svg{opacity:0.6}
+.thumb-icon-label{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.4);text-transform:uppercase}
+
+/* Responsive */
+@media(max-width:768px){
+  .hero h1{font-size:3.5rem}
+  .hero-content{padding:0 1.5rem 4rem}
+  .section-header,.scroll-row,.featured-row,.cat-grid,.promo-banner,.stats-strip,.promo-content{padding-left:1.2rem;padding-right:1.2rem;margin-left:0;margin-right:0}
+  .promo-content{flex-direction:column;text-align:center}
+  nav{padding:0 1rem}
+  .nav-links{display:none}
+  .stats-strip{flex-wrap:wrap}
+  .stat-item{min-width:45%}
+  .hero-visual{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav>
+  <a href="404.html" class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="14" width="20" height="3" rx="1"/>
+        <rect x="6" y="9" width="12" height="3" rx="1"/>
+        <rect x="10" y="4" width="4" height="3" rx="1"/>
+        <rect x="3" y="17" width="2" height="5" rx="0.5"/>
+        <rect x="19" y="17" width="2" height="5" rx="0.5"/>
+      </svg>
+    </div>
+    <div class="nav-logo-text">Sipil<span>Hub</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="404.html" class="active">Beranda</a>
+    <a href="404.html">Rumus</a>
+    <a href="404.html">Material</a>
+    <a href="404.html">Struktur</a>
+    <a href="404.html">Geoteknik</a>
+    <a href="404.html">Hidro</a>
+    <a href="404.html">Kalkulator</a>
+  </div>
+  <div class="nav-right">
+    <input class="nav-search" type="text" id="navSearch" placeholder="Cari topik, rumus..." autocomplete="off">
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-img">
+    <div class="hero-visual">
+      <svg viewBox="0 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Bridge wireframe -->
+        <line x1="60" y1="320" x2="420" y2="320" stroke="#e8b84b" stroke-width="3"/>
+        <line x1="60" y1="320" x2="60" y2="180" stroke="#e8b84b" stroke-width="2"/>
+        <line x1="420" y1="320" x2="420" y2="180" stroke="#e8b84b" stroke-width="2"/>
+        <path d="M60 180 Q240 80 420 180" stroke="#e8b84b" stroke-width="2.5" fill="none"/>
+        <line x1="120" y1="315" x2="107" y2="196" stroke="#4b8de8" stroke-width="1.2" stroke-dasharray="4,3"/>
+        <line x1="180" y1="315" x2="167" y2="158" stroke="#4b8de8" stroke-width="1.2" stroke-dasharray="4,3"/>
+        <line x1="240" y1="315" x2="240" y2="136" stroke="#4b8de8" stroke-width="1.2" stroke-dasharray="4,3"/>
+        <line x1="300" y1="315" x2="313" y2="158" stroke="#4b8de8" stroke-width="1.2" stroke-dasharray="4,3"/>
+        <line x1="360" y1="315" x2="373" y2="196" stroke="#4b8de8" stroke-width="1.2" stroke-dasharray="4,3"/>
+        <!-- Ground -->
+        <line x1="20" y1="340" x2="460" y2="340" stroke="#5c6b7f" stroke-width="2"/>
+        <!-- Pile caps -->
+        <rect x="40" y="320" width="40" height="20" rx="2" fill="none" stroke="#5c6b7f" stroke-width="1.5"/>
+        <rect x="400" y="320" width="40" height="20" rx="2" fill="none" stroke="#5c6b7f" stroke-width="1.5"/>
+        <!-- Piles -->
+        <line x1="50" y1="340" x2="50" y2="400" stroke="#5c6b7f" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <line x1="70" y1="340" x2="70" y2="400" stroke="#5c6b7f" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <line x1="410" y1="340" x2="410" y2="400" stroke="#5c6b7f" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <line x1="430" y1="340" x2="430" y2="400" stroke="#5c6b7f" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <!-- Force arrows -->
+        <line x1="240" y1="70" x2="240" y2="100" stroke="#e84b4b" stroke-width="2"/>
+        <polygon points="235,100 245,100 240,115" fill="#e84b4b"/>
+        <text x="248" y="90" font-size="12" fill="#e84b4b" font-family="Barlow Condensed" font-weight="700">P</text>
+        <!-- Dimension line -->
+        <line x1="60" y1="370" x2="420" y2="370" stroke="#8a9ab0" stroke-width="1"/>
+        <line x1="60" y1="365" x2="60" y2="375" stroke="#8a9ab0" stroke-width="1"/>
+        <line x1="420" y1="365" x2="420" y2="375" stroke="#8a9ab0" stroke-width="1"/>
+        <text x="225" y="388" font-size="11" fill="#8a9ab0" font-family="Barlow Condensed" letter-spacing="1">L = 60 m</text>
+      </svg>
+    </div>
+  </div>
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      <span>Konten Baru Tersedia</span>
+    </div>
+    <div class="hero-tag">Seri Unggulan</div>
+    <h1>Analisis <em>Struktur</em> Jembatan Gantung</h1>
+    <p class="hero-desc">Pelajari teori, rumus, dan metode perhitungan struktur jembatan gantung secara mendalam — dari beban mati hingga analisis dinamis.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><strong>Struktur Jembatan</strong></div>
+      <div class="hero-meta-item"><span class="dot"></span><strong>12 Topik</strong></div>
+      <div class="hero-meta-item"><span class="dot"></span>Tingkat Lanjut</div>
+      <div class="hero-meta-item"><span class="dot"></span>SNI 1725:2016</div>
+    </div>
+    <div class="hero-actions">
+      <a href="404.html" class="hero-btn hero-btn-primary">
+        <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+        Mulai Belajar
+      </a>
+      <a href="404.html" class="hero-btn hero-btn-secondary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Lihat Detail
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── TICKER ── -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item"><strong>BARU</strong> Rumus Tegangan Lentur Balok<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item"><strong>UPDATE</strong> Tabel Baja Profil WF SNI<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item"><strong>BARU</strong> Kalkulator Daya Dukung Pondasi<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item"><strong>SEGERA</strong> Video: Analisis Gempa Respon Spektrum<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item"><strong>BARU</strong> Rumus Tegangan Lentur Balok<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item"><strong>UPDATE</strong> Tabel Baja Profil WF SNI<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item"><strong>BARU</strong> Kalkulator Daya Dukung Pondasi<span class="ticker-sep">◆</span></span>
+    <span class="ticker-item"><strong>SEGERA</strong> Video: Analisis Gempa Respon Spektrum<span class="ticker-sep">◆</span></span>
+  </div>
+</div>
+
+<main>
+
+<!-- ── STATS ── -->
+<div class="stats-strip">
+  <div class="stat-item"><div class="stat-num">240+</div><div class="stat-label">Rumus & Formula</div></div>
+  <div class="stat-item"><div class="stat-num">18</div><div class="stat-label">Kategori Topik</div></div>
+  <div class="stat-item"><div class="stat-num">50+</div><div class="stat-label">Referensi SNI</div></div>
+  <div class="stat-item"><div class="stat-num">12</div><div class="stat-label">Kalkulator Interaktif</div></div>
+</div>
+
+<!-- ── KATEGORI UTAMA ── -->
+<section class="row-section">
+  <div class="section-header">
+    <div class="section-title">Kategori Utama</div>
+    <a href="404.html" class="section-more">Lihat Semua →</a>
+  </div>
+  <div class="cat-grid">
+    <div class="cat-card" onclick="location.href='kalkulatorvolume/0kalkulatorvolume.html'">
+      <div class="cat-icon" style="background:rgba(232,184,75,0.15)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#e8b84b" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+      </div>
+      <div class="cat-name">Kalkulator Volume</div>
+    </div>
+    <div class="cat-card" onclick="location.href='404.html'">
+      <div class="cat-icon" style="background:rgba(75,141,232,0.12)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#4b8de8" stroke-width="1.8"><rect x="3" y="16" width="18" height="3"/><rect x="6" y="11" width="12" height="3"/><rect x="10" y="6" width="4" height="3"/><line x1="4" y1="19" x2="4" y2="23"/><line x1="20" y1="19" x2="20" y2="23"/></svg>
+      </div>
+      <div class="cat-name">Struktur</div>
+    </div>
+    <div class="cat-card" onclick="location.href='404.html'">
+      <div class="cat-icon" style="background:rgba(75,207,138,0.12)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#4bcf8a" stroke-width="1.8"><path d="M3 21 L3 10 L12 3 L21 10 L21 21"/><rect x="9" y="14" width="6" height="7"/></svg>
+      </div>
+      <div class="cat-name">Geoteknik</div>
+    </div>
+    <div class="cat-card" onclick="location.href='404.html'">
+      <div class="cat-icon" style="background:rgba(75,191,232,0.12)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#4bbfe8" stroke-width="1.8"><path d="M2 14 Q6 10 10 14 Q14 18 18 14 Q20 12 22 14"/><path d="M2 19 Q6 15 10 19 Q14 23 18 19 Q20 17 22 19"/></svg>
+      </div>
+      <div class="cat-name">Hidrolika</div>
+    </div>
+    <div class="cat-card" onclick="location.href='404.html'">
+      <div class="cat-icon" style="background:rgba(232,184,75,0.12)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#e8b84b" stroke-width="1.8"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="13" y2="16"/></svg>
+      </div>
+      <div class="cat-name">Material</div>
+    </div>
+    <div class="cat-card" onclick="location.href='404.html'">
+      <div class="cat-icon" style="background:rgba(232,75,75,0.12)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#e84b4b" stroke-width="1.8"><path d="M3 21 L12 5 L21 21"/><line x1="7" y1="15" x2="17" y2="15"/></svg>
+      </div>
+      <div class="cat-name">Mekanika</div>
+    </div>
+    <div class="cat-card" onclick="location.href='404.html'">
+      <div class="cat-icon" style="background:rgba(75,141,232,0.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7b9bd0" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="21"/><path d="M3 12 Q8 8 12 12 Q16 16 21 12"/></svg>
+      </div>
+      <div class="cat-name">Transportasi</div>
+    </div>
+    <div class="cat-card" onclick="location.href='404.html'">
+      <div class="cat-icon" style="background:rgba(75,207,138,0.08)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7bcda0" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      </div>
+      <div class="cat-name">Manajemen</div>
+    </div>
+    <div class="cat-card" onclick="location.href='404.html'">
+      <div class="cat-icon" style="background:rgba(155,107,232,0.15)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#9b6be8" stroke-width="1.8"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+      </div>
+      <div class="cat-name">Referensi SNI</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── RUMUS TERPOPULER ── -->
+<section class="row-section" style="margin-top:2.5rem">
+  <div class="section-header">
+    <div class="section-title">Rumus Terpopuler</div>
+    <a href="404.html" class="section-more">Semua Rumus →</a>
+  </div>
+  <div class="scroll-row">
+
+    <div class="rumus-card" onclick="location.href='404.html'">
+      <div class="rumus-header">
+        <div class="rumus-icon" style="background:rgba(75,141,232,0.15)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4b8de8" stroke-width="2"><path d="M3 21 L3 10 L12 3 L21 10 L21 21"/></svg>
+        </div>
+        <div>
+          <div class="rumus-cat">Struktur</div>
+          <div class="rumus-name">Tegangan Lentur</div>
+        </div>
+      </div>
+      <div class="rumus-body">
+        <div class="rumus-formula">σ = M · y / I</div>
+        <div class="rumus-vars">
+          <div class="rumus-var"><strong>σ</strong> — Tegangan lentur (MPa)</div>
+          <div class="rumus-var"><strong>M</strong> — Momen lentur (N·mm)</div>
+          <div class="rumus-var"><strong>y</strong> — Jarak serat terluar (mm)</div>
+          <div class="rumus-var"><strong>I</strong> — Momen inersia (mm⁴)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rumus-card" onclick="location.href='404.html'">
+      <div class="rumus-header">
+        <div class="rumus-icon" style="background:rgba(75,207,138,0.15)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4bcf8a" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="12"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div>
+          <div class="rumus-cat">Geoteknik</div>
+          <div class="rumus-name">Daya Dukung Pondasi</div>
+        </div>
+      </div>
+      <div class="rumus-body">
+        <div class="rumus-formula">qu = c·Nc + q·Nq + ½·γ·B·Nγ</div>
+        <div class="rumus-vars">
+          <div class="rumus-var"><strong>c</strong> — Kohesi tanah (kN/m²)</div>
+          <div class="rumus-var"><strong>Nc, Nq, Nγ</strong> — Faktor kapasitas dukung</div>
+          <div class="rumus-var"><strong>γ</strong> — Berat volume tanah (kN/m³)</div>
+          <div class="rumus-var"><strong>B</strong> — Lebar pondasi (m)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rumus-card" onclick="location.href='404.html'">
+      <div class="rumus-header">
+        <div class="rumus-icon" style="background:rgba(75,191,232,0.15)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4bbfe8" stroke-width="2"><path d="M2 14 Q8 6 14 14 Q18 20 22 14"/></svg>
+        </div>
+        <div>
+          <div class="rumus-cat">Hidrolika</div>
+          <div class="rumus-name">Debit Manning</div>
+        </div>
+      </div>
+      <div class="rumus-body">
+        <div class="rumus-formula">Q = (1/n) · A · R^⅔ · S^½</div>
+        <div class="rumus-vars">
+          <div class="rumus-var"><strong>Q</strong> — Debit aliran (m³/s)</div>
+          <div class="rumus-var"><strong>n</strong> — Koefisien kekasaran Manning</div>
+          <div class="rumus-var"><strong>R</strong> — Jari-jari hidrolik (m)</div>
+          <div class="rumus-var"><strong>S</strong> — Kemiringan dasar saluran</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rumus-card" onclick="location.href='404.html'">
+      <div class="rumus-header">
+        <div class="rumus-icon" style="background:rgba(232,75,75,0.15)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#e84b4b" stroke-width="2"><path d="M3 21 L12 5 L21 21"/><line x1="7" y1="15" x2="17" y2="15"/></svg>
+        </div>
+        <div>
+          <div class="rumus-cat">Mekanika</div>
+          <div class="rumus-name">Hukum Hooke</div>
+        </div>
+      </div>
+      <div class="rumus-body">
+        <div class="rumus-formula">σ = E · ε</div>
+        <div class="rumus-vars">
+          <div class="rumus-var"><strong>σ</strong> — Tegangan normal (MPa)</div>
+          <div class="rumus-var"><strong>E</strong> — Modulus elastisitas (MPa)</div>
+          <div class="rumus-var"><strong>ε</strong> — Regangan (dimensionless)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rumus-card" onclick="location.href='404.html'">
+      <div class="rumus-header">
+        <div class="rumus-icon" style="background:rgba(232,184,75,0.15)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#e8b84b" stroke-width="2"><rect x="2" y="8" width="20" height="12" rx="2"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="8" x2="12" y2="20"/></svg>
+        </div>
+        <div>
+          <div class="rumus-cat">Struktur Beton</div>
+          <div class="rumus-name">Momen Nominal Balok</div>
+        </div>
+      </div>
+      <div class="rumus-body">
+        <div class="rumus-formula">Mn = As · fy · (d - a/2)</div>
+        <div class="rumus-vars">
+          <div class="rumus-var"><strong>As</strong> — Luas tulangan tarik (mm²)</div>
+          <div class="rumus-var"><strong>fy</strong> — Tegangan leleh baja (MPa)</div>
+          <div class="rumus-var"><strong>d</strong> — Tinggi efektif balok (mm)</div>
+          <div class="rumus-var"><strong>a</strong> — Tinggi blok tekan (mm)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rumus-card" onclick="location.href='404.html'">
+      <div class="rumus-header">
+        <div class="rumus-icon" style="background:rgba(130,75,232,0.15)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#9b6be8" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2 Q17 8 17 12 Q17 16 12 22"/></svg>
+        </div>
+        <div>
+          <div class="rumus-cat">Transportasi</div>
+          <div class="rumus-name">Kapasitas Jalan</div>
+        </div>
+      </div>
+      <div class="rumus-body">
+        <div class="rumus-formula">C = Co · FCw · FCsp · FCsf</div>
+        <div class="rumus-vars">
+          <div class="rumus-var"><strong>Co</strong> — Kapasitas dasar (smp/jam)</div>
+          <div class="rumus-var"><strong>FCw</strong> — Faktor koreksi lebar</div>
+          <div class="rumus-var"><strong>FCsp</strong> — Faktor pemisah arah</div>
+          <div class="rumus-var"><strong>FCsf</strong> — Faktor hambatan samping</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── TOPIK PILIHAN EDITOR ── -->
+<section class="row-section" style="margin-top:2rem">
+  <div class="section-header">
+    <div class="section-title">Topik Pilihan Editor</div>
+    <a href="404.html" class="section-more">Lihat Semua →</a>
+  </div>
+  <div class="scroll-row">
+    <div class="card card-lg" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-blue" style="height:170px"><div class="thumb-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4b8de8" stroke-width="1.2"><rect x="3" y="16" width="18" height="3"/><rect x="6" y="11" width="12" height="3"/><rect x="10" y="6" width="4" height="3"/></svg><div class="thumb-icon-label">Struktur Baja</div></div></div><div class="card-badge new">Baru</div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-label">Struktur Baja</div><div class="card-title">Profil WF & Perencanaan Sambungan Baut</div><div class="card-sub">SNI 1729:2020 · 8 Topik</div></div>
+    </div>
+    <div class="card card-lg" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-amber" style="height:170px"><div class="thumb-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e8b84b" stroke-width="1.2"><circle cx="12" cy="8" r="5"/><path d="M7 14 L7 21 L12 18 L17 21 L17 14"/></svg><div class="thumb-icon-label">Geoteknik</div></div></div><div class="card-badge hot">Populer</div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-label">Geoteknik</div><div class="card-title">Analisis Stabilitas Lereng Metode Bishop</div><div class="card-sub">Tanah & Fondasi · 6 Topik</div></div>
+    </div>
+    <div class="card card-lg" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-teal" style="height:170px"><div class="thumb-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4bbfe8" stroke-width="1.2"><path d="M3 18 Q8 10 12 14 Q16 18 21 10"/><path d="M3 21 L21 21"/></svg><div class="thumb-icon-label">Hidrolika</div></div></div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-label">Hidrolika</div><div class="card-title">Perencanaan Saluran Drainase Perkotaan</div><div class="card-sub">SNI 03-3424 · 5 Topik</div></div>
+    </div>
+    <div class="card card-lg" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-red" style="height:170px"><div class="thumb-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e84b4b" stroke-width="1.2"><path d="M3 21 L12 5 L21 21"/><line x1="7" y1="15" x2="17" y2="15"/></svg><div class="thumb-icon-label">Gempa</div></div></div><div class="card-badge hot">Tren</div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-label">Rekayasa Gempa</div><div class="card-title">Analisis Respon Spektrum SNI 1726:2019</div><div class="card-sub">Dinamika Struktur · 10 Topik</div></div>
+    </div>
+    <div class="card card-lg" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-green" style="height:170px"><div class="thumb-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4bcf8a" stroke-width="1.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><div class="thumb-icon-label">Manajemen</div></div></div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-label">Manajemen Konstruksi</div><div class="card-title">Penjadwalan Proyek: Metode CPM & PERT</div><div class="card-sub">Manajemen Proyek · 7 Topik</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROMO BANNER ── -->
+<div class="promo-banner">
+  <div class="promo-bg"></div>
+  <div class="promo-pattern"></div>
+  <div class="promo-content">
+    <div class="promo-text">
+      <div class="promo-tag">Referensi Standar</div>
+      <h2>Perpustakaan SNI Teknik Sipil</h2>
+      <p>Akses lengkap semua referensi SNI yang relevan — dari SNI Beton, Baja, Gempa, hingga Jalan — terintegrasi langsung dengan rumus dan kalkulator.</p>
+    </div>
+    <button class="promo-btn" onclick="location.href='404.html'">Jelajahi SNI →</button>
+  </div>
+</div>
+
+<!-- ── SERI BETON ── -->
+<section class="row-section">
+  <div class="section-header">
+    <div class="section-title">Seri: Struktur Beton</div>
+    <a href="404.html" class="section-more">Semua Seri →</a>
+  </div>
+  <div class="scroll-row">
+    <div class="card card-md" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-gray" style="height:130px"><div class="thumb-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#8a9ab0" stroke-width="1.5"><rect x="2" y="8" width="20" height="12" rx="2"/><line x1="2" y1="12" x2="22" y2="12"/></svg><div class="thumb-icon-label">Ep. 1</div></div></div><div class="card-badge" style="background:var(--blue)">Ep. 01</div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-label">Beton Bertulang</div><div class="card-title">Konsep Dasar & Asumsi Perencanaan</div><div class="card-sub">SNI 2847:2019</div></div>
+    </div>
+    <div class="card card-md" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-gray" style="height:130px"><div class="thumb-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#8a9ab0" stroke-width="1.5"><rect x="2" y="8" width="20" height="12" rx="2"/><line x1="12" y1="8" x2="12" y2="20"/></svg><div class="thumb-icon-label">Ep. 2</div></div></div><div class="card-badge" style="background:var(--blue)">Ep. 02</div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-label">Beton Bertulang</div><div class="card-title">Perencanaan Balok Lentur Tunggal</div><div class="card-sub">Momen Nominal & Rho Tulangan</div></div>
+    </div>
+    <div class="card card-md" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-gray" style="height:130px"><div class="thumb-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#8a9ab0" stroke-width="1.5"><line x1="12" y1="2" x2="12" y2="22"/><path d="M2 12 L22 12"/></svg><div class="thumb-icon-label">Ep. 3</div></div></div><div class="card-badge" style="background:var(--blue)">Ep. 03</div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-label">Beton Bertulang</div><div class="card-title">Perencanaan Kolom Persegi Terkekang</div><div class="card-sub">Beban Aksial & Momen Kombinasi</div></div>
+    </div>
+    <div class="card card-md" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-gray" style="height:130px"><div class="thumb-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#8a9ab0" stroke-width="1.5"><polygon points="12,2 20,20 4,20"/></svg><div class="thumb-icon-label">Ep. 4</div></div></div><div class="card-badge coming">Segera</div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-label">Beton Bertulang</div><div class="card-title">Pelat Dua Arah: Metode Koefisien Momen</div><div class="card-sub">Akan hadir segera</div></div>
+    </div>
+    <div class="card card-md" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-gray" style="height:130px"><div class="thumb-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#8a9ab0" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="17"/></svg><div class="thumb-icon-label">Ep. 5</div></div></div><div class="card-badge coming">Segera</div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-label">Beton Bertulang</div><div class="card-title">Pondasi Telapak Terisolasi di Atas Tanah Kohesif</div><div class="card-sub">Akan hadir segera</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURED CARDS LANDSCAPE ── -->
+<section class="row-section" style="margin-top:2rem">
+  <div class="section-header">
+    <div class="section-title">Konten Unggulan</div>
+    <a href="404.html" class="section-more">Semua →</a>
+  </div>
+  <div class="featured-row">
+    <div class="feat-card" onclick="location.href='404.html'">
+      <div class="feat-bg t-blue">
+        <svg style="position:absolute;bottom:50px;right:20px;opacity:0.25" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#4b8de8" stroke-width="0.8"><rect x="3" y="16" width="18" height="3"/><rect x="6" y="11" width="12" height="3"/><rect x="10" y="6" width="4" height="3"/><line x1="4" y1="19" x2="4" y2="24"/><line x1="20" y1="19" x2="20" y2="24"/></svg>
+        <div class="feat-content"><div class="feat-tag">Struktur Jembatan</div><div class="feat-title">Distribusi Beban Lalu Lintas pada Gelagar Jembatan</div><div class="feat-sub">SNI 1725:2016 · 45 menit</div></div>
+      </div>
+    </div>
+    <div class="feat-card" onclick="location.href='404.html'">
+      <div class="feat-bg t-green">
+        <svg style="position:absolute;bottom:50px;right:20px;opacity:0.25" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#4bcf8a" stroke-width="0.8"><path d="M2 20 L8 12 L14 16 L22 6"/></svg>
+        <div class="feat-content"><div class="feat-tag">Mekanika Tanah</div><div class="feat-title">Konsolidasi Primer: Teori Terzaghi & Pengukuran Cv</div><div class="feat-sub">Geoteknik Lanjut · 38 menit</div></div>
+      </div>
+    </div>
+    <div class="feat-card" onclick="location.href='404.html'">
+      <div class="feat-bg t-purple">
+        <svg style="position:absolute;bottom:50px;right:20px;opacity:0.25" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#9b6be8" stroke-width="0.8"><path d="M3 21 L12 5 L21 21"/><line x1="7" y1="15" x2="17" y2="15"/></svg>
+        <div class="feat-content"><div class="feat-tag">Rekayasa Gempa</div><div class="feat-title">Konsep Daktilitas & Sistem Penahan Gempa (SRPMK)</div><div class="feat-sub">SNI 1726:2019 · 52 menit</div></div>
+      </div>
+    </div>
+    <div class="feat-card" onclick="location.href='404.html'">
+      <div class="feat-bg t-teal">
+        <svg style="position:absolute;bottom:50px;right:20px;opacity:0.25" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#4bbfe8" stroke-width="0.8"><path d="M2 14 Q6 8 10 14 Q14 20 18 14 Q20 10 22 14"/></svg>
+        <div class="feat-content"><div class="feat-tag">Hidrolika</div><div class="feat-title">Analisis Frekuensi Banjir: Log-Pearson III & Gumbel</div><div class="feat-sub">Hidrologi Terapan · 41 menit</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TOPIK CEPAT / RINGKASAN ── -->
+<section class="row-section" style="margin-top:2rem">
+  <div class="section-header">
+    <div class="section-title">Topik Ringkas</div>
+    <a href="404.html" class="section-more">Lihat Semua →</a>
+  </div>
+  <div class="scroll-row">
+    <div class="card card-sm" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-amber" style="height:105px"><div class="thumb-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#e8b84b" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M9 12 L11 14 L15 10"/></svg></div></div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-title" style="font-size:0.88rem">Modulus Elastisitas Beton</div><div class="card-sub">Ec = 4700√f'c</div></div>
+    </div>
+    <div class="card card-sm" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-blue" style="height:105px"><div class="thumb-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4b8de8" stroke-width="1.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></div></div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-title" style="font-size:0.88rem">Defleksi Balok Merata</div><div class="card-sub">δmax = 5wL⁴/384EI</div></div>
+    </div>
+    <div class="card card-sm" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-green" style="height:105px"><div class="thumb-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4bcf8a" stroke-width="1.5"><path d="M12 2 L19 9 L19 22 L5 22 L5 9 Z"/></svg></div></div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-title" style="font-size:0.88rem">Tekanan Tanah Aktif (Rankine)</div><div class="card-sub">Ka = tan²(45-φ/2)</div></div>
+    </div>
+    <div class="card card-sm" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-red" style="height:105px"><div class="thumb-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#e84b4b" stroke-width="1.5"><path d="M12 2 L20 22 L12 17 L4 22 Z"/></svg></div></div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-title" style="font-size:0.88rem">Angka Keamanan Lereng</div><div class="card-sub">SF = τf / τmobil ≥ 1.5</div></div>
+    </div>
+    <div class="card card-sm" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-teal" style="height:105px"><div class="thumb-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4bbfe8" stroke-width="1.5"><path d="M4 17 Q8 11 12 14 Q16 17 20 11"/></svg></div></div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-title" style="font-size:0.88rem">Rumus Hazen-Williams</div><div class="card-sub">V = 0.8492 · C · R^0.63 · S^0.54</div></div>
+    </div>
+    <div class="card card-sm" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-purple" style="height:105px"><div class="thumb-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#9b6be8" stroke-width="1.5"><circle cx="12" cy="12" r="9"/></svg></div></div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-title" style="font-size:0.88rem">Periode Alami Struktur</div><div class="card-sub">T = 2π√(m/k)</div></div>
+    </div>
+    <div class="card card-sm" onclick="location.href='404.html'">
+      <div class="card-thumb"><div class="thumb-placeholder t-gray" style="height:105px"><div class="thumb-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#8a9ab0" stroke-width="1.5"><rect x="3" y="8" width="18" height="10" rx="2"/><line x1="8" y1="8" x2="8" y2="18"/><line x1="16" y1="8" x2="16" y2="18"/></svg></div></div><div class="card-overlay"></div><div class="card-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+      <div class="card-info"><div class="card-title" style="font-size:0.88rem">Kapasitas Geser Balok Beton</div><div class="card-sub">Vc = 0.17·√f'c·bw·d</div></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">Sipil<span>Hub</span></div>
+  <div class="footer-links">
+    <a href="404.html">Tentang</a>
+    <a href="404.html">Rumus</a>
+    <a href="404.html">Material</a>
+    <a href="404.html">Kalkulator</a>
+    <a href="404.html">Referensi SNI</a>
+    <a href="404.html">Kontak</a>
+  </div>
+  <div class="footer-copy">© 2025 SipilHub. Semua hak dilindungi.</div>
+</footer>
+
+<script>
+// ── CLICK NAVIGATION LOG ──
+document.querySelectorAll('.card,.feat-card,.cat-card,.rumus-card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    const title = card.querySelector('.card-title,.feat-title,.cat-name,.rumus-name');
+    if(title) console.log('Navigating to:', title.textContent);
+  });
+});
+
+// ── SEARCH SYSTEM ──
+const searchInput = document.getElementById('navSearch');
+
+// Build searchable data from rumus cards + topic cards
+const searchData = [
+  // Rumus
+  { type:'rumus', name:'Tegangan Lentur', cat:'Struktur', formula:'σ = M · y / I', vars:'σ Tegangan lentur MPa, M Momen lentur N·mm, y Jarak serat terluar mm, I Momen inersia mm⁴' },
+  { type:'rumus', name:'Daya Dukung Pondasi', cat:'Geoteknik', formula:'qu = c·Nc + q·Nq + ½·γ·B·Nγ', vars:'c Kohesi tanah kN/m², Nc Nq Nγ Faktor kapasitas dukung, γ Berat volume tanah kN/m³, B Lebar pondasi m' },
+  { type:'rumus', name:'Debit Manning', cat:'Hidrolika', formula:'Q = (1/n) · A · R^⅔ · S^½', vars:'Q Debit aliran m³/s, n Koefisien kekasaran Manning, R Jari-jari hidrolik m, S Kemiringan dasar saluran' },
+  { type:'rumus', name:'Hukum Hooke', cat:'Mekanika', formula:'σ = E · ε', vars:'σ Tegangan normal MPa, E Modulus elastisitas MPa, ε Regangan dimensionless' },
+  { type:'rumus', name:'Momen Nominal Balok', cat:'Struktur Beton', formula:'Mn = As · fy · (d - a/2)', vars:'As Luas tulangan tarik mm², fy Tegangan leleh baja MPa, d Tinggi efektif balok mm, a Tinggi blok tekan mm' },
+  { type:'rumus', name:'Kapasitas Jalan', cat:'Transportasi', formula:'C = Co · FCw · FCsp · FCsf', vars:'Co Kapasitas dasar smp/jam, FCw Faktor koreksi lebar, FCsp Faktor pemisah arah, FCsf Faktor hambatan samping' },
+  { type:'rumus', name:'Modulus Elastisitas Beton', cat:'Material', formula:'Ec = 4700√f\'c', vars:'Ec Modulus elastisitas beton MPa, f\'c Kuat tekan beton MPa' },
+  { type:'rumus', name:'Defleksi Balok Merata', cat:'Struktur', formula:'δmax = 5wL⁴/384EI', vars:'δmax Defleksi maksimum mm, w Beban merata N/mm, L Panjang balok mm, E Modulus elastisitas MPa, I Momen inersia mm⁴' },
+  { type:'rumus', name:'Tekanan Tanah Aktif Rankine', cat:'Geoteknik', formula:'Ka = tan²(45-φ/2)', vars:'Ka Koefisien tekanan tanah aktif, φ Sudut geser dalam tanah derajat' },
+  { type:'rumus', name:'Angka Keamanan Lereng', cat:'Geoteknik', formula:'SF = τf / τmobil ≥ 1.5', vars:'SF Angka keamanan, τf Kuat geser tanah kN/m², τmobil Tegangan geser yang termobilisasi kN/m²' },
+  { type:'rumus', name:'Hazen-Williams', cat:'Hidrolika', formula:'V = 0.8492 · C · R^0.63 · S^0.54', vars:'V Kecepatan aliran m/s, C Koefisien Hazen-Williams, R Jari-jari hidrolik m, S Kemiringan saluran' },
+  { type:'rumus', name:'Periode Alami Struktur', cat:'Dinamika', formula:'T = 2π√(m/k)', vars:'T Periode alami detik, m Massa kg, k Kekakuan N/m' },
+  { type:'rumus', name:'Kapasitas Geser Balok Beton', cat:'Struktur Beton', formula:'Vc = 0.17·√f\'c·bw·d', vars:'Vc Kapasitas geser beton N, f\'c Kuat tekan beton MPa, bw Lebar badan balok mm, d Tinggi efektif mm' },
+  // Kategori
+  { type:'kategori', name:'Kalkulator Volume', cat:'Kategori Utama', formula:'', vars:'kalkulator volume hitungan beton pasir semen material' },
+  { type:'kategori', name:'Struktur', cat:'Kategori Utama', formula:'', vars:'struktur baja beton tulangan balok kolom' },
+  { type:'kategori', name:'Geoteknik', cat:'Kategori Utama', formula:'', vars:'geoteknik tanah pondasi lereng stabilitas' },
+  { type:'kategori', name:'Hidrolika', cat:'Kategori Utama', formula:'', vars:'hidrolika air saluran drainase debit' },
+  { type:'kategori', name:'Referensi SNI', cat:'Kategori Utama', formula:'', vars:'SNI standar nasional indonesia peraturan referensi kode' },
+  { type:'kategori', name:'Transportasi', cat:'Kategori Utama', formula:'', vars:'transportasi jalan raya kapasitas lalu lintas' },
+  // Topik
+  { type:'topik', name:'Profil WF & Perencanaan Sambungan Baut', cat:'Struktur Baja', formula:'', vars:'SNI 1729:2020 baut sambungan baja WF' },
+  { type:'topik', name:'Analisis Stabilitas Lereng Metode Bishop', cat:'Geoteknik', formula:'', vars:'lereng bishop stabilitas tanah' },
+  { type:'topik', name:'Perencanaan Saluran Drainase Perkotaan', cat:'Hidrolika', formula:'', vars:'drainase saluran kota SNI 03-3424' },
+  { type:'topik', name:'Analisis Respon Spektrum SNI 1726:2019', cat:'Rekayasa Gempa', formula:'', vars:'gempa respon spektrum dinamika SNI 1726' },
+  { type:'topik', name:'Penjadwalan Proyek: Metode CPM & PERT', cat:'Manajemen Konstruksi', formula:'', vars:'CPM PERT jadwal proyek manajemen' },
+  { type:'topik', name:'Distribusi Beban Lalu Lintas pada Gelagar Jembatan', cat:'Struktur Jembatan', formula:'', vars:'SNI 1725:2016 jembatan gelagar beban' },
+  { type:'topik', name:'Konsolidasi Primer: Teori Terzaghi & Pengukuran Cv', cat:'Mekanika Tanah', formula:'', vars:'terzaghi konsolidasi tanah cv geoteknik lanjut' },
+  { type:'topik', name:'Konsep Daktilitas & Sistem Penahan Gempa SRPMK', cat:'Rekayasa Gempa', formula:'', vars:'SNI 1726:2019 daktilitas SRPMK gempa' },
+  { type:'topik', name:'Analisis Frekuensi Banjir: Log-Pearson III & Gumbel', cat:'Hidrologi', formula:'', vars:'banjir Log-Pearson Gumbel frekuensi hidrologi' },
+];
+
+// ── SEARCH OVERLAY ──
+const overlayHTML = `
+<div id="searchOverlay" style="display:none;position:fixed;top:64px;left:0;right:0;bottom:0;z-index:200;background:rgba(10,12,15,0.85);backdrop-filter:blur(6px)">
+  <div style="max-width:700px;margin:2rem auto;padding:0 1.5rem">
+    <div id="searchResults" style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;max-height:70vh;overflow-y:auto"></div>
+  </div>
+</div>`;
+document.body.insertAdjacentHTML('beforeend', overlayHTML);
+
+const overlay = document.getElementById('searchOverlay');
+const resultsBox = document.getElementById('searchResults');
+
+const typeColor = { rumus:'#e8b84b', kategori:'#4bbfe8', topik:'#4bcf8a' };
+const typeBg = { rumus:'rgba(232,184,75,0.12)', kategori:'rgba(75,191,232,0.12)', topik:'rgba(75,207,138,0.12)' };
+const typeLabel = { rumus:'Rumus', kategori:'Kategori', topik:'Topik' };
+
+function renderResults(q) {
+  const kw = q.toLowerCase().trim();
+  if(!kw){ overlay.style.display='none'; return; }
+
+  const hits = searchData.filter(d =>
+    d.name.toLowerCase().includes(kw) ||
+    d.cat.toLowerCase().includes(kw) ||
+    d.formula.toLowerCase().includes(kw) ||
+    d.vars.toLowerCase().includes(kw)
+  );
+
+  overlay.style.display = 'block';
+  if(!hits.length){
+    resultsBox.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--muted);font-size:0.9rem">Tidak ada hasil untuk "<strong style="color:var(--text)">${q}</strong>"</div>`;
+    return;
+  }
+
+  resultsBox.innerHTML = hits.map(h => `
+    <div onclick="closeSearch()" style="padding:1rem 1.3rem;border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:flex-start;gap:12px;transition:background .15s" 
+         onmouseover="this.style.background='var(--card2)'" onmouseout="this.style.background='transparent'">
+      <div style="flex-shrink:0;margin-top:2px">
+        <span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.62rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;background:${typeBg[h.type]};color:${typeColor[h.type]}">${typeLabel[h.type]}</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--text);margin-bottom:2px">${h.name}</div>
+        <div style="font-size:0.72rem;color:var(--muted)">${h.cat}${h.formula ? ' · <span style="color:var(--accent);font-family:monospace">' + h.formula + '</span>' : ''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function closeSearch(){
+  overlay.style.display='none';
+  searchInput.value='';
+}
+
+searchInput.addEventListener('input', e => renderResults(e.target.value));
+searchInput.addEventListener('keydown', e => { if(e.key==='Escape') closeSearch(); });
+overlay.addEventListener('click', e => { if(e.target===overlay) closeSearch(); });
+
+document.addEventListener('keydown', e => {
+  if(e.key==='/' && document.activeElement !== searchInput){
+    e.preventDefault(); searchInput.focus();
+  }
+});
+</script>
+</body>
+</html>
