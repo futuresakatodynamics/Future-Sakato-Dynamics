@@ -784,6 +784,11 @@ nav.scrolled { box-shadow: 0 2px 24px rgba(26,63,110,0.12); }
   display: none;
 }
 
+/* Sembunyikan Google Translate bar bawaan */
+.goog-te-banner-frame, .skiptranslate { display: none !important; }
+body { top: 0 !important; }
+.goog-te-gadget { display: none !important; }
+
 .burger {
   display: none;
   flex-direction: column;
@@ -4652,10 +4657,30 @@ function toggleWA() {
       waInitDone = true;
       setTimeout(() => {
         addWAMsg('Halo! 👋 Selamat datang di <strong>Fusako Studio</strong>.\n\nAda yang bisa kami bantu untuk kebutuhan desain dan perencanaan Anda?', 'bot');
+        injectLangBtn();
       }, 400);
     }
     setTimeout(() => document.getElementById('waInput').focus(), 300);
   }
+}
+
+/* Inject tombol alih bahasa di chatbot — hanya kalau online */
+function injectLangBtn() {
+  if (!navigator.onLine) return;
+  var existing = document.getElementById('wa-lang-btn');
+  if (existing) return;
+  var wrap = document.createElement('div');
+  wrap.id = 'wa-lang-btn';
+  wrap.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 12px 10px 12px;';
+  wrap.innerHTML =
+    '<span style="font-size:10px;color:#999;letter-spacing:1px;font-family:Rajdhani,sans-serif;font-weight:600;text-transform:uppercase;">Language:</span>' +
+    '<div style="display:flex;align-items:center;border:1.5px solid rgba(26,63,110,0.18);border-radius:20px;overflow:hidden;height:26px;">' +
+      '<button id="wl-id" onclick="setLang(\'id\')" style="background:#1a3a6e;color:#fff;border:none;padding:0 10px;font-size:10px;font-weight:700;letter-spacing:1.5px;cursor:pointer;font-family:Rajdhani,sans-serif;height:100%;text-transform:uppercase;">ID</button>' +
+      '<div style="width:1px;height:14px;background:rgba(26,63,110,0.18);"></div>' +
+      '<button id="wl-en" onclick="setLang(\'en\')" style="background:none;color:#888;border:none;padding:0 10px;font-size:10px;font-weight:700;letter-spacing:1.5px;cursor:pointer;font-family:Rajdhani,sans-serif;height:100%;text-transform:uppercase;">EN</button>' +
+    '</div>';
+  var el = document.getElementById('waMessages');
+  if (el) el.appendChild(wrap);
 }
 
 // Show WA button after scrolling 1 full screen height
@@ -4679,6 +4704,7 @@ window.addEventListener('scroll', () => {
         waInitDone = true;
         setTimeout(() => {
           addWAMsg('Halo! 👋 Selamat datang di <strong>Fusako Studio</strong>.\n\nAda yang bisa kami bantu untuk kebutuhan desain dan perencanaan Anda?', 'bot');
+          injectLangBtn();
         }, 400);
       }
     }
@@ -5189,12 +5215,12 @@ document.addEventListener('keydown', function(e) {
   document.getElementById('fsd-month').textContent = m;
   document.getElementById('fsd-badge').textContent = 'PROMO ' + m.toUpperCase();
 
-  /* Tampil otomatis setelah 1.5 detik */
+  /* Tampil otomatis setelah 8 detik */
   setTimeout(function(){
     var o = document.getElementById('fsd-overlay');
     o.style.display = 'flex';
     setTimeout(function(){ o.classList.add('show'); }, 30);
-  }, 1500);
+  }, 8000);
 
   /* Tutup klik overlay (bukan popup) */
   document.getElementById('fsd-overlay').addEventListener('click', function(e){
@@ -5256,6 +5282,97 @@ function fsdCloseTnc(){
 }
 </script>
 <!-- ===== END POPUP PROMO ===== -->
+
+<!-- ===== GOOGLE TRANSLATE ===== -->
+<div id="google_translate_element" style="display:none;"></div>
+<script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'id',
+    includedLanguages: 'en,id',
+    autoDisplay: false
+  }, 'google_translate_element');
+}
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+var _currentLang = 'id';
+
+/* ── RESTORE DOM TANPA RELOAD ──
+   Google Translate membungkus teks dengan tag <font> dan
+   menyimpan versi terjemahan di dalamnya. Untuk balik ke bahasa
+   asli tanpa reload: unwrap semua <font> buatan GT, hapus cookie,
+   chatbot dan state halaman tetap utuh.
+*/
+function restoreOriginalLanguage() {
+  /* 1. Hapus cookie googtrans di semua kemungkinan path/domain */
+  var expiry = 'expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  document.cookie = 'googtrans=; ' + expiry;
+  document.cookie = 'googtrans=; ' + expiry + ' domain=' + location.hostname + ';';
+  document.cookie = 'googtrans=; ' + expiry + ' domain=.' + location.hostname + ';';
+
+  /* 2. Unwrap semua <font class="notranslate"> buatan GT
+     GT membungkus teks yang sudah ditranslasi dengan tag <font>.
+     Kita pindahkan semua child-nya ke posisi semula, lalu buang tag <font>-nya. */
+  var fonts = document.querySelectorAll('font.notranslate');
+  fonts.forEach(function(font) {
+    var parent = font.parentNode;
+    if (!parent) return;
+    while (font.firstChild) {
+      parent.insertBefore(font.firstChild, font);
+    }
+    parent.removeChild(font);
+  });
+
+  /* 3. Bersihkan sisa artefak GT */
+  document.body.style.top = '';
+  document.body.style.position = '';
+
+  var banner = document.querySelector('.goog-te-banner-frame');
+  if (banner) banner.style.display = 'none';
+
+  /* 4. Reset dropdown GT ke 'id' tanpa trigger event translate */
+  var sel = document.querySelector('.goog-te-combo');
+  if (sel) sel.value = 'id';
+}
+
+function setLang(lang) {
+  if (lang === _currentLang) return;
+  _currentLang = lang;
+
+  /* Update tombol bahasa di chatbot */
+  var wlId = document.getElementById('wl-id');
+  var wlEn = document.getElementById('wl-en');
+  if (wlId && wlEn) {
+    if (lang === 'id') {
+      wlId.style.background = '#1a3a6e'; wlId.style.color = '#fff';
+      wlEn.style.background = 'none'; wlEn.style.color = '#888';
+    } else {
+      wlEn.style.background = '#1a3a6e'; wlEn.style.color = '#fff';
+      wlId.style.background = 'none'; wlId.style.color = '#888';
+    }
+  }
+
+  if (lang === 'id') {
+    /* Balik ke Indonesia → restore DOM, TANPA reload, chat tetap aman */
+    restoreOriginalLanguage();
+  } else {
+    /* Ke bahasa lain → trigger Google Translate seperti biasa */
+    var tryTranslate = function(attempt) {
+      var sel = document.querySelector('.goog-te-combo');
+      if (sel) {
+        sel.value = lang;
+        sel.dispatchEvent(new Event('change'));
+      } else if (attempt < 20) {
+        setTimeout(function(){ tryTranslate(attempt + 1); }, 200);
+      }
+    };
+    tryTranslate(0);
+  }
+}
+</script>
+<!-- ===== END GOOGLE TRANSLATE ===== -->
 
 </body>
 </html>
