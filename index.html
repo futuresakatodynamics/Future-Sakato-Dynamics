@@ -4562,7 +4562,7 @@ async function getBotReply(userMsg) {
   if (!replied) {
     await new Promise(r => setTimeout(r, 700 + Math.random()*600));
     const tmpl = getTemplateReply(userMsg);
-    const reply = tmpl || 'Terima kasih atas pertanyaannya! 😊\\n\\nBoleh ceritakan sedikit tentang proyek atau kebutuhan desain Anda? Tim kami siap membantu menemukan solusi yang tepat.';
+    const reply = tmpl || 'Terima kasih atas pertanyaannya! 😊\n\nBoleh ceritakan sedikit tentang proyek atau kebutuhan desain Anda? Tim kami siap membantu menemukan solusi yang tepat.';
     waChatHistory.push({ role: 'assistant', content: reply });
     removeTyping();
     waBotTyping = false;

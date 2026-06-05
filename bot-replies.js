@@ -144,6 +144,60 @@ const waTemplates = [
     reply:
       '📐 Kami bisa bantu sesuai ukuran dan spesifikasi proyek Anda.\n\n' +
       'Coba ceritakan: luas tanah, jumlah lantai yang diinginkan, dan fungsi bangunannya. Kami siap bantu!'
+  },
+
+  {
+    keys: /rumah|hunian|tinggal|tempat tinggal/i,
+    reply:
+      '🏠 Kami melayani *Desain Rumah Tinggal* dengan berbagai pilihan:\n\n' +
+      '• Rumah 1 lantai hingga 3 lantai\n' +
+      '• Desain modern, minimalis, tropis, dan lainnya\n' +
+      '• Gambar kerja lengkap + RAB\n\n' +
+      'Berapa luas tanah dan berapa lantai yang Anda rencanakan?'
+  },
+
+  {
+    keys: /desain|rancang|arsitek|arsitektur/i,
+    reply:
+      '✏️ Kami siap membantu *desain dan perencanaan* bangunan Anda!\n\n' +
+      'Layanan kami mencakup hunian, perkantoran, komersial, hingga kawasan industri.\n\n' +
+      'Bangunan apa yang ingin Anda desain?'
+  },
+
+  {
+    keys: /renovasi|renov|ubah rumah|perbaikan rumah/i,
+    reply:
+      '🔨 Kami juga melayani *Renovasi Bangunan*:\n\n' +
+      '• Renovasi rumah tinggal\n' +
+      '• Perluasan bangunan\n' +
+      '• Ubah tampak fasad\n\n' +
+      'Ceritakan kondisi bangunan sekarang dan perubahan yang diinginkan!'
+  },
+
+  {
+    keys: /bangun|pembangunan|konstruksi|mau bikin|mau buat/i,
+    reply:
+      '🏗️ Bagus! Kami siap membantu perencanaan pembangunan Anda dari awal.\n\n' +
+      'Mulai dari desain konsep, gambar kerja, hingga dokumen teknis lengkap.\n\n' +
+      'Bangunan apa yang ingin Anda wujudkan?'
+  },
+
+  {
+    keys: /halo|hai|hi|hello|selamat|pagi|siang|sore|malam|apa kabar/i,
+    reply:
+      '👋 Halo! Selamat datang di *Future Sakato Dynamics Studio*.\n\n' +
+      'Kami siap membantu kebutuhan desain dan perencanaan bangunan Anda.\n\n' +
+      'Ada yang bisa kami bantu?'
+  },
+
+  {
+    keys: /paket|layanan|pilihan|penawaran/i,
+    reply:
+      '📦 Berikut paket layanan kami:\n\n' +
+      '🗺️ *Paket Denah Saja* — gambar denah + fasad\n' +
+      '📐 *Paket Detapo* — denah + detail konstruksi + RAB _(paling populer)_\n' +
+      '🏗️ *Paket Lengkap* — full dokumen teknis + pendampingan\n\n' +
+      'Mau info harga atau detail salah satu paket?'
   }
 
 ];  // ← akhir waTemplates
