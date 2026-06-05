@@ -2663,7 +2663,7 @@ footer {
     <li><a href="#proyek">Proyek<span class="nav-active-popup">Proyek Kami</span></a></li>
     <li><a href="#kontak" class="nav-cta">Hubungi Kami</a></li>
 
-    <li><a href="sipilhub/sipilhub.html">SipilHub</a></li>
+    <li><a href="sipilhub/index.html">SipilHub</a></li>
   </ul>
   <button class="burger" id="burger" aria-label="Menu">
     <span></span><span></span><span></span>
@@ -4063,6 +4063,9 @@ document.addEventListener('keydown', function(ev) {
 })();
 </script>
 
+<!-- ===== BOT REPLIES — edit balasan bot di file ini ===== -->
+<script src="bot-replies.js"></script>
+
 <script>
 // ── LAYANAN CARD CLICK – border biru saat diklik ──
 document.querySelectorAll('.layanan-card').forEach(card => {
@@ -4202,24 +4205,7 @@ const WA_SPAM_LIMIT = 3;
 const WA_SPAM_WINDOW = 4000;
 
 // ── TEMPLATE FALLBACK ──
-const waTemplates = [
-  { keys: /halo|hai|hi|hello|selamat|pagi|siang|sore|malam|apa kabar/i, reply: '👋 Halo! Selamat datang di *Future Sakato Dynamics Studio*.\\n\\nKami adalah studio desain dan perencanaan profesional untuk hunian, perkantoran, kawasan industri, hingga fasilitas publik.\\n\\nAda kebutuhan desain apa yang bisa kami bantu?' },
-  { keys: /harga|biaya|tarif|cost|fee|bayar/i, reply: '💰 Biaya perencanaan kami bervariasi sesuai jenis dan skala proyek.\\n\\n• Desain rumah tinggal: mulai Rp 3 jt\\n• Perkantoran / komersial: mulai Rp 8 jt\\n• Kawasan industri: sesuai kebutuhan\\n\\nSemua estimasi transparan. Proyek apa yang sedang Anda rencanakan?' },
-  { keys: /rumah|hunian|tinggal|perumahan|apartemen|vila/i, reply: '🏠 Kami menyediakan layanan *Desain Hunian* lengkap:\\n\\n• Rumah tinggal 1–3 lantai\\n• Desain interior & eksterior\\n• Gambar kerja siap bangun\\n• RAB & estimasi biaya\\n\\nBoleh ceritakan kebutuhan rumah Anda?' },
-  { keys: /kantor|perkantoran|gedung|ruko|komersial|toko/i, reply: '🏢 Layanan *Desain Perkantoran & Komersial* kami:\\n\\n• Gedung kantor 1–10 lantai\\n• Ruko dan pusat perbelanjaan\\n• Desain representatif & fungsional\\n\\nBisa ceritakan gambaran proyeknya?' },
-  { keys: /industri|pabrik|gudang|warehouse|manufaktur/i, reply: '🏭 Untuk *Perencanaan Kawasan Industri*, kami menangani:\\n\\n• Desain pabrik & gudang\\n• Layout kawasan industri\\n• Perencanaan utilitas & infrastruktur\\n\\nCeritakan kebutuhan industri Anda!' },
-  { keys: /klinik|rumah sakit|puskesmas|kesehatan|medis|dokter/i, reply: '🏥 Kami berpengalaman dalam *Desain Fasilitas Kesehatan*:\\n\\n• Klinik & puskesmas\\n• Ruang periksa & apotek\\n• Standar kesehatan & sanitasi\\n\\nAda proyek fasilitas kesehatan yang ingin direncanakan?' },
-  { keys: /cafe|restoran|hotel|penginapan|resort|kafe/i, reply: '☕ Untuk *Desain Cafe, Restoran & Penginapan*:\\n\\n• Konsep interior modern & estetis\\n• Denah sirkulasi pengunjung optimal\\n• Desain hotel & villa\\n\\nBagaimana konsep yang Anda bayangkan?' },
-  { keys: /sipil|infrastruktur|jalan|jembatan|drainase|air bersih/i, reply: '🔧 Layanan *Perencanaan Sipil & Infrastruktur* kami:\\n\\n• Perencanaan jalan & drainase\\n• Sistem air bersih & sanitasi\\n• Dokumen teknis siap lelang\\n\\nProyek infrastruktur apa yang sedang direncanakan?' },
-  { keys: /proses|alur|langkah|cara|prosedur|bagaimana|gimana/i, reply: '📋 Proses kerja kami sederhana:\\n\\n1️⃣ Konsultasi — ceritakan kebutuhan\\n2️⃣ Brief & kajian — kami pelajari detail\\n3️⃣ Desain konsep — sketsa & rencana awal\\n4️⃣ Revisi — sampai sesuai keinginan\\n5️⃣ Dokumen final — siap bangun\\n\\nSemua bisa online! 💻' },
-  { keys: /lokasi|alamat|dimana|kantor|sijunjung|sumatera/i, reply: '📍 Studio kami di *Sijunjung, Sumatera Barat*, namun melayani seluruh Indonesia secara online.\\n\\nAda yang ingin Anda tanyakan lebih lanjut?' },
-  { keys: /kontak|hubungi|telepon|wa|whatsapp|nomor|email/i, reply: '📞 Untuk berdiskusi langsung, silakan klik tombol *"Hubungi Tim Kami"* di bawah — tim kami siap merespons via WhatsApp.\\n\\nAtau ada pertanyaan lain dulu?' },
-  { keys: /lama|waktu|durasi|berapa lama|kapan selesai|deadline/i, reply: '⏱️ Estimasi waktu pengerjaan:\\n\\n• Desain rumah: *7–14 hari*\\n• Perkantoran: *14–21 hari*\\n• Proyek besar: sesuai kompleksitas\\n\\nAda target waktu tertentu?' },
-  { keys: /revisi|ubah|ganti|tidak suka|kurang|perbaiki/i, reply: '✏️ Setiap paket sudah termasuk revisi desain hingga Anda puas. Kepuasan klien adalah prioritas kami. 💯\\n\\nMau tahu lebih lanjut tentang paket layanan kami?' },
-  { keys: /portofolio|contoh|hasil|proyek|karya|galeri/i, reply: '🖼️ Portofolio kami bisa dilihat di bagian *"Proyek Kami"* di halaman ini.\\n\\nUntuk katalog lengkap dengan detail gambar, tim kami siap mengirimkan setelah konsultasi singkat.' },
-  { keys: /terima kasih|makasih|thanks|mantap|bagus|oke|ok|siap/i, reply: '😊 Sama-sama! Senang bisa membantu.\\n\\nJika ada pertanyaan lain seputar desain dan perencanaan, jangan ragu bertanya ya!' },
-  { keys: /berapa|ukuran|luas|meter|lantai|kamar/i, reply: '📐 Kami bisa bantu sesuai ukuran dan spesifikasi proyek Anda.\\n\\nCoba ceritakan: luas tanah, jumlah lantai yang diinginkan, dan fungsi bangunannya. Kami siap bantu!' }
-];
+// (Didefinisikan di bot-replies.js — edit di sana)
 
 function getTime() {
   return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
@@ -4532,21 +4518,8 @@ async function getBotReply(userMsg) {
     return;
   }
 
-  const systemPrompt = `Kamu adalah asisten virtual dari Future Sakato Dynamics Studio, sebuah studio desain dan perencanaan profesional berbasis di Sijunjung, Sumatera Barat, Indonesia. 
-
-Layanan kami meliputi: desain hunian (rumah tinggal), desain perkantoran, perencanaan kawasan industri, desain fasilitas publik, perencanaan sipil & infrastruktur, desain klinik/fasilitas kesehatan, desain hotel & penginapan, desain cafe & restoran.
-
-Nomor WhatsApp tim kami: +62 851-1703-1202
-Email: futuresakatodynamics@gmail.com
-Lokasi: Sijunjung, Sumatera Barat
-
-Tugasmu:
-- Sambut tamu dengan hangat dan profesional
-- Jawab pertanyaan umum tentang layanan, harga estimasi, proses, dan portofolio
-- Jika pertanyaan sangat spesifik (negosiasi harga detail, pengukuran lapangan, proposal resmi), sarankan untuk melanjutkan ke tim manusia
-- Balas dalam Bahasa Indonesia yang sopan dan profesional
-- Singkat dan jelas, maksimal 3-4 kalimat per balasan
-- Jangan sebut bahwa kamu adalah AI`;
+  // System prompt dibaca dari bot-replies.js
+  const systemPrompt = waBotSystemPrompt;
 
   let replied = false;
 
