@@ -1,1364 +1,1478 @@
-/* ================================================================
-   FUSAKO CHATBOT — Future Sakato Dynamics Studio
-   fusako-chatbot.js  ·  v3.0  ·  File tunggal gabungan
+/* =============================================================
+   CHATBOT FUSAKO STUDIO — chatbot-fusako.js
+   Versi: 2.0 (Alur Pilihan + Input Manual)
 
-   Berisi:
-     A. DATA & TEKS (templates, steps, system prompts)
-     B. FLOW CHATBOT BIASA (alur konsultasi umum)
-     C. FLOW CHATBOT PROMO (alur klaim promo Tipe 50)
-     D. UI ENGINE  (render pesan, typing, opsi)
-     E. PUBLIC API (FusakoChat.init / FusakoChat.startPromo)
-
-   Cara pakai di HTML:
-     <script src="fusako-chatbot.js"></script>
-
-     // Chat biasa:
-     FusakoChat.init({
-       containerSelector: '#wrap',   // opsional, default '#wrap'
-       waNumber: '6282285754080',     // opsional
-     });
-
-     // Dari popup promo — klaim diklik:
-     FusakoChat.startPromo('PROMOTIPE50', {
-       containerSelector: '#chat-panel',
-     });
-
-   Elemen HTML minimal yang dibutuhkan:
-     <div id="wrap">
-       <div id="msgs"></div>
-       <div id="opts"></div>
-       <input id="inp" />
-       <button id="snd">Kirim</button>
-     </div>
-   ================================================================ */
-
-;(function (global) {
-  'use strict';
-
-  /* ──────────────────────────────────────────────────────────────
-     A. DATA & TEKS
-     ────────────────────────────────────────────────────────────── */
-
-  /** Helper: sapaan sesuai jam */
-  function getSapaan() {
-    const h = new Date().getHours();
-    if (h >= 5  && h < 12) return 'Selamat pagi';
-    if (h >= 12 && h < 15) return 'Selamat siang';
-    if (h >= 15 && h < 19) return 'Selamat sore';
-    return 'Selamat malam';
-  }
-
-  /** Waktu HH:MM */
-  function getTime() {
-    const d = new Date();
-    return d.getHours().toString().padStart(2, '0') + ':' +
-           d.getMinutes().toString().padStart(2, '0');
-  }
+   CARA PAKAI DI index.html:
+   1. Tambahkan <script src="chatbot-fusako.js"></script>
+      sebelum </body>
+   2. Pastikan elemen chatbot (waPopup, waInput, dll.)
+      sudah ada di HTML (tidak berubah dari versi sebelumnya)
+   3. Fungsi yang bisa dipanggil dari luar:
+      - sendBotMsg()          → kirim pesan dari input #waInput
+      - window._startPromo(code) → mulai sesi dari popup promo
+   ============================================================= */
 
 
-  /* ── A1. TEMPLATE FALLBACK (pertanyaan di luar alur konsultasi) ── */
-  const waTemplates = [
-    {
-      keys: /harga|biaya|tarif|cost|fee|bayar/i,
-      reply:
-        '💰 Biaya perencanaan kami bervariasi sesuai jenis dan skala proyek.\n\n' +
-        '• Desain rumah tinggal: mulai Rp 3 jt\n' +
-        '• Perkantoran / komersial: mulai Rp 8 jt\n' +
-        '• Kawasan industri: sesuai kebutuhan\n\n' +
-        'Semua estimasi transparan. Proyek apa yang sedang Anda rencanakan?'
-    },
-    {
-      keys: /kantor|perkantoran|gedung|ruko|komersial|toko/i,
-      reply:
-        '🏢 Layanan *Desain Perkantoran & Komersial* kami:\n\n' +
-        '• Gedung kantor 1–10 lantai\n• Ruko dan pusat perbelanjaan\n' +
-        '• Desain representatif & fungsional\n\nBisa ceritakan gambaran proyeknya?'
-    },
-    {
-      keys: /industri|pabrik|gudang|warehouse|manufaktur/i,
-      reply:
-        '🏭 Untuk *Perencanaan Kawasan Industri*, kami menangani:\n\n' +
-        '• Desain pabrik & gudang\n• Layout kawasan industri\n' +
-        '• Perencanaan utilitas & infrastruktur\n\nCeritakan kebutuhan industri Anda!'
-    },
-    {
-      keys: /klinik|rumah sakit|puskesmas|kesehatan|medis|dokter/i,
-      reply:
-        '🏥 Kami berpengalaman dalam *Desain Fasilitas Kesehatan*:\n\n' +
-        '• Klinik & puskesmas\n• Ruang periksa & apotek\n' +
-        '• Standar kesehatan & sanitasi\n\nAda proyek fasilitas kesehatan yang ingin direncanakan?'
-    },
-    {
-      keys: /cafe|restoran|hotel|penginapan|resort|kafe/i,
-      reply:
-        '☕ Untuk *Desain Cafe, Restoran & Penginapan*:\n\n' +
-        '• Konsep interior modern & estetis\n• Denah sirkulasi pengunjung optimal\n' +
-        '• Desain hotel & villa\n\nBagaimana konsep yang Anda bayangkan?'
-    },
-    {
-      keys: /sipil|infrastruktur|jalan|jembatan|drainase|air bersih/i,
-      reply:
-        '🔧 Layanan *Perencanaan Sipil & Infrastruktur* kami:\n\n' +
-        '• Perencanaan jalan & drainase\n• Sistem air bersih & sanitasi\n' +
-        '• Dokumen teknis siap lelang\n\nProyek infrastruktur apa yang sedang direncanakan?'
-    },
-    {
-      keys: /proses|alur|langkah|cara|prosedur|bagaimana|gimana/i,
-      reply:
-        '📋 Proses kerja kami sederhana:\n\n' +
-        '1️⃣ Konsultasi — ceritakan kebutuhan\n' +
-        '2️⃣ Brief & kajian — kami pelajari detail\n' +
-        '3️⃣ Desain konsep — sketsa & rencana awal\n' +
-        '4️⃣ Revisi — sampai sesuai keinginan\n' +
-        '5️⃣ Dokumen final — siap bangun\n\nSemua bisa online! 💻'
-    },
-    {
-      keys: /lokasi|alamat|dimana|sijunjung|sumatera/i,
-      reply:
-        '📍 Studio kami di *Sijunjung, Sumatera Barat*, namun melayani seluruh Indonesia secara online.\n\nAda yang ingin Anda tanyakan lebih lanjut?'
-    },
-    {
-      keys: /kontak|hubungi|telepon|wa|whatsapp|nomor|email/i,
-      reply:
-        '📞 Untuk berdiskusi langsung, silakan klik tombol *"Hubungi Tim Kami"* di bawah — tim kami siap merespons via WhatsApp.\n\nAtau ada pertanyaan lain dulu?'
-    },
-    {
-      keys: /lama|waktu|durasi|berapa lama|kapan selesai|deadline/i,
-      reply:
-        '⏱️ Estimasi waktu pengerjaan:\n\n' +
-        '• Desain rumah: *7–14 hari*\n• Perkantoran: *14–21 hari*\n' +
-        '• Proyek besar: sesuai kompleksitas\n\nAda target waktu tertentu?'
-    },
-    {
-      keys: /revisi|ubah|ganti|tidak suka|kurang|perbaiki/i,
-      reply:
-        '✏️ Setiap paket sudah termasuk revisi desain hingga Anda puas. Kepuasan klien adalah prioritas kami. 💯\n\nMau tahu lebih lanjut tentang paket layanan kami?'
-    },
-    {
-      keys: /portofolio|contoh|hasil|proyek|karya|galeri/i,
-      reply:
-        '🖼️ Portofolio kami bisa dilihat di bagian *"Proyek Kami"* di halaman ini.\n\nUntuk katalog lengkap dengan detail gambar, tim kami siap mengirimkan setelah konsultasi singkat.'
-    },
-    {
-      keys: /terima kasih|makasih|thanks|mantap|bagus|oke|ok|siap/i,
-      reply:
-        '😊 Sama-sama! Senang bisa membantu.\n\nJika ada pertanyaan lain seputar desain dan perencanaan, jangan ragu bertanya ya!'
-    },
-    {
-      keys: /paket|layanan|pilihan|penawaran/i,
-      reply:
-        '📦 Berikut paket layanan kami:\n\n' +
-        '🗺️ *Paket Denah Saja* — gambar denah + fasad\n' +
-        '📐 *Paket Detapo* — denah + detail konstruksi + RAB _(paling populer)_\n' +
-        '🏗️ *Paket Lengkap* — full dokumen teknis + pendampingan\n\n' +
-        'Mau info harga atau detail salah satu paket?'
-    },
-    {
-      keys: /renovasi|renov|ubah rumah|perbaikan rumah/i,
-      reply:
-        '🔨 Kami juga melayani *Renovasi Bangunan*:\n\n' +
-        '• Renovasi rumah tinggal\n• Perluasan bangunan\n• Ubah tampak fasad\n\n' +
-        'Ceritakan kondisi bangunan sekarang dan perubahan yang diinginkan!'
-    },
-    {
-      keys: /rumah|hunian|tinggal|tempat tinggal/i,
-      reply:
-        '🏠 Kami melayani *Desain Rumah Tinggal* dengan berbagai pilihan:\n\n' +
-        '• Rumah 1 lantai hingga 3 lantai\n• Desain modern, minimalis, tropis, dan lainnya\n' +
-        '• Gambar kerja lengkap + RAB\n\nBerapa luas tanah dan berapa lantai yang Anda rencanakan?'
-    },
-    {
-      keys: /desain|rancang|arsitek|arsitektur/i,
-      reply:
-        '✏️ Kami siap membantu *desain dan perencanaan* bangunan Anda!\n\n' +
-        'Layanan kami mencakup hunian, perkantoran, komersial, hingga kawasan industri.\n\nBangunan apa yang ingin Anda desain?'
-    },
-    {
-      keys: /bangun|pembangunan|konstruksi|mau bikin|mau buat/i,
-      reply:
-        '🏗️ Bagus! Kami siap membantu perencanaan pembangunan Anda dari awal.\n\n' +
-        'Mulai dari desain konsep, gambar kerja, hingga dokumen teknis lengkap.\n\nBangunan apa yang ingin Anda wujudkan?'
-    },
-    {
-      keys: /halo|hai|hi|hello|selamat|pagi|siang|sore|malam|apa kabar/i,
-      reply:
-        '👋 Halo! Selamat datang di *Future Sakato Dynamics Studio*.\n\n' +
-        'Kami siap membantu kebutuhan desain dan perencanaan bangunan Anda.\n\nAda yang bisa kami bantu?'
-    },
-    {
-      keys: /berapa|ukuran|luas|meter|lantai|kamar/i,
-      reply:
-        '📐 Kami bisa bantu sesuai ukuran dan spesifikasi proyek Anda.\n\n' +
-        'Coba ceritakan: luas tanah, jumlah lantai yang diinginkan, dan fungsi bangunannya. Kami siap bantu!'
-    }
-  ];
+/* ─────────────────────────────────────────────────────────────
+   0. KONFIGURASI
+   ───────────────────────────────────────────────────────────── */
+const FUSAKO_CONFIG = {
+  waNumber:    '6285117031202',       /* nomor WA admin tanpa + */
+  promoCode:   'PROMOTIPE50',         /* kode promo aktif       */
+  promoHarga:  'Rp 4.499.000',        /* harga promo            */
+  promoHargaAsli: 'Rp 8.000.000',     /* harga asli             */
+  promoMaxLuas: 50,                   /* max luas promo (m²)    */
+  promoHemat:  '44%',                 /* persentase hemat       */
+  promoSlot:   2,                     /* kuota slot promo       */
+
+  /* Warna header chatbot saat mode promo */
+  colorPromo:  '#d4930e',
+  colorNormal: '#075E54',
+
+  /* Gunakan Claude API atau fallback template */
+  useClaudeAPI: true,
+};
 
 
-  /* ── A2. ALUR KONSULTASI HUNIAN ── */
-  const waConsultSteps = [
-    {
-      id: 'welcome',
-      getReply: () =>
-        `${getSapaan()}! 👋\n\nTerima kasih telah menghubungi *Future Sakato Dynamics Studio*.\n\nApakah Anda ingin konsultasi desain rumah, renovasi, atau bangunan lainnya?`,
-      saveKey: 'jenis_konsultasi',
-      nextStep: 'luas_tanah'
-    },
-    {
-      id: 'luas_tanah',
-      getReply: () =>
-        'Bisa disebutkan *luas tanah atau ukuran lahan*-nya?\n\n_Contoh: 8×12, 10×15, 120 m², dll._',
-      saveKey: 'luas_tanah',
-      nextStep: 'jumlah_lantai'
-    },
-    {
-      id: 'jumlah_lantai',
-      getReply: () =>
-        'Berapa *jumlah lantai* yang direncanakan?\n\n• 1 lantai\n• 2 lantai\n• 3 lantai atau lebih\n• Belum menentukan',
-      saveKey: 'jumlah_lantai',
-      nextStep: 'kamar_tidur'
-    },
-    {
-      id: 'kamar_tidur',
-      getReply: () => 'Berapa *kamar tidur* yang dibutuhkan?',
-      saveKey: 'kamar_tidur',
-      nextStep: 'kamar_mandi'
-    },
-    {
-      id: 'kamar_mandi',
-      getReply: () => 'Berapa *kamar mandi* yang dibutuhkan?',
-      saveKey: 'kamar_mandi',
-      nextStep: 'penghuni'
-    },
-    {
-      id: 'penghuni',
-      getReply: () =>
-        'Siapa yang akan *menempati* rumah tersebut?\n\n• Pasangan suami istri\n• Keluarga kecil\n• Keluarga besar\n• Orang tua dan anak\n• Investasi / disewakan\n• Lainnya',
-      saveKey: 'penghuni',
-      nextStep: 'garasi'
-    },
-    {
-      id: 'garasi',
-      getReply: () =>
-        'Apakah membutuhkan *garasi atau carport*?\n\n• Tidak ada\n• 1 mobil\n• 2 mobil\n• 3 mobil atau lebih',
-      saveKey: 'garasi',
-      nextStep: 'ruangan_tambahan'
-    },
-    {
-      id: 'ruangan_tambahan',
-      getReply: () =>
-        'Ruangan tambahan apa yang dibutuhkan?\n\n_Boleh sebutkan lebih dari satu. Contoh:_\n' +
-        '• Mushola\n• Ruang kerja / home office\n• Ruang tamu\n• Ruang laundry\n' +
-        '• Gudang\n• Ruang usaha\n• Balkon\n• Rooftop\n• Tidak ada',
-      saveKey: 'ruangan_tambahan',
-      nextStep: 'gaya_desain'
-    },
-    {
-      id: 'gaya_desain',
-      getReply: () =>
-        'Gaya *desain* yang disukai?\n\n• Modern\n• Minimalis\n• Tropis\n' +
-        '• Industrial\n• Klasik\n• Scandinavian\n• Japandi\n• Belum tahu',
-      saveKey: 'gaya_desain',
-      nextStep: 'status_tanah'
-    },
-    {
-      id: 'status_tanah',
-      getReply: () => 'Apakah *sudah memiliki tanah*?\n\n• Sudah\n• Belum',
-      saveKey: 'status_tanah',
-      nextStep: 'lokasi'
-    },
-    {
-      id: 'lokasi',
-      getReply: () =>
-        '*Lokasi pembangunan* di daerah mana?\n\n_Contoh: Padang, Sijunjung, Jakarta Selatan, Makassar, dll._',
-      saveKey: 'lokasi',
-      nextStep: 'kondisi_lahan'
-    },
-    {
-      id: 'kondisi_lahan',
-      getReply: () =>
-        'Bagaimana *kondisi lahan* saat ini?\n\n• Tanah kosong\n• Ada bangunan lama\n' +
-        '• Renovasi rumah lama\n• Kavling perumahan\n• Hook / pojok\n• Belum tahu',
-      saveKey: 'kondisi_lahan',
-      nextStep: 'jadwal'
-    },
-    {
-      id: 'jadwal',
-      getReply: () =>
-        'Kapan *rencana pembangunan* dimulai?\n\n• Secepatnya\n• 1–3 bulan\n' +
-        '• 3–6 bulan\n• Lebih dari 6 bulan\n• Masih mencari referensi',
-      saveKey: 'jadwal',
-      nextStep: 'anggaran'
-    },
-    {
-      id: 'anggaran',
-      getReply: () =>
-        'Berapa *kisaran anggaran pembangunan* yang disiapkan?\n\n' +
-        '• Di bawah 300 juta\n• 300 – 500 juta\n• 500 juta – 1 miliar\n' +
-        '• 1 – 2 miliar\n• Di atas 2 miliar\n• Belum menentukan',
-      saveKey: 'anggaran',
-      nextStep: 'catatan'
-    },
-    {
-      id: 'catatan',
-      getReply: () =>
-        'Apakah ada *kebutuhan khusus* yang ingin disampaikan?\n\n_Contoh:_\n' +
-        '• Banyak ventilasi / rumah terang\n• Ramah lansia / ramah anak\n' +
-        '• Banyak taman\n• Bisa dikembangkan ke 2 lantai\n• Hemat biaya\n• Tidak ada catatan khusus',
-      saveKey: 'catatan',
-      nextStep: 'summary'
-    }
-  ];
+/* ─────────────────────────────────────────────────────────────
+   1. TEMPLATE FALLBACK
+      Dipakai jika API Claude tidak tersedia / gagal merespons.
+      Hanya berlaku untuk chat DARI PROMO atau chat umum
+      (bukan alur konsultasi step-by-step langsung).
+   ───────────────────────────────────────────────────────────── */
+const waTemplates = [
+
+  {
+    keys: /harga|biaya|tarif|cost|fee|bayar/i,
+    reply:
+      '💰 Biaya perencanaan kami bervariasi sesuai jenis dan skala proyek.\n\n' +
+      '🏠 *Desain Lengkap (Rumah / Villa / Hotel / Apartemen):*\n' +
+      '   • Paket Lengkap: Rp 95.000/m²\n' +
+      '   • Paket Detapo: Rp 45.000/m²\n\n' +
+      '🏪 *Desain Lengkap (Kos-kosan / Ruko / Rukan):*\n' +
+      '   • Paket Lengkap: Rp 65.000/m²\n' +
+      '   • Paket Detapo: Rp 32.000/m²\n\n' +
+      '🗺️ *Paket Denah Saja (1–3 lantai):* Rp 300.000 (flat)\n\n' +
+      'Semua estimasi transparan. Proyek apa yang sedang Anda rencanakan?'
+  },
+
+  {
+    keys: /kantor|perkantoran|gedung|ruko|komersial|toko/i,
+    reply:
+      '🏢 Layanan *Desain Perkantoran & Komersial* kami:\n\n' +
+      '• Gedung kantor 1–10 lantai\n' +
+      '• Ruko dan pusat perbelanjaan\n' +
+      '• Desain representatif & fungsional\n\n' +
+      'Bisa ceritakan gambaran proyeknya?'
+  },
+
+  {
+    keys: /industri|pabrik|gudang|warehouse|manufaktur/i,
+    reply:
+      '🏭 Untuk *Perencanaan Kawasan Industri*, kami menangani:\n\n' +
+      '• Desain pabrik & gudang\n' +
+      '• Layout kawasan industri\n' +
+      '• Perencanaan utilitas & infrastruktur\n\n' +
+      'Ceritakan kebutuhan industri Anda!'
+  },
+
+  {
+    keys: /klinik|rumah sakit|puskesmas|kesehatan|medis|dokter/i,
+    reply:
+      '🏥 Kami berpengalaman dalam *Desain Fasilitas Kesehatan*:\n\n' +
+      '• Klinik & puskesmas\n' +
+      '• Ruang periksa & apotek\n' +
+      '• Standar kesehatan & sanitasi\n\n' +
+      'Ada proyek fasilitas kesehatan yang ingin direncanakan?'
+  },
+
+  {
+    keys: /cafe|restoran|hotel|penginapan|resort|kafe/i,
+    reply:
+      '☕ Untuk *Desain Cafe, Restoran & Penginapan*:\n\n' +
+      '• Konsep interior modern & estetis\n' +
+      '• Denah sirkulasi pengunjung optimal\n' +
+      '• Desain hotel & villa\n\n' +
+      'Bagaimana konsep yang Anda bayangkan?'
+  },
+
+  {
+    keys: /sipil|infrastruktur|jalan|jembatan|drainase|air bersih/i,
+    reply:
+      '🔧 Layanan *Perencanaan Sipil & Infrastruktur* kami:\n\n' +
+      '• Perencanaan jalan & drainase\n' +
+      '• Sistem air bersih & sanitasi\n' +
+      '• Dokumen teknis siap lelang\n\n' +
+      'Proyek infrastruktur apa yang sedang direncanakan?'
+  },
+
+  {
+    keys: /proses|alur|langkah|cara|prosedur|bagaimana|gimana/i,
+    reply:
+      '📋 Proses kerja kami sederhana:\n\n' +
+      '1️⃣ Konsultasi — ceritakan kebutuhan\n' +
+      '2️⃣ Brief & kajian — kami pelajari detail\n' +
+      '3️⃣ Desain konsep — sketsa & rencana awal\n' +
+      '4️⃣ Revisi — sampai sesuai keinginan\n' +
+      '5️⃣ Dokumen final — siap bangun\n\n' +
+      'Semua bisa online! 💻'
+  },
+
+  {
+    keys: /lokasi|alamat|dimana|sijunjung|sumatera/i,
+    reply:
+      '📍 Studio kami di *Sijunjung, Sumatera Barat*, namun melayani seluruh Indonesia secara online.\n\n' +
+      'Ada yang ingin Anda tanyakan lebih lanjut?'
+  },
+
+  {
+    keys: /kontak|hubungi|telepon|wa|whatsapp|nomor|email/i,
+    reply:
+      '📞 Untuk berdiskusi langsung, silakan klik tombol *"Hubungi Tim Kami"* — tim kami siap merespons via WhatsApp.\n\n' +
+      'Atau ada pertanyaan lain dulu?'
+  },
+
+  {
+    keys: /lama|waktu|durasi|berapa lama|kapan selesai|deadline/i,
+    reply:
+      '⏱️ Estimasi waktu pengerjaan:\n\n' +
+      '• Desain rumah: *7–30 hari*\n' +
+      '• Perkantoran: *14–90 hari*\n' +
+      '• Proyek besar: sesuai kompleksitas\n\n' +
+      'Ada target waktu tertentu?'
+  },
+
+  {
+    keys: /revisi|ubah|ganti|tidak suka|kurang|perbaiki/i,
+    reply:
+      '✏️ Setiap paket sudah termasuk revisi desain. Kepuasan klien adalah prioritas kami. 💯\n\n' +
+      'Mau tahu lebih lanjut tentang paket layanan kami?'
+  },
+
+  {
+    keys: /portofolio|contoh|hasil|proyek|karya|galeri/i,
+    reply:
+      '🖼️ Portofolio kami bisa dilihat di bagian *"Proyek Kami"* di halaman ini.\n\n' +
+      'Untuk katalog lengkap, tim kami siap mengirimkan setelah konsultasi singkat.'
+  },
+
+  {
+    keys: /terima kasih|makasih|thanks|mantap|bagus|oke|ok|siap/i,
+    reply:
+      '😊 Sama-sama! Senang bisa membantu.\n\n' +
+      'Jika ada pertanyaan lain seputar desain dan perencanaan, jangan ragu bertanya ya!'
+  },
+
+  {
+    keys: /berapa|ukuran|luas|meter|lantai|kamar/i,
+    reply:
+      '📐 Kami bisa bantu sesuai ukuran dan spesifikasi proyek Anda.\n\n' +
+      'Coba ceritakan: luas tanah, jumlah lantai, dan fungsi bangunannya.'
+  },
+
+  {
+    keys: /rumah|hunian|tinggal|tempat tinggal/i,
+    reply:
+      '🏠 Kami melayani *Desain Rumah Tinggal* dengan berbagai pilihan:\n\n' +
+      '• Rumah 1 lantai hingga 3 lantai\n' +
+      '• Desain modern, minimalis, tropis, dan lainnya\n' +
+      '• Gambar kerja lengkap + RAB\n\n' +
+      'Berapa luas tanah dan berapa lantai yang Anda rencanakan?'
+  },
+
+  {
+    keys: /desain|rancang|arsitek|arsitektur/i,
+    reply:
+      '✏️ Kami siap membantu *desain dan perencanaan* bangunan Anda!\n\n' +
+      'Layanan kami mencakup hunian, perkantoran, komersial, hingga kawasan industri.\n\n' +
+      'Bangunan apa yang ingin Anda desain?'
+  },
+
+  {
+    keys: /renovasi|renov|ubah rumah|perbaikan rumah/i,
+    reply:
+      '🔨 Kami juga melayani *Renovasi Bangunan*:\n\n' +
+      '• Renovasi rumah tinggal\n' +
+      '• Perluasan bangunan\n' +
+      '• Ubah tampak fasad\n\n' +
+      'Ceritakan kondisi bangunan sekarang dan perubahan yang diinginkan!'
+  },
+
+  {
+    keys: /bangun|pembangunan|konstruksi|mau bikin|mau buat/i,
+    reply:
+      '🏗️ Bagus! Kami siap membantu perencanaan pembangunan Anda dari awal.\n\n' +
+      'Mulai dari desain konsep, gambar kerja, hingga dokumen teknis lengkap.\n\n' +
+      'Bangunan apa yang ingin Anda wujudkan?'
+  },
+
+  {
+    keys: /halo|hai|hi|hello|selamat|pagi|siang|sore|malam|apa kabar/i,
+    reply:
+      '👋 Halo! Selamat datang di *Fusako Studio*.\n\n' +
+      'Kami siap membantu kebutuhan desain dan perencanaan bangunan Anda.\n\n' +
+      'Ada yang bisa kami bantu?'
+  },
+
+  {
+    keys: /paket|layanan|pilihan|penawaran/i,
+    reply:
+      '📦 Berikut paket layanan kami:\n\n' +
+      '🗺️ *Paket Denah Saja* — gambar denah + fasad\n' +
+      '📐 *Paket Detapo* — denah + detail konstruksi + RAB _(paling populer)_\n' +
+      '🏗️ *Paket Lengkap* — full dokumen teknis + pendampingan\n\n' +
+      'Mau info harga atau detail salah satu paket?'
+  },
+
+];   /* ← akhir waTemplates */
 
 
-  /* ── A3. ALUR KONSULTASI NON-HUNIAN ── */
-  const waConsultStepsNonHunian = [
-    {
-      id: 'luas_tanah',
-      getReply: () =>
-        'Bisa disebutkan *luas lahan atau bangunan* yang direncanakan?\n\n_Contoh: 200 m², 15×30, dll._',
-      saveKey: 'luas_tanah',
-      nextStep: 'jumlah_lantai'
-    },
-    {
-      id: 'jumlah_lantai',
-      getReply: () =>
-        'Berapa *jumlah lantai* yang direncanakan?\n\n• 1 lantai\n• 2–4 lantai\n• 5 lantai atau lebih\n• Belum menentukan',
-      saveKey: 'jumlah_lantai',
-      nextStep: 'fungsi_ruang'
-    },
-    {
-      id: 'fungsi_ruang',
-      getReply: () =>
-        'Ruangan atau fasilitas utama apa yang dibutuhkan?\n\n' +
-        '_Sebutkan yang relevan. Contoh: ruang meeting, area pamer,\ndapur, loker karyawan, mushola, parkir, dll._',
-      saveKey: 'ruangan_tambahan',
-      nextStep: 'gaya_desain'
-    },
-    {
-      id: 'gaya_desain',
-      getReply: () =>
-        'Gaya *desain* yang diinginkan?\n\n• Modern\n• Minimalis\n• Industrial\n• Klasik\n• Tropis\n• Belum tahu',
-      saveKey: 'gaya_desain',
-      nextStep: 'status_tanah'
-    },
-    {
-      id: 'status_tanah',
-      getReply: () => 'Apakah *sudah memiliki lahan*?\n\n• Sudah\n• Belum',
-      saveKey: 'status_tanah',
-      nextStep: 'lokasi'
-    },
-    {
-      id: 'lokasi',
-      getReply: () =>
-        '*Lokasi pembangunan* di daerah mana?\n\n_Contoh: Padang, Jakarta Utara, Surabaya, dll._',
-      saveKey: 'lokasi',
-      nextStep: 'kondisi_lahan'
-    },
-    {
-      id: 'kondisi_lahan',
-      getReply: () =>
-        'Bagaimana *kondisi lahan* saat ini?\n\n• Tanah kosong\n• Ada bangunan lama\n• Renovasi bangunan lama\n• Belum tahu',
-      saveKey: 'kondisi_lahan',
-      nextStep: 'jadwal'
-    },
-    {
-      id: 'jadwal',
-      getReply: () =>
-        'Kapan *rencana pembangunan* dimulai?\n\n• Secepatnya\n• 1–3 bulan\n' +
-        '• 3–6 bulan\n• Lebih dari 6 bulan\n• Masih mencari referensi',
-      saveKey: 'jadwal',
-      nextStep: 'anggaran'
-    },
-    {
-      id: 'anggaran',
-      getReply: () =>
-        'Berapa *kisaran anggaran pembangunan* yang disiapkan?\n\n' +
-        '• Di bawah 500 juta\n• 500 juta – 1 miliar\n• 1 – 3 miliar\n• Di atas 3 miliar\n• Belum menentukan',
-      saveKey: 'anggaran',
-      nextStep: 'catatan'
-    },
-    {
-      id: 'catatan',
-      getReply: () =>
-        'Apakah ada *kebutuhan khusus* lainnya?\n\n' +
-        '_Contoh: hemat energi, parkir luas, representatif untuk klien,\nramah difabel, fasad korporat, dll._\nAtau ketik: *Tidak ada*',
-      saveKey: 'catatan',
-      nextStep: 'summary'
-    }
-  ];
+/* ─────────────────────────────────────────────────────────────
+   2. ALUR KONSULTASI STEP-BY-STEP (LANGSUNG / BIASA)
+      Berlaku saat user buka chat langsung (bukan dari promo).
+      Setiap step memiliki:
+        id        → identifier unik step
+        msg       → fungsi yang mengembalikan teks pertanyaan
+        opts      → array pilihan tombol { label, value, manual? }
+        save      → key untuk menyimpan jawaban ke state.data
+        next      → fungsi(value) yang mengembalikan id step berikutnya
+   ───────────────────────────────────────────────────────────── */
+const waConsultSteps = [
 
+  {
+    id: 'welcome',
+    msg: () => {
+      const s = _getSapaan();
+      return `${s}! 👋\n\nSelamat datang di *Fusako Studio*.\n\nKami membantu layanan desain rumah, villa, ruko, kantor, interior, renovasi, hingga perencanaan pembangunan.\n\nApa yang ingin Anda konsultasikan?`;
+    },
+    opts: [
+      { label: '🏠 Desain Rumah',           value: 'Desain Rumah' },
+      { label: '🏡 Desain Villa',            value: 'Desain Villa' },
+      { label: '🏢 Desain Kantor',           value: 'Desain Kantor' },
+      { label: '🏪 Desain Ruko/Toko',        value: 'Desain Ruko/Toko' },
+      { label: '🛋️ Desain Interior',        value: 'Desain Interior' },
+      { label: '🔨 Renovasi Bangunan',       value: 'Renovasi Bangunan' },
+      { label: '📋 Konsultasi Perencanaan',  value: 'Konsultasi Perencanaan' },
+      { label: '✏️ Ketik sendiri...',        value: null, manual: true },
+    ],
+    save: 'jenis',
+    next: (v) => {
+      const non = /kantor|ruko|toko|villa|interior|renovasi|perencanaan/i.test(v);
+      window._consultState.mode = non ? 'non_hunian' : 'hunian';
+      return 'status_lahan';
+    },
+  },
 
-  /* ── A4. FLOW CHATBOT BIASA (chatbot_fusako_v2) ── */
-  const FLOW_BIASA = {
-    welcome: {
-      msg: () =>
-        `${getSapaan()}! 👋\n\nSelamat datang di *Fusako Studio*.\n\nKami membantu layanan desain rumah, villa, ruko, kantor, interior, renovasi, hingga perencanaan pembangunan.\n\nApa yang ingin Anda konsultasikan?`,
-      opts: [
-        { label: '🏠 Desain Rumah',           value: 'Desain Rumah' },
-        { label: '🏡 Desain Villa',            value: 'Desain Villa' },
-        { label: '🏢 Desain Kantor',           value: 'Desain Kantor' },
-        { label: '🏪 Desain Ruko/Toko',        value: 'Desain Ruko/Toko' },
-        { label: '🛋️ Desain Interior',         value: 'Desain Interior' },
-        { label: '🔨 Renovasi Bangunan',       value: 'Renovasi Bangunan' },
-        { label: '📋 Konsultasi Perencanaan',  value: 'Konsultasi Perencanaan' },
-        { label: '✏️ Ketik sendiri...',        value: null, manual: true },
-      ],
-      save: 'jenis',
-      next: (v) => {
-        const non = /kantor|ruko|toko|villa|interior|renovasi|perencanaan/i.test(v);
-        return non ? 'tujuan_non' : 'status_lahan';
+  {
+    id: 'status_lahan',
+    msg: () => 'Baik, kami siap membantu.\n\nApakah Anda sudah memiliki lahan?',
+    opts: [
+      { label: '✅ Sudah ada lahan',         value: 'Sudah ada lahan' },
+      { label: '⏳ Sedang mencari lahan',    value: 'Sedang mencari lahan' },
+      { label: '❌ Belum memiliki lahan',    value: 'Belum memiliki lahan' },
+    ],
+    save: 'status_lahan',
+    next: (v) => /belum|cari/i.test(v) ? 'belum_lahan' : 'luas_lahan',
+  },
+
+  {
+    id: 'belum_lahan',
+    msg: () =>
+      'Tidak masalah. Banyak klien kami berkonsultasi sebelum membeli lahan untuk mengetahui ukuran yang ideal.\n\n' +
+      'Boleh kami tahu:\n' +
+      '📌 Berapa kamar tidur yang diinginkan?\n' +
+      '📌 Berapa lantai yang direncanakan?\n' +
+      '📌 Berapa kebutuhan parkir kendaraan?\n\n' +
+      '_Silakan ketik jawaban Anda._',
+    opts: [{ label: '✏️ Ketik kebutuhan saya...', value: null, manual: true }],
+    save: 'kebutuhan_awal',
+    next: () => 'layanan',
+  },
+
+  {
+    id: 'luas_lahan',
+    msg: () => 'Berapa perkiraan *luas lahan* yang dimiliki?\n\n_Contoh: 6×12 m, 8×15 m, 120 m², dll._',
+    opts: [
+      { label: '6×12 m',  value: '6×12 meter' },
+      { label: '8×15 m',  value: '8×15 meter' },
+      { label: '10×20 m', value: '10×20 meter' },
+      { label: '✏️ Ukuran lain...', value: null, manual: true },
+    ],
+    save: 'luas',
+    next: () => 'kawasan',
+  },
+
+  {
+    id: 'kawasan',
+    msg: () => 'Lahan berada di kawasan apa?',
+    opts: [
+      { label: '🏘️ Perumahan',      value: 'Perumahan' },
+      { label: '🌳 Pedesaan',       value: 'Pedesaan' },
+      { label: '🏙️ Perkotaan',     value: 'Perkotaan' },
+      { label: '🏖️ Kawasan wisata', value: 'Kawasan wisata' },
+      { label: '✏️ Lainnya...', value: null, manual: true },
+    ],
+    save: 'kawasan',
+    next: () => window._consultState.mode === 'non_hunian' ? 'tujuan_non' : 'tujuan',
+  },
+
+  {
+    id: 'tujuan',
+    msg: () => 'Rumah yang direncanakan akan digunakan untuk?',
+    opts: [
+      { label: '👨‍👩‍👧‍👦 Hunian keluarga',    value: 'Hunian keluarga' },
+      { label: '💼 Investasi',               value: 'Investasi' },
+      { label: '🏠 Rumah kontrakan',         value: 'Rumah kontrakan' },
+      { label: '🏡 Rumah pensiun',           value: 'Rumah pensiun' },
+      { label: '🔄 Hunian + usaha',          value: 'Kombinasi hunian dan usaha' },
+    ],
+    save: 'tujuan',
+    next: () => 'kamar',
+  },
+
+  {
+    id: 'tujuan_non',
+    msg: () =>
+      'Bangunan akan digunakan untuk tujuan apa?\n\n_Contoh: kantor operasional, toko retail, cafe, guest house, gudang._',
+    opts: [
+      { label: '🏢 Kantor operasional',  value: 'Kantor operasional' },
+      { label: '🏪 Toko / retail',       value: 'Toko / retail' },
+      { label: '☕ Cafe / restoran',     value: 'Cafe / restoran' },
+      { label: '🏨 Penginapan',          value: 'Penginapan / guest house' },
+      { label: '🏭 Gudang / industri',   value: 'Gudang / industri' },
+      { label: '✏️ Lainnya...',          value: null, manual: true },
+    ],
+    save: 'tujuan',
+    next: () => 'lantai',
+  },
+
+  {
+    id: 'kamar',
+    msg: () => 'Berapa *kamar tidur* yang diinginkan?',
+    opts: [
+      { label: '2 kamar', value: '2 kamar tidur' },
+      { label: '3 kamar', value: '3 kamar tidur' },
+      { label: '4 kamar', value: '4 kamar tidur' },
+      { label: '> 4 kamar', value: 'Lebih dari 4 kamar tidur' },
+    ],
+    save: 'kamar',
+    next: () => 'ruang_khusus',
+  },
+
+  {
+    id: 'ruang_khusus',
+    msg: () =>
+      'Selain kamar tidur, ada *ruang khusus* yang diinginkan?\n\n' +
+      '_Contoh: ruang kerja, mushola, taman belakang, garasi 2 mobil, rooftop._',
+    opts: [
+      { label: 'Ruang kerja',    value: 'Ruang kerja' },
+      { label: 'Mushola',        value: 'Mushola' },
+      { label: 'Taman belakang', value: 'Taman belakang' },
+      { label: 'Garasi 2 mobil', value: 'Garasi 2 mobil' },
+      { label: '✏️ Sebutkan...', value: null, manual: true },
+      { label: 'Tidak ada',      value: 'Tidak ada' },
+    ],
+    save: 'ruang_khusus',
+    next: () => 'konsep',
+  },
+
+  {
+    id: 'konsep',
+    msg: () => 'Konsep *desain* yang disukai?',
+    opts: [
+      { label: '🏠 Minimalis modern',       value: 'Minimalis modern' },
+      { label: '🌿 Tropis modern',          value: 'Tropis modern' },
+      { label: '🏛️ Klasik',               value: 'Klasik' },
+      { label: '🧱 Industrial',            value: 'Industrial' },
+      { label: '✨ Modern luxury',          value: 'Modern luxury' },
+      { label: '🤔 Minta rekomendasi',     value: 'Belum tahu, ingin rekomendasi' },
+    ],
+    save: 'konsep',
+    next: () => 'lantai',
+  },
+
+  {
+    id: 'lantai',
+    msg: () => 'Bangunan direncanakan berapa *lantai*?',
+    opts: [
+      { label: '1 lantai',         value: '1 lantai' },
+      { label: '2 lantai',         value: '2 lantai' },
+      { label: '3 lantai',         value: '3 lantai' },
+      { label: 'Belum ditentukan', value: 'Belum ditentukan' },
+    ],
+    save: 'lantai',
+    next: () => 'anggaran',
+  },
+
+  {
+    id: 'anggaran',
+    msg: () => 'Perkiraan *anggaran pembangunan*?\n\n_Jika belum pasti, pilih estimasi terdekat._',
+    opts: [
+      { label: '< 300 juta',     value: 'Di bawah 300 juta' },
+      { label: '300–500 juta',   value: '300–500 juta' },
+      { label: '500 jt–1 M',    value: '500 juta–1 miliar' },
+      { label: '1–2 M',         value: '1–2 miliar' },
+      { label: '> 2 M',         value: 'Di atas 2 miliar' },
+      { label: 'Belum tahu',    value: 'Belum mengetahui' },
+    ],
+    save: 'anggaran',
+    next: () => 'layanan',
+  },
+
+  {
+    id: 'layanan',
+    msg: () => 'Layanan apa yang paling Anda butuhkan?',
+    opts: [
+      { label: '📐 Desain Denah',           value: 'Desain Denah' },
+      { label: '🏠 Arsitektur Lengkap',     value: 'Desain Arsitektur Lengkap' },
+      { label: '📋 RAB',                    value: 'RAB Perkiraan Biaya' },
+      { label: '🛋️ Desain Interior',       value: 'Desain Interior' },
+      { label: '📄 Gambar Kerja Teknis',    value: 'Gambar Kerja Teknis' },
+      { label: '🤝 Konsultasi Awal',        value: 'Konsultasi Awal' },
+    ],
+    save: 'layanan',
+    next: () => 'paket_pilih',
+  },
+
+  {
+    id: 'paket_pilih',
+    msg: (data) => {
+      const lahan = (data && data.luas) ? data.luas : '';
+      const isNonHunian = (window._consultState && window._consultState.mode === 'non_hunian');
+      const tarifLengkap = isNonHunian ? 'Rp 65.000/m²' : 'Rp 95.000/m²';
+      const tarifDetapo  = isNonHunian ? 'Rp 32.000/m²' : 'Rp 45.000/m²';
+      const jenisLabel   = isNonHunian ? '(Kos-kosan / Ruko / Rukan)' : '(Rumah Tinggal / Villa / Hotel / Apartemen)';
+      return (
+        '📦 *Pilih Paket Layanan Kami:*\n' +
+        `_${jenisLabel}_\n\n` +
+        '🗺️ *Paket Denah Saja* — Rp 300.000\n' +
+        '   Gambar denah lantai, max 3 lantai\n\n' +
+        `📐 *Paket Detapo* — ${tarifDetapo}\n` +
+        '   Denah + detail konstruksi + RAB\n' +
+        '   _Paling populer!_\n\n' +
+        `🏗️ *Paket Lengkap* — ${tarifLengkap}\n` +
+        '   Full dokumen teknis + pendampingan\n\n' +
+        (lahan ? `_Estimasi otomatis tersedia setelah Anda pilih paket._\n\n` : '') +
+        'Paket mana yang sesuai kebutuhan Anda?'
+      );
+    },
+    opts: [
+      { label: '🗺️ Paket Denah Saja',  value: 'Paket Denah Saja' },
+      { label: '📐 Paket Detapo',       value: 'Paket Detapo' },
+      { label: '🏗️ Paket Lengkap',     value: 'Paket Lengkap' },
+    ],
+    save: 'paket',
+    next: () => 'kalkulator',
+  },
+
+  {
+    id: 'kalkulator',
+    msg: (data) => {
+      const d = data || {};
+      const isNonHunian = (window._consultState && window._consultState.mode === 'non_hunian');
+
+      /* Tarif per m² sesuai jenis bangunan — kiblatnya harga website */
+      const hargaBase = {
+        'Paket Denah Saja': 300000,
+        'Paket Detapo':     isNonHunian ? 32000 : 45000,
+        'Paket Lengkap':    isNonHunian ? 65000 : 95000,
+      };
+      const tarifLabel = {
+        'Paket Denah Saja': 'Rp 300.000 (flat)',
+        'Paket Detapo':     isNonHunian ? 'Rp 32.000/m²' : 'Rp 45.000/m²',
+        'Paket Lengkap':    isNonHunian ? 'Rp 65.000/m²' : 'Rp 95.000/m²',
+      };
+      const paket = d.paket || 'Paket Detapo';
+      const base = hargaBase[paket] || 45000;
+
+      /* Parsing luas dari berbagai format */
+      let luas = 0;
+      const luasStr = (d.luas || '').toLowerCase().replace(/\s/g,'');
+      const matchXY = luasStr.match(/(\d+)[×x](\d+)/);
+      if (matchXY) {
+        luas = parseInt(matchXY[1]) * parseInt(matchXY[2]);
+      } else {
+        const matchM2 = luasStr.match(/(\d+)m²?/);
+        if (matchM2) luas = parseInt(matchM2[1]);
       }
+
+      /* Kalkulasi total sesuai paket */
+      let total = base;
+      let note = '';
+      if (paket === 'Paket Denah Saja') {
+        /* Flat — tidak tergantung luas */
+        total = 300000;
+        note = luas > 0 ? `\n_(Harga flat untuk denah 1–3 lantai)_` : '';
+      } else if (luas > 0) {
+        /* Tarif × luas untuk Detapo & Lengkap */
+        total = base * luas;
+        note = `\n_(${tarifLabel[paket]} × ${luas} m²)_`;
+      }
+
+      const totalStr = 'Rp ' + total.toLocaleString('id-ID');
+
+      /* Simpan hasil kalkulator ke state */
+      window._consultState.data.estimasi_harga = totalStr;
+      window._consultState.data.estimasi_luas   = luas > 0 ? luas + ' m²' : '-';
+
+      return (
+        '🧮 *Estimasi Biaya Otomatis*\n\n' +
+        `📦 Paket       : *${paket}*\n` +
+        `💲 Tarif       : ${tarifLabel[paket]}\n` +
+        (luas > 0 ? `📐 Luas desain : ${luas} m²\n` : '') +
+        `💰 Estimasi    : *${totalStr}*${note}\n\n` +
+        '⚠️ _Estimasi ini bersifat indikatif. Harga final dikonfirmasi setelah konsultasi lanjutan._\n\n' +
+        'Lanjut lengkapi data diri untuk konfirmasi?'
+      );
     },
-    status_lahan: {
-      msg: () => 'Baik, kami siap membantu.\n\nApakah Anda sudah memiliki lahan?',
-      opts: [
-        { label: '✅ Sudah ada lahan',        value: 'Sudah ada lahan' },
-        { label: '⏳ Sedang mencari lahan',   value: 'Sedang mencari lahan' },
-        { label: '❌ Belum memiliki lahan',   value: 'Belum memiliki lahan' },
-      ],
-      save: 'status_lahan',
-      next: (v) => /belum|cari/i.test(v) ? 'belum_lahan' : 'luas_lahan'
-    },
-    belum_lahan: {
-      msg: () =>
-        'Tidak masalah.\n\nBanyak klien kami berkonsultasi sebelum membeli lahan untuk mengetahui ukuran yang ideal.\n\nBoleh kami tahu kebutuhan umumnya?\n\n📌 Berapa kamar tidur yang diinginkan?\n📌 Berapa lantai yang direncanakan?\n📌 Berapa kebutuhan parkir kendaraan?\n\n_Silakan ketik jawaban Anda._',
-      opts: [{ label: '✏️ Ketik kebutuhan saya...', value: null, manual: true }],
-      save: 'cerita',
-      next: () => 'layanan'
-    },
-    luas_lahan: {
-      msg: () => 'Berapa perkiraan *luas lahan* yang dimiliki?\n\n_Contoh: 6×12 m, 8×15 m, 120 m², dll._',
-      opts: [
-        { label: '6×12 m',       value: '6×12 meter' },
-        { label: '8×15 m',       value: '8×15 meter' },
-        { label: '10×20 m',      value: '10×20 meter' },
-        { label: '✏️ Ukuran lain...', value: null, manual: true },
-      ],
-      save: 'luas',
-      next: () => 'kawasan'
-    },
-    kawasan: {
-      msg: () => 'Lahan berada di kawasan apa?',
-      opts: [
-        { label: '🏘️ Perumahan',    value: 'Perumahan' },
-        { label: '🌳 Pedesaan',     value: 'Pedesaan' },
-        { label: '🏙️ Perkotaan',   value: 'Perkotaan' },
-        { label: '🏖️ Kawasan wisata', value: 'Kawasan wisata' },
-        { label: '✏️ Lainnya...',   value: null, manual: true },
-      ],
-      save: 'kawasan',
-      next: (v, state) => state.mode === 'non_hunian' ? 'tujuan_non' : 'tujuan'
-    },
-    tujuan: {
-      msg: () => 'Rumah yang direncanakan akan digunakan untuk?',
-      opts: [
-        { label: '👨‍👩‍👧‍👦 Hunian keluarga',     value: 'Hunian keluarga' },
-        { label: '💼 Investasi',             value: 'Investasi' },
-        { label: '🏠 Rumah kontrakan',       value: 'Rumah kontrakan' },
-        { label: '🏡 Rumah pensiun',         value: 'Rumah pensiun' },
-        { label: '🔄 Hunian + usaha',        value: 'Kombinasi hunian dan usaha' },
-      ],
-      save: 'tujuan',
-      next: () => 'penghuni'
-    },
-    tujuan_non: {
-      msg: () =>
-        'Bangunan akan digunakan untuk tujuan apa?\n\n_Contoh: kantor operasional, toko retail, cafe, guest house, gudang, dll._',
-      opts: [
-        { label: '🏢 Kantor operasional',    value: 'Kantor operasional' },
-        { label: '🏪 Toko / retail',         value: 'Toko / retail' },
-        { label: '☕ Cafe / restoran',       value: 'Cafe / restoran' },
-        { label: '🏨 Penginapan',            value: 'Penginapan / guest house' },
-        { label: '🏭 Gudang / industri',     value: 'Gudang / industri' },
-        { label: '✏️ Lainnya...',            value: null, manual: true },
-      ],
-      save: 'tujuan',
-      next: () => 'luas_bangunan_non'
-    },
-    luas_bangunan_non: {
-      msg: () => 'Luas bangunan yang direncanakan?\n\n_Contoh: 200 m², 15×30 m, dll._',
-      opts: [
-        { label: '< 200 m²',    value: 'Kurang dari 200 m²' },
-        { label: '200–500 m²',  value: '200–500 m²' },
-        { label: '> 500 m²',   value: 'Lebih dari 500 m²' },
-        { label: '✏️ Sebutkan...', value: null, manual: true },
-      ],
-      save: 'luas',
-      next: () => 'lantai'
-    },
-    penghuni: {
-      msg: () => 'Berapa *jumlah anggota keluarga* yang akan menempati rumah?',
-      opts: [
-        { label: '2 orang',       value: '2 orang' },
-        { label: '3–4 orang',     value: '3–4 orang' },
-        { label: '5–6 orang',     value: '5–6 orang' },
-        { label: '> 6 orang',     value: 'Lebih dari 6 orang' },
-      ],
-      save: 'penghuni',
-      next: () => 'kamar'
-    },
-    kamar: {
-      msg: () => 'Berapa *kamar tidur* yang diinginkan?',
-      opts: [
-        { label: '2 kamar', value: '2 kamar tidur' },
-        { label: '3 kamar', value: '3 kamar tidur' },
-        { label: '4 kamar', value: '4 kamar tidur' },
-        { label: '> 4 kamar', value: 'Lebih dari 4 kamar tidur' },
-      ],
-      save: 'kamar',
-      next: () => 'ruang_khusus'
-    },
-    ruang_khusus: {
-      msg: () =>
-        'Selain kamar tidur, adakah *ruang khusus* yang diinginkan?\n\n_Contoh: ruang kerja, mushola, ruang belajar, taman belakang, garasi 2 mobil, rooftop, kolam renang._',
-      opts: [
-        { label: 'Ruang kerja',     value: 'Ruang kerja' },
-        { label: 'Mushola',         value: 'Mushola' },
-        { label: 'Taman belakang',  value: 'Taman belakang' },
-        { label: 'Garasi 2 mobil',  value: 'Garasi 2 mobil' },
-        { label: '✏️ Sebutkan...',  value: null, manual: true },
-        { label: 'Tidak ada',       value: 'Tidak ada' },
-      ],
-      save: 'ruang_khusus',
-      next: () => 'konsep'
-    },
-    konsep: {
-      msg: () => 'Apakah sudah ada gambaran *konsep desain* yang disukai?',
-      opts: [
-        { label: '🏠 Minimalis modern',          value: 'Minimalis modern' },
-        { label: '🌿 Tropis modern',             value: 'Tropis modern' },
-        { label: '🏛️ Klasik',                   value: 'Klasik' },
-        { label: '🧱 Industrial',               value: 'Industrial' },
-        { label: '✨ Modern luxury',             value: 'Modern luxury' },
-        { label: '🤔 Belum tahu, minta rekomendasi', value: 'Belum tahu, ingin rekomendasi' },
-      ],
-      save: 'konsep',
-      next: () => 'lantai'
-    },
-    lantai: {
-      msg: () => 'Bangunan direncanakan berapa *lantai*?',
-      opts: [
-        { label: '1 lantai',        value: '1 lantai' },
-        { label: '2 lantai',        value: '2 lantai' },
-        { label: '3 lantai',        value: '3 lantai' },
-        { label: 'Belum ditentukan', value: 'Belum ditentukan' },
-      ],
-      save: 'lantai',
-      next: () => 'anggaran'
-    },
-    anggaran: {
-      msg: () =>
-        'Apakah sudah ada *perkiraan anggaran* pembangunan?\n\n_Jika belum pasti, cukup tuliskan perkiraannya._',
-      opts: [
-        { label: '< 300 juta',   value: 'Di bawah 300 juta' },
-        { label: '300–500 juta', value: '300–500 juta' },
-        { label: '500 jt–1 M',   value: '500 juta–1 miliar' },
-        { label: '1–2 M',        value: '1–2 miliar' },
-        { label: '> 2 M',        value: 'Di atas 2 miliar' },
-        { label: 'Belum tahu',   value: 'Belum mengetahui' },
-      ],
-      save: 'anggaran',
-      next: () => 'layanan'
-    },
-    layanan: {
-      msg: () => 'Saat ini, layanan apa yang paling Anda butuhkan?',
-      opts: [
-        { label: '📐 Desain Denah',               value: 'Desain Denah' },
-        { label: '🏠 Desain Arsitektur Lengkap',  value: 'Desain Arsitektur Lengkap' },
-        { label: '📋 RAB Perkiraan Biaya',        value: 'RAB Perkiraan Biaya' },
-        { label: '🛋️ Desain Interior',            value: 'Desain Interior' },
-        { label: '📄 Gambar Kerja Teknis',        value: 'Gambar Kerja Teknis' },
-        { label: '🤝 Konsultasi Awal',            value: 'Konsultasi Awal' },
-      ],
-      save: 'layanan',
-      next: () => 'kontak'
-    },
-    kontak: {
-      msg: () =>
-        'Baik! Sebelum kami hubungkan ke tim konsultan, mohon lengkapi data berikut:\n\n📌 *Nama Anda*\n\n_Silakan ketik nama Anda._',
-      opts: [{ label: '✏️ Ketik nama saya...', value: null, manual: true }],
-      save: 'nama',
-      next: () => 'kontak_lokasi'
-    },
-    kontak_lokasi: {
-      msg: () => '📌 *Kota / Lokasi proyek* di mana?',
-      opts: [
-        { label: 'Jakarta',   value: 'Jakarta' },
-        { label: 'Bekasi',    value: 'Bekasi' },
-        { label: 'Bandung',   value: 'Bandung' },
-        { label: 'Surabaya',  value: 'Surabaya' },
-        { label: 'Medan',     value: 'Medan' },
-        { label: '✏️ Kota lain...', value: null, manual: true },
-      ],
-      save: 'lokasi',
-      next: () => 'kontak_wa'
-    },
-    kontak_wa: {
-      msg: () => '📌 *Nomor WhatsApp* yang bisa kami hubungi?',
-      opts: [{ label: '✏️ Ketik nomor WA...', value: null, manual: true }],
-      save: 'wa',
-      next: () => 'kontak_cerita'
-    },
-    kontak_cerita: {
-      msg: () =>
-        '📌 Ceritakan singkat *rumah impian Anda* atau hal spesifik yang ingin dikonsultasikan.',
-      opts: [
-        { label: '✏️ Cerita singkat...', value: null, manual: true },
-        { label: 'Lewati',               value: '—' },
-      ],
-      save: 'cerita',
-      next: () => 'summary'
-    }
-  };
+    opts: [
+      { label: '✅ Lanjut isi data', value: 'Lanjut' },
+      { label: '🔄 Ganti paket',     value: '__BACK_PAKET__' },
+    ],
+    save: null,
+    next: (v) => /back_paket/i.test(v) ? 'paket_pilih' : 'kontak',
+  },
+
+  {
+    id: 'kontak',
+    msg: () => 'Hampir selesai! Mohon lengkapi data:\n\n📌 *Nama Anda?*',
+    opts: [{ label: '✏️ Ketik nama...', value: null, manual: true }],
+    save: 'nama',
+    next: () => 'kontak_lokasi',
+  },
+
+  {
+    id: 'kontak_lokasi',
+    msg: () => '📌 *Kota / Lokasi proyek?*',
+    opts: [
+      { label: 'Jakarta',    value: 'Jakarta' },
+      { label: 'Bekasi',     value: 'Bekasi' },
+      { label: 'Bandung',    value: 'Bandung' },
+      { label: 'Surabaya',   value: 'Surabaya' },
+      { label: 'Medan',      value: 'Medan' },
+      { label: '✏️ Kota lain...', value: null, manual: true },
+    ],
+    save: 'lokasi',
+    next: () => 'kontak_wa',
+  },
+
+  {
+    id: 'kontak_wa',
+    msg: () => '📌 *Nomor WhatsApp* yang bisa kami hubungi?',
+    opts: [{ label: '✏️ Ketik nomor WA...', value: null, manual: true }],
+    save: 'wa',
+    next: () => 'summary',
+  },
+
+];   /* ← akhir waConsultSteps (biasa) */
 
 
-  /* ── A5. FLOW CHATBOT PROMO (fusako_promo_to_chat_flow) ── */
-  const PROMOCODE = 'PROMOTIPE50';
+/* ─────────────────────────────────────────────────────────────
+   3. ALUR KONSULTASI STEP-BY-STEP (MODE PROMO)
+      Dipakai jika user masuk dari popup promo (fsdGoChat).
+      Memiliki step tambahan: konfirmasi luas ≤50 m².
+   ───────────────────────────────────────────────────────────── */
+const waConsultStepsPromo = [
 
-  const FLOW_PROMO = {
-    welcome: {
-      msg: () =>
-        `${getSapaan()}! 👋\n\n🏷️ *Halo! Kode Promo ${PROMOCODE} berhasil digunakan.*\n\nSelamat datang di *Fusako Studio*!\n\nPromo ini berlaku untuk *Desain Bangunan Tipe 50* (luas maksimal *50 m²*), mencakup gambar kerja lengkap + RAB, dengan harga spesial *Rp 4.499.000* (hemat 44%).\n\nUntuk mulai klaim, silakan pilih jenis bangunan yang ingin didesain:`,
-      opts: [
-        { label: '🏠 Rumah Tinggal',      value: 'Rumah Tinggal' },
-        { label: '🏡 Villa / Guest House', value: 'Villa / Guest House' },
-        { label: '🏪 Ruko / Toko',        value: 'Ruko / Toko' },
-        { label: '🏢 Kantor Kecil',       value: 'Kantor Kecil' },
-        { label: '✏️ Lainnya...',         value: null, manual: true },
-      ],
-      save: 'jenis',
-      next: () => 'konfirmasi_luas'
+  {
+    id: 'welcome',
+    msg: () => {
+      const s = _getSapaan();
+      const cfg = FUSAKO_CONFIG;
+      return (
+        `${s}! 👋\n\n` +
+        `🏷️ *Halo! Kode Promo ${cfg.promoCode} berhasil digunakan.*\n\n` +
+        `Selamat datang di *Fusako Studio*!\n\n` +
+        `Promo ini berlaku untuk *Desain Bangunan Tipe ${cfg.promoMaxLuas}* ` +
+        `(luas maksimal *${cfg.promoMaxLuas} m²*), mencakup:\n` +
+        `✅ Gambar kerja lengkap (denah, tampak, potongan, detail)\n` +
+        `✅ RAB perkiraan biaya\n` +
+        `✅ Revisi desain maks. 2×\n\n` +
+        `Harga spesial: *${cfg.promoHarga}* (hemat ${cfg.promoHemat} dari ${cfg.promoHargaAsli})\n\n` +
+        `Untuk mulai klaim, pilih jenis bangunan Anda:`
+      );
     },
-    konfirmasi_luas: {
-      msg: () =>
-        'Promo ini berlaku untuk bangunan dengan *luas maksimal 50 m²*.\n\nApakah luas bangunan yang Anda rencanakan masih dalam batas tersebut?',
-      opts: [
-        { label: '✅ Ya, di bawah atau sama dengan 50 m²', value: 'Ya, ≤50 m²' },
-        { label: '❌ Melebihi 50 m²', value: 'Melebihi 50 m²' },
-      ],
-      save: 'konfirmasi_luas',
-      next: (v) => /melebihi/i.test(v) ? 'luar_promo' : 'status_lahan'
+    opts: [
+      { label: '🏠 Rumah Tinggal',       value: 'Rumah Tinggal' },
+      { label: '🏡 Villa / Guest House', value: 'Villa / Guest House' },
+      { label: '🏪 Ruko / Toko',         value: 'Ruko / Toko' },
+      { label: '🏢 Kantor Kecil',        value: 'Kantor Kecil' },
+      { label: '✏️ Lainnya...',          value: null, manual: true },
+    ],
+    save: 'jenis',
+    next: () => 'konfirmasi_luas',
+  },
+
+  {
+    id: 'konfirmasi_luas',
+    msg: () =>
+      `Promo ini berlaku untuk bangunan dengan *luas maksimal ${FUSAKO_CONFIG.promoMaxLuas} m²*.\n\n` +
+      'Apakah luas bangunan yang Anda rencanakan masih dalam batas tersebut?',
+    opts: [
+      { label: `✅ Ya, ≤${FUSAKO_CONFIG.promoMaxLuas} m²`,  value: `Ya, ≤${FUSAKO_CONFIG.promoMaxLuas} m²` },
+      { label: `❌ Melebihi ${FUSAKO_CONFIG.promoMaxLuas} m²`, value: `Melebihi ${FUSAKO_CONFIG.promoMaxLuas} m²` },
+    ],
+    save: 'konfirmasi_luas',
+    next: (v) => /melebihi/i.test(v) ? 'luar_promo' : 'status_lahan',
+  },
+
+  {
+    id: 'luar_promo',
+    msg: () =>
+      'Terima kasih sudah jujur! 😊\n\n' +
+      `Promo *Tipe ${FUSAKO_CONFIG.promoMaxLuas}* hanya berlaku untuk bangunan ≤${FUSAKO_CONFIG.promoMaxLuas} m². ` +
+      'Untuk luas di atas itu, kami tetap siap membantu dengan layanan reguler.\n\n' +
+      'Apakah Anda ingin melanjutkan konsultasi desain tanpa promo?',
+    opts: [
+      { label: '✅ Lanjut konsultasi reguler', value: 'Lanjut' },
+      { label: '❌ Tidak, terima kasih',       value: 'Tidak' },
+    ],
+    save: 'keputusan_luar',
+    next: (v) => /tidak/i.test(v) ? 'selesai_tolak' : 'status_lahan',
+  },
+
+  {
+    id: 'selesai_tolak',
+    msg: () =>
+      'Baik, tidak masalah! 🙏\n\n' +
+      'Jika sewaktu-waktu ada yang bisa kami bantu, jangan ragu hubungi kami kembali.\n\n' +
+      'Terima kasih sudah mengunjungi *Fusako Studio*!',
+    opts: [],
+    save: null,
+    next: () => 'selesai_tolak',
+  },
+
+  {
+    id: 'status_lahan',
+    msg: () => 'Apakah Anda sudah memiliki lahan?',
+    opts: [
+      { label: '✅ Sudah ada lahan',      value: 'Sudah ada lahan' },
+      { label: '⏳ Sedang mencari',       value: 'Sedang mencari lahan' },
+      { label: '❌ Belum punya lahan',    value: 'Belum memiliki lahan' },
+    ],
+    save: 'status_lahan',
+    next: (v) => /belum|cari/i.test(v) ? 'belum_lahan' : 'luas_lahan',
+  },
+
+  {
+    id: 'belum_lahan',
+    msg: () =>
+      'Tidak masalah! Kami bisa bantu estimasi ukuran lahan yang sesuai.\n\n' +
+      'Ceritakan kebutuhan umumnya:\n' +
+      '📌 Berapa kamar tidur?\n' +
+      '📌 Ada ruang khusus yang diinginkan?',
+    opts: [{ label: '✏️ Ketik kebutuhan...', value: null, manual: true }],
+    save: 'kebutuhan_awal',
+    next: () => 'konsep',
+  },
+
+  {
+    id: 'luas_lahan',
+    msg: () => `Berapa ukuran lahannya?\n\n_Contoh: 5×10 m, 6×12 m, 50 m², dll._`,
+    opts: [
+      { label: '5×10 m', value: '5×10 m' },
+      { label: '6×12 m', value: '6×12 m' },
+      { label: '7×10 m', value: '7×10 m' },
+      { label: '✏️ Ukuran lain...', value: null, manual: true },
+    ],
+    save: 'luas',
+    next: () => 'kawasan',
+  },
+
+  {
+    id: 'kawasan',
+    msg: () => 'Lahan berada di kawasan apa?',
+    opts: [
+      { label: '🏘️ Perumahan',      value: 'Perumahan' },
+      { label: '🌳 Pedesaan',       value: 'Pedesaan' },
+      { label: '🏙️ Perkotaan',     value: 'Perkotaan' },
+      { label: '✏️ Lainnya...', value: null, manual: true },
+    ],
+    save: 'kawasan',
+    next: () => 'kamar',
+  },
+
+  {
+    id: 'kamar',
+    msg: () => `Berapa *kamar tidur* yang diinginkan?\n\n_Untuk bangunan ≤${FUSAKO_CONFIG.promoMaxLuas} m², umumnya 1–2 kamar._`,
+    opts: [
+      { label: '1 kamar',                  value: '1 kamar tidur' },
+      { label: '2 kamar',                  value: '2 kamar tidur' },
+      { label: 'Studio (tanpa kamar terpisah)', value: 'Studio' },
+    ],
+    save: 'kamar',
+    next: () => 'ruang_khusus',
+  },
+
+  {
+    id: 'ruang_khusus',
+    msg: () => `Ada ruang khusus yang diinginkan?\n\n_Sesuaikan dengan luas ≤${FUSAKO_CONFIG.promoMaxLuas} m²._`,
+    opts: [
+      { label: 'Ruang kerja',     value: 'Ruang kerja' },
+      { label: 'Mushola',         value: 'Mushola' },
+      { label: 'Dapur terbuka',   value: 'Dapur terbuka' },
+      { label: 'Taman kecil',     value: 'Taman kecil' },
+      { label: '✏️ Sebutkan...',  value: null, manual: true },
+      { label: 'Tidak ada',       value: 'Tidak ada' },
+    ],
+    save: 'ruang_khusus',
+    next: () => 'konsep',
+  },
+
+  {
+    id: 'konsep',
+    msg: () => 'Konsep *desain* yang disukai?',
+    opts: [
+      { label: '🏠 Minimalis modern',  value: 'Minimalis modern' },
+      { label: '🌿 Tropis modern',     value: 'Tropis modern' },
+      { label: '🧱 Industrial',       value: 'Industrial' },
+      { label: '✨ Modern luxury',     value: 'Modern luxury' },
+      { label: '🤔 Minta rekomendasi', value: 'Belum tahu, ingin rekomendasi' },
+    ],
+    save: 'konsep',
+    next: () => 'paket_pilih_promo',
+  },
+
+  {
+    id: 'paket_pilih_promo',
+    msg: () => {
+      const cfg = FUSAKO_CONFIG;
+      return (
+        '📦 *Pilih Paket untuk Promo Anda:*\n\n' +
+        `🏷️ *${cfg.promoCode}* — Paket Desain Tipe ${cfg.promoMaxLuas}\n` +
+        `   Harga spesial: *${cfg.promoHarga}*\n` +
+        `   (Hemat ${cfg.promoHemat} dari ${cfg.promoHargaAsli})\n` +
+        '   ✅ Gambar kerja lengkap + RAB + revisi 2×\n\n' +
+        '📐 *Paket Detapo Reguler* — mulai Rp 32.000/m² (Kos/Ruko) · Rp 45.000/m² (Rumah/Villa)\n' +
+        '   Denah + detail konstruksi + RAB\n\n' +
+        '🏗️ *Paket Lengkap Reguler* — mulai Rp 65.000/m² (Kos/Ruko) · Rp 95.000/m² (Rumah/Villa)\n' +
+        '   Full dokumen teknis + pendampingan\n\n' +
+        'Pilih paket mana yang Anda inginkan?'
+      );
     },
-    luar_promo: {
-      msg: () =>
-        'Terima kasih sudah jujur! 😊\n\nPromo *Tipe 50* hanya berlaku untuk bangunan ≤50 m². Untuk luas di atas itu, kami tetap siap membantu dengan layanan reguler.\n\nApakah Anda ingin melanjutkan konsultasi desain tanpa promo?',
-      opts: [
-        { label: '✅ Lanjut konsultasi reguler', value: 'Lanjut konsultasi reguler' },
-        { label: '❌ Tidak, terima kasih',       value: 'Tidak' },
-      ],
-      save: 'keputusan_luar',
-      next: (v) => /tidak/i.test(v) ? 'selesai_tolak' : 'status_lahan'
+    opts: [
+      { label: `🏷️ ${FUSAKO_CONFIG.promoCode} (Promo)`, value: FUSAKO_CONFIG.promoCode },
+      { label: '📐 Paket Detapo Reguler',                value: 'Paket Detapo' },
+      { label: '🏗️ Paket Lengkap Reguler',              value: 'Paket Lengkap' },
+    ],
+    save: 'paket',
+    next: () => 'kalkulator_promo',
+  },
+
+  {
+    id: 'kalkulator_promo',
+    msg: (data) => {
+      const d = data || {};
+      const cfg = FUSAKO_CONFIG;
+      const paket = d.paket || cfg.promoCode;
+
+      /* Tarif per m² sesuai jenis bangunan — kiblatnya harga website */
+      const isNonHunian = (window._consultState && window._consultState.mode === 'non_hunian');
+      const hargaMap = {};
+      hargaMap[cfg.promoCode]  = 4499000; /* promo: flat */
+      hargaMap['Paket Detapo'] = isNonHunian ? 32000 : 45000;
+      hargaMap['Paket Lengkap']= isNonHunian ? 65000 : 95000;
+      const baseHarga = hargaMap[paket] || 4499000;
+
+      const tarifLabel = {};
+      tarifLabel['Paket Detapo']  = isNonHunian ? 'Rp 32.000/m²' : 'Rp 45.000/m²';
+      tarifLabel['Paket Lengkap'] = isNonHunian ? 'Rp 65.000/m²' : 'Rp 95.000/m²';
+
+      /* Parsing luas */
+      let luas = 0;
+      const luasStr = (d.luas || '').toLowerCase().replace(/\s/g,'');
+      const matchXY = luasStr.match(/(\d+)[×x](\d+)/);
+      if (matchXY) luas = parseInt(matchXY[1]) * parseInt(matchXY[2]);
+      else {
+        const matchM2 = luasStr.match(/(\d+)m²?/);
+        if (matchM2) luas = parseInt(matchM2[1]);
+      }
+
+      let total = baseHarga;
+      let note = '';
+      const isPromoKode = paket === cfg.promoCode;
+
+      if (isPromoKode) {
+        total = 4499000;
+        note = `\n_Harga promo tetap ${cfg.promoHarga} untuk ≤${cfg.promoMaxLuas} m²_`;
+      } else if (luas > 0) {
+        total = baseHarga * luas;
+        note = `\n_(${tarifLabel[paket]} × ${luas} m²)_`;
+      }
+
+      const totalStr = 'Rp ' + total.toLocaleString('id-ID');
+      window._consultState.data.estimasi_harga = totalStr;
+      window._consultState.data.estimasi_luas   = luas > 0 ? luas + ' m²' : '-';
+
+      return (
+        '🧮 *Estimasi Biaya Otomatis*\n\n' +
+        `📦 Paket       : *${paket}*\n` +
+        (!isPromoKode && tarifLabel[paket] ? `💲 Tarif       : ${tarifLabel[paket]}\n` : '') +
+        (luas > 0 ? `📐 Luas desain : ${luas} m²\n` : '') +
+        `💰 Estimasi    : *${totalStr}*${note}\n\n` +
+        (isPromoKode ? `🏷️ *Kode: ${cfg.promoCode} — berlaku!*\n\n` : '') +
+        '⚠️ _Estimasi indikatif. Harga final dikonfirmasi admin._\n\n' +
+        'Lanjut isi data diri untuk konfirmasi?'
+      );
     },
-    selesai_tolak: {
-      msg: () =>
-        'Baik, tidak masalah! 🙏\n\nJika sewaktu-waktu ada yang bisa kami bantu, jangan ragu hubungi kami kembali.\n\nTerima kasih sudah mengunjungi Fusako Studio!',
-      opts: [],
-      save: null,
-      next: () => 'selesai_tolak'
-    },
-    status_lahan: {
-      msg: () => 'Apakah Anda sudah memiliki lahan?',
-      opts: [
-        { label: '✅ Sudah ada lahan',     value: 'Sudah ada lahan' },
-        { label: '⏳ Sedang mencari',      value: 'Sedang mencari lahan' },
-        { label: '❌ Belum punya lahan',   value: 'Belum memiliki lahan' },
-      ],
-      save: 'status_lahan',
-      next: (v) => /belum|cari/i.test(v) ? 'belum_lahan' : 'luas_lahan'
-    },
-    belum_lahan: {
-      msg: () =>
-        'Tidak masalah! Kami bisa bantu estimasi ukuran lahan yang sesuai.\n\nCeritakan kebutuhan umumnya:\n📌 Berapa kamar tidur?\n📌 Ada ruang khusus yang diinginkan?',
-      opts: [{ label: '✏️ Ketik kebutuhan saya...', value: null, manual: true }],
-      save: 'kebutuhan',
-      next: () => 'konsep'
-    },
-    luas_lahan: {
-      msg: () => 'Berapa ukuran lahannya?\n\n_Contoh: 5×10 m, 6×12 m, 50 m², dll._',
-      opts: [
-        { label: '5×10 m',          value: '5×10 m' },
-        { label: '6×12 m',          value: '6×12 m' },
-        { label: '7×10 m',          value: '7×10 m' },
-        { label: '✏️ Ukuran lain...', value: null, manual: true },
-      ],
-      save: 'luas',
-      next: () => 'kawasan'
-    },
-    kawasan: {
-      msg: () => 'Lahan berada di kawasan apa?',
-      opts: [
-        { label: '🏘️ Perumahan',  value: 'Perumahan' },
-        { label: '🌳 Pedesaan',   value: 'Pedesaan' },
-        { label: '🏙️ Perkotaan', value: 'Perkotaan' },
-        { label: '✏️ Lainnya...', value: null, manual: true },
-      ],
-      save: 'kawasan',
-      next: () => 'kamar'
-    },
-    kamar: {
-      msg: () =>
-        'Berapa *kamar tidur* yang diinginkan?\n\n_Untuk bangunan ≤50 m², umumnya 1–2 kamar tidur._',
-      opts: [
-        { label: '1 kamar', value: '1 kamar tidur' },
-        { label: '2 kamar', value: '2 kamar tidur' },
-        { label: 'Studio / tanpa kamar terpisah', value: 'Studio' },
-      ],
-      save: 'kamar',
-      next: () => 'ruang_khusus'
-    },
-    ruang_khusus: {
-      msg: () =>
-        'Ada ruang khusus yang diinginkan?\n\n_Sesuaikan dengan luas 50 m²._',
-      opts: [
-        { label: 'Ruang kerja',    value: 'Ruang kerja' },
-        { label: 'Mushola',        value: 'Mushola' },
-        { label: 'Dapur terbuka',  value: 'Dapur terbuka' },
-        { label: 'Taman kecil',    value: 'Taman kecil' },
-        { label: '✏️ Sebutkan...', value: null, manual: true },
-        { label: 'Tidak ada',      value: 'Tidak ada' },
-      ],
-      save: 'ruang_khusus',
-      next: () => 'konsep'
-    },
-    konsep: {
-      msg: () => 'Konsep *desain* yang disukai?',
-      opts: [
-        { label: '🏠 Minimalis modern',          value: 'Minimalis modern' },
-        { label: '🌿 Tropis modern',             value: 'Tropis modern' },
-        { label: '🧱 Industrial',               value: 'Industrial' },
-        { label: '✨ Modern luxury',             value: 'Modern luxury' },
-        { label: '🤔 Minta rekomendasi',        value: 'Belum tahu, ingin rekomendasi' },
-      ],
-      save: 'konsep',
-      next: () => 'kontak'
-    },
-    kontak: {
-      msg: () =>
-        'Hampir selesai! Mohon lengkapi data untuk klaim promo:\n\n📌 *Nama Anda?*',
-      opts: [{ label: '✏️ Ketik nama...', value: null, manual: true }],
-      save: 'nama',
-      next: () => 'kontak_lokasi'
-    },
-    kontak_lokasi: {
-      msg: () => '📌 *Kota / Lokasi proyek?*',
-      opts: [
-        { label: 'Jakarta',   value: 'Jakarta' },
-        { label: 'Bekasi',    value: 'Bekasi' },
-        { label: 'Bandung',   value: 'Bandung' },
-        { label: 'Surabaya',  value: 'Surabaya' },
-        { label: '✏️ Kota lain...', value: null, manual: true },
-      ],
-      save: 'lokasi',
-      next: () => 'kontak_wa'
-    },
-    kontak_wa: {
-      msg: () =>
-        '📌 *Nomor WhatsApp* yang bisa kami hubungi untuk klaim promo?',
-      opts: [{ label: '✏️ Ketik nomor WA...', value: null, manual: true }],
-      save: 'wa',
-      next: () => 'summary'
-    }
-  };
+    opts: [
+      { label: '✅ Lanjut isi data', value: 'Lanjut' },
+      { label: '🔄 Ganti paket',     value: '__BACK_PAKET__' },
+    ],
+    save: null,
+    next: (v) => /back_paket/i.test(v) ? 'paket_pilih_promo' : 'kontak',
+  },
+
+  {
+    id: 'kontak',
+    msg: () => 'Hampir selesai! Mohon lengkapi data untuk klaim promo:\n\n📌 *Nama Anda?*',
+    opts: [{ label: '✏️ Ketik nama...', value: null, manual: true }],
+    save: 'nama',
+    next: () => 'kontak_lokasi',
+  },
+
+  {
+    id: 'kontak_lokasi',
+    msg: () => '📌 *Kota / Lokasi proyek?*',
+    opts: [
+      { label: 'Jakarta',    value: 'Jakarta' },
+      { label: 'Bekasi',     value: 'Bekasi' },
+      { label: 'Bandung',    value: 'Bandung' },
+      { label: 'Surabaya',   value: 'Surabaya' },
+      { label: '✏️ Kota lain...', value: null, manual: true },
+    ],
+    save: 'lokasi',
+    next: () => 'kontak_wa',
+  },
+
+  {
+    id: 'kontak_wa',
+    msg: () => '📌 *Nomor WhatsApp* untuk konfirmasi klaim promo?',
+    opts: [{ label: '✏️ Ketik nomor WA...', value: null, manual: true }],
+    save: 'wa',
+    next: () => 'summary',
+  },
+
+];   /* ← akhir waConsultStepsPromo */
 
 
-  /* ── A6. BUILDER RINGKASAN & WA ── */
-  function buildSummaryBiasa(data, mode) {
-    const d = data || {};
-    const penawaranPaket =
-      '\n\n━━━━━━━━━━━━━━━━━━━━\n📦 *PAKET LAYANAN KAMI*\n━━━━━━━━━━━━━━━━━━━━\n\n' +
-      '🗺️ *Paket Denah Saja*\n   Gambar denah lantai + fasad\n   _Cocok untuk yang butuh gambar dasar_\n\n' +
-      '📐 *Paket Detapo*\n   Denah + detail konstruksi + RAB\n   _Paling populer untuk bangun rumah_\n\n' +
-      '🏗️ *Paket Lengkap*\n   Full dokumen teknis + pendampingan\n   _Untuk proyek skala menengah–besar_\n\n' +
-      '📲 Klik *"Hubungi Tim Kami"* untuk kirim ringkasan ini ke WhatsApp admin kami.\n\nTim kami akan segera menghubungi Anda! 🙏';
+/* ─────────────────────────────────────────────────────────────
+   4. BUILDER RINGKASAN KONSULTASI
+   ───────────────────────────────────────────────────────────── */
+function buildSummary(data, mode, fromPromo) {
+  const d = data || {};
+  const cfg = FUSAKO_CONFIG;
 
-    const hdr = mode === 'non_hunian'
-      ? '🏢 *KONSULTASI BANGUNAN — Fusako Studio*'
-      : '🏠 *KONSULTASI HUNIAN — Fusako Studio*';
+  let t = '✅ *Terima kasih!* Konsultasi Anda telah kami catat.\n\n';
+  t += '━━━━━━━━━━━━━━━━━━━━\n';
+  t += fromPromo
+    ? `🏷️ *KLAIM PROMO ${cfg.promoCode}*\n`
+    : '📋 *RINGKASAN KONSULTASI*\n';
+  t += '━━━━━━━━━━━━━━━━━━━━\n\n';
 
-    let s = '✅ *Terima kasih!* Konsultasi Anda telah kami catat.\n\n';
-    s += '━━━━━━━━━━━━━━━━━━━━\n📋 *RINGKASAN KONSULTASI*\n━━━━━━━━━━━━━━━━━━━━\n\n';
-    s += hdr + '\n\n';
-    if (d.jenis)       s += (mode === 'non_hunian' ? '🏗️' : '🏠') + ' Jenis           : ' + d.jenis + '\n';
-    if (d.status_lahan) s += '📋 Status lahan   : ' + d.status_lahan + '\n';
-    if (d.luas)         s += '📐 Luas lahan     : ' + d.luas + '\n';
-    if (d.kawasan)      s += '📍 Kawasan        : ' + d.kawasan + '\n';
-    if (d.tujuan)       s += '🎯 Tujuan         : ' + d.tujuan + '\n';
-    if (d.penghuni)     s += '👥 Penghuni       : ' + d.penghuni + '\n';
-    if (d.kamar)        s += '🛏️ Kamar tidur    : ' + d.kamar + '\n';
-    if (d.ruang_khusus) s += '🛋️ Ruang khusus  : ' + d.ruang_khusus + '\n';
-    if (d.konsep)       s += '🎨 Konsep desain  : ' + d.konsep + '\n';
-    if (d.lantai)       s += '🏢 Jumlah lantai  : ' + d.lantai + '\n';
-    if (d.anggaran)     s += '💰 Anggaran       : ' + d.anggaran + '\n';
-    if (d.layanan)      s += '📦 Layanan        : ' + d.layanan + '\n';
-    if (d.nama)         s += '👤 Nama           : ' + d.nama + '\n';
-    if (d.lokasi)       s += '📍 Lokasi proyek  : ' + d.lokasi + '\n';
-    if (d.wa)           s += '📲 WhatsApp       : ' + d.wa + '\n';
-    if (d.cerita)       s += '📝 Catatan        : ' + d.cerita + '\n';
-    s += penawaranPaket;
-    return s;
+  if (fromPromo) {
+    t += `🏷️ Kode promo      : *${cfg.promoCode}*\n`;
+    t += `💰 Harga promo     : *${cfg.promoHarga}* (hemat ${cfg.promoHemat})\n`;
+    t += `📐 Maks. luas      : ${cfg.promoMaxLuas} m²\n\n`;
   }
 
-  function buildWAMsgBiasa(data, mode, fromPromo, promoCode) {
-    const d = data || {};
-    const lines = [];
-    if (fromPromo) lines.push('🏷️ *KODE PROMO: ' + promoCode + '*\n');
-    lines.push(mode === 'non_hunian'
-      ? '🏢 *KONSULTASI BANGUNAN — Fusako Studio*'
-      : '🏠 *KONSULTASI HUNIAN — Fusako Studio*');
-    lines.push('');
-    if (d.jenis)        lines.push('Jenis          : ' + d.jenis);
-    if (d.status_lahan) lines.push('Status lahan   : ' + d.status_lahan);
-    if (d.luas)         lines.push('Luas lahan     : ' + d.luas);
-    if (d.kawasan)      lines.push('Kawasan        : ' + d.kawasan);
-    if (d.tujuan)       lines.push('Tujuan         : ' + d.tujuan);
-    if (d.penghuni)     lines.push('Penghuni       : ' + d.penghuni);
-    if (d.kamar)        lines.push('Kamar tidur    : ' + d.kamar);
-    if (d.ruang_khusus) lines.push('Ruang khusus   : ' + d.ruang_khusus);
-    if (d.konsep)       lines.push('Konsep desain  : ' + d.konsep);
-    if (d.lantai)       lines.push('Jumlah lantai  : ' + d.lantai);
-    if (d.anggaran)     lines.push('Anggaran       : ' + d.anggaran);
-    if (d.layanan)      lines.push('Layanan        : ' + d.layanan);
-    if (d.nama)         lines.push('Nama           : ' + d.nama);
-    if (d.lokasi)       lines.push('Lokasi proyek  : ' + d.lokasi);
-    if (d.wa)           lines.push('WhatsApp       : ' + d.wa);
-    if (d.cerita)       lines.push('Catatan        : ' + d.cerita);
-    lines.push('', 'Mohon tindak lanjut konsultasi ini. Terima kasih! 🙏');
-    return lines.join('\n');
+  if (d.jenis)            t += (mode === 'non_hunian' ? '🏗️' : '🏠') + ` Jenis           : ${d.jenis}\n`;
+  if (d.konfirmasi_luas)  t += `📏 Luas bangunan   : ${d.konfirmasi_luas}\n`;
+  if (d.status_lahan)     t += `📋 Status lahan    : ${d.status_lahan}\n`;
+  if (d.luas)             t += `📐 Ukuran lahan    : ${d.luas}\n`;
+  if (d.kawasan)          t += `📍 Kawasan         : ${d.kawasan}\n`;
+  if (d.tujuan)           t += `🎯 Tujuan          : ${d.tujuan}\n`;
+  if (d.kamar)            t += `🛏️ Kamar tidur     : ${d.kamar}\n`;
+  if (d.ruang_khusus)     t += `🛋️ Ruang khusus   : ${d.ruang_khusus}\n`;
+  if (d.konsep)           t += `🎨 Konsep desain   : ${d.konsep}\n`;
+  if (d.lantai)           t += `🏢 Jumlah lantai   : ${d.lantai}\n`;
+  if (d.anggaran)         t += `💰 Anggaran        : ${d.anggaran}\n`;
+  if (d.layanan)          t += `📦 Layanan         : ${d.layanan}\n`;
+  if (d.kebutuhan_awal)   t += `📝 Kebutuhan awal  : ${d.kebutuhan_awal}\n`;
+  if (d.nama)             t += `👤 Nama            : ${d.nama}\n`;
+  if (d.lokasi)           t += `📍 Lokasi proyek   : ${d.lokasi}\n`;
+
+  /* ── PAKET TERPILIH (bold) ── */
+  t += '\n━━━━━━━━━━━━━━━━━━━━\n';
+  t += '📦 *PAKET YANG DIPILIH*\n';
+  t += '━━━━━━━━━━━━━━━━━━━━\n\n';
+
+  if (d.paket) {
+    t += `🏷️ *${d.paket}*\n`;
+  } else if (fromPromo) {
+    t += `🏷️ *${cfg.promoCode} — Paket Desain Tipe ${cfg.promoMaxLuas}*\n`;
+  } else {
+    t += '📐 *Paket Detapo* _(default)_\n';
   }
 
-  function buildSummaryPromo(data) {
-    const d = data || {};
-    let t = '✅ *Data klaim promo berhasil dicatat!*\n\n';
-    t += '━━━━━━━━━━━━━━━━━━━━\n🏷️ *KLAIM PROMO ' + PROMOCODE + '*\n━━━━━━━━━━━━━━━━━━━━\n\n';
-    t += '🏷️ Kode promo      : *' + PROMOCODE + '*\n';
-    t += '💰 Harga promo     : *Rp 4.499.000* (hemat 44%)\n';
-    t += '📐 Maks. luas      : 50 m²\n\n';
-    if (d.jenis)           t += '🏠 Jenis bangunan  : ' + d.jenis + '\n';
-    if (d.konfirmasi_luas) t += '📏 Luas bangunan   : ' + d.konfirmasi_luas + '\n';
-    if (d.status_lahan)    t += '📋 Status lahan    : ' + d.status_lahan + '\n';
-    if (d.luas)            t += '📐 Ukuran lahan    : ' + d.luas + '\n';
-    if (d.kawasan)         t += '📍 Kawasan         : ' + d.kawasan + '\n';
-    if (d.kamar)           t += '🛏️ Kamar tidur     : ' + d.kamar + '\n';
-    if (d.ruang_khusus)    t += '🛋️ Ruang khusus   : ' + d.ruang_khusus + '\n';
-    if (d.konsep)          t += '🎨 Konsep desain   : ' + d.konsep + '\n';
-    if (d.kebutuhan)       t += '📝 Kebutuhan       : ' + d.kebutuhan + '\n';
-    if (d.nama)            t += '👤 Nama            : ' + d.nama + '\n';
-    if (d.lokasi)          t += '📍 Lokasi proyek   : ' + d.lokasi + '\n';
-    if (d.wa)              t += '📲 WhatsApp        : ' + d.wa + '\n';
-    t += '\n━━━━━━━━━━━━━━━━━━━━\n📦 *YANG DIDAPATKAN*\n━━━━━━━━━━━━━━━━━━━━\n\n';
+  if (d.estimasi_luas && d.estimasi_luas !== '-')
+    t += `📐 Luas estimasi   : ${d.estimasi_luas}\n`;
+  if (d.estimasi_harga)
+    t += `💰 *Estimasi biaya : ${d.estimasi_harga}*\n`;
+
+  if (fromPromo) {
+    t += '\n📋 *Yang didapatkan:*\n';
     t += '✅ Gambar kerja lengkap (denah, tampak, potongan, detail)\n';
     t += '✅ RAB perkiraan biaya\n';
-    t += '✅ Revisi desain maks. 2× sesuai masukan\n\n';
-    t += '📲 Klik *"Kirim ke WA"* di bawah untuk konfirmasi klaim promo ke admin kami.\n\nTim kami akan segera menghubungi Anda! 🙏';
-    return t;
+    t += `✅ Revisi desain maks. 2×\n`;
+    t += `\n🏷️ *Promo ${cfg.promoCode} berlaku untuk konsultasi ini!*\n`;
   }
 
-  function buildWAMsgPromo(data) {
-    const d = data || {};
-    const lines = [
-      '*' + PROMOCODE + '* *' + PROMOCODE + '* *' + PROMOCODE + '*',
-      '',
-      '🏷️ *KLAIM PROMO TIPE 50 — Fusako Studio*',
-      '',
-      'Kode promo      : ' + PROMOCODE,
-      'Harga promo     : Rp 4.499.000',
-    ];
-    if (d.jenis)           lines.push('Jenis bangunan  : ' + d.jenis);
-    if (d.konfirmasi_luas) lines.push('Luas bangunan   : ' + d.konfirmasi_luas);
-    if (d.status_lahan)    lines.push('Status lahan    : ' + d.status_lahan);
-    if (d.luas)            lines.push('Ukuran lahan    : ' + d.luas);
-    if (d.kawasan)         lines.push('Kawasan         : ' + d.kawasan);
-    if (d.kamar)           lines.push('Kamar tidur     : ' + d.kamar);
-    if (d.ruang_khusus)    lines.push('Ruang khusus    : ' + d.ruang_khusus);
-    if (d.konsep)          lines.push('Konsep desain   : ' + d.konsep);
-    if (d.kebutuhan)       lines.push('Kebutuhan       : ' + d.kebutuhan);
-    if (d.nama)            lines.push('Nama            : ' + d.nama);
-    if (d.lokasi)          lines.push('Lokasi proyek   : ' + d.lokasi);
-    if (d.wa)              lines.push('WhatsApp        : ' + d.wa);
-    lines.push('', 'Mohon konfirmasi klaim promo ini. Terima kasih! 🙏');
-    return lines.join('\n');
+  t += '\n━━━━━━━━━━━━━━━━━━━━\n';
+  t += '📲 Klik *"Hubungi Tim Kami"* untuk kirim ringkasan ke WhatsApp kami.\n';
+
+  /* ── NOMOR WA ADMIN — PALING AKHIR ── */
+  t += '\n📞 *Nomor WhatsApp Tim Fusako Studio:*\n';
+  t += `*+${cfg.waNumber}*\n\n`;
+  t += 'Tim kami akan segera menghubungi Anda! 🙏';
+
+  return t;
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   5. BUILDER PESAN WHATSAPP OTOMATIS
+   ───────────────────────────────────────────────────────────── */
+function buildWAMessage(data, mode, fromPromo) {
+  const d = data || {};
+  const cfg = FUSAKO_CONFIG;
+
+  const header = fromPromo
+    ? `🏷️ *KLAIM PROMO ${cfg.promoCode} — Fusako Studio*`
+    : (mode === 'non_hunian'
+        ? '🏢 *KONSULTASI BANGUNAN — Fusako Studio*'
+        : '🏠 *KONSULTASI HUNIAN — Fusako Studio*');
+
+  let lines = [];
+
+  if (fromPromo) {
+    lines.push(`*${cfg.promoCode}* *${cfg.promoCode}* *${cfg.promoCode}*`);
+    lines.push('');
+    lines.push(header);
+    lines.push('');
+    lines.push(`Kode promo      : *${cfg.promoCode}*`);
+    lines.push(`Harga promo     : *${cfg.promoHarga}*`);
+  } else {
+    lines.push(header);
+    lines.push('');
   }
 
+  if (d.jenis)            lines.push(`Jenis           : ${d.jenis}`);
+  if (d.konfirmasi_luas)  lines.push(`Luas bangunan   : ${d.konfirmasi_luas}`);
+  if (d.status_lahan)     lines.push(`Status lahan    : ${d.status_lahan}`);
+  if (d.luas)             lines.push(`Ukuran lahan    : ${d.luas}`);
+  if (d.kawasan)          lines.push(`Kawasan         : ${d.kawasan}`);
+  if (d.tujuan)           lines.push(`Tujuan          : ${d.tujuan}`);
+  if (d.kamar)            lines.push(`Kamar tidur     : ${d.kamar}`);
+  if (d.ruang_khusus)     lines.push(`Ruang khusus    : ${d.ruang_khusus}`);
+  if (d.konsep)           lines.push(`Konsep desain   : ${d.konsep}`);
+  if (d.lantai)           lines.push(`Jumlah lantai   : ${d.lantai}`);
+  if (d.anggaran)         lines.push(`Anggaran        : ${d.anggaran}`);
+  if (d.layanan)          lines.push(`Layanan         : ${d.layanan}`);
+  if (d.kebutuhan_awal)   lines.push(`Kebutuhan awal  : ${d.kebutuhan_awal}`);
+  if (d.nama)             lines.push(`Nama            : ${d.nama}`);
+  if (d.lokasi)           lines.push(`Lokasi proyek   : ${d.lokasi}`);
 
-  /* ── A7. SYSTEM PROMPTS CLAUDE API ── */
-  const waBotSystemPromptConsult =
-    `Kamu adalah asisten konsultasi dari Future Sakato Dynamics Studio — studio desain dan perencanaan profesional berbasis di Sijunjung, Sumatera Barat, Indonesia.
+  /* ── PAKET TERPILIH — BOLD ── */
+  lines.push('');
+  lines.push('━━━━━━━━━━━━━━━━━━━━');
+  if (d.paket) {
+    lines.push(`*PAKET DIPILIH: ${d.paket}*`);
+  } else if (fromPromo) {
+    lines.push(`*PAKET DIPILIH: ${cfg.promoCode} — Tipe ${cfg.promoMaxLuas}*`);
+  }
+  if (d.estimasi_luas && d.estimasi_luas !== '-')
+    lines.push(`Estimasi luas   : ${d.estimasi_luas}`);
+  if (d.estimasi_harga)
+    lines.push(`*Estimasi biaya : ${d.estimasi_harga}*`);
+  lines.push('━━━━━━━━━━━━━━━━━━━━');
 
-Tugasmu KHUSUS dalam sesi ini adalah menjalankan alur konsultasi terstruktur untuk memahami kebutuhan bangunan calon klien, SATU pertanyaan dalam satu waktu, berurutan sesuai alur berikut:
+  lines.push('');
+  lines.push('Mohon tindak lanjut konsultasi ini. Terima kasih! 🙏');
+
+  /* ── NOMOR WA KONSUMEN — PALING AKHIR ── */
+  if (d.wa) {
+    lines.push('');
+    lines.push(`📲 *Nomor WA Konsumen: ${d.wa}*`);
+  }
+
+  return lines.join('\n');
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   6. SYSTEM PROMPT CLAUDE API — KONSULTASI (LANGSUNG)
+   ───────────────────────────────────────────────────────────── */
+const waBotSystemPromptConsult =
+`Kamu adalah asisten konsultasi dari Fusako Studio (Future Sakato Dynamics Studio) — studio desain dan perencanaan profesional berbasis di Sijunjung, Sumatera Barat, Indonesia.
+
+Tugasmu KHUSUS dalam sesi ini adalah menjalankan alur konsultasi terstruktur untuk memahami kebutuhan bangunan calon klien, SATU pertanyaan dalam satu waktu.
 
 ALUR PERTANYAAN (hunian):
-1. Sambut user sesuai waktu (pagi/siang/sore/malam), tanyakan: "Apakah Anda ingin konsultasi desain rumah, renovasi, atau bangunan lainnya?"
-2. Luas tanah atau ukuran lahan
-3. Jumlah lantai (pilihan: 1 lantai / 2 lantai / 3 lantai atau lebih / Belum menentukan)
-4. Kamar tidur yang dibutuhkan
-5. Kamar mandi yang dibutuhkan
-6. Siapa yang akan menempati (pilihan: Pasangan suami istri / Keluarga kecil / Keluarga besar / Orang tua dan anak / Investasi / Lainnya)
-7. Garasi atau carport (pilihan: Tidak ada / 1 mobil / 2 mobil / 3 mobil atau lebih)
-8. Ruangan tambahan (contoh: Mushola, Ruang kerja, Ruang laundry, Gudang, Ruang usaha, Balkon, Rooftop)
-9. Gaya desain (pilihan: Modern / Minimalis / Tropis / Industrial / Klasik / Scandinavian / Japandi / Belum tahu)
-10. Status tanah (Sudah / Belum)
-11. Lokasi pembangunan
-12. Kondisi lahan (pilihan: Tanah kosong / Ada bangunan lama / Renovasi rumah lama / Kavling perumahan / Hook / pojok / Belum tahu)
-13. Kapan rencana pembangunan dimulai (pilihan: Secepatnya / 1-3 bulan / 3-6 bulan / Lebih dari 6 bulan / Masih mencari referensi)
-14. Kisaran anggaran (pilihan: Di bawah 300 juta / 300-500 juta / 500 juta-1 miliar / 1-2 miliar / Di atas 2 miliar / Belum menentukan)
-15. Kebutuhan khusus (contoh: banyak ventilasi, ramah lansia, banyak taman, hemat biaya)
-16. Tampilkan ringkasan lengkap dengan label "Kapasitas kendaraan" untuk garasi, lalu tawarkan paket layanan
+1. Sambut user sesuai waktu (pagi/siang/sore/malam), tanyakan jenis konsultasi
+2. Status kepemilikan lahan
+3. Luas tanah atau ukuran lahan
+4. Kawasan lokasi (perumahan, pedesaan, perkotaan, wisata)
+5. Tujuan bangunan (hunian keluarga, investasi, kontrakan, dll.)
+6. Kamar tidur yang dibutuhkan
+7. Ruangan khusus yang diinginkan
+8. Gaya desain
+9. Jumlah lantai
+10. Kisaran anggaran pembangunan
+11. Layanan yang dibutuhkan
+12. Nama, lokasi proyek, nomor WhatsApp
+13. Tampilkan ringkasan + tawarkan paket layanan
 
-Jika user menyebut bangunan NON-HUNIAN (kantor, ruko, cafe, dll.), sesuaikan pertanyaan untuk bangunan komersial.
+Jika user menyebut bangunan NON-HUNIAN (kantor, ruko, cafe, dll.), sesuaikan pertanyaan.
 
 Aturan:
 - SELALU satu pertanyaan per balasan
-- Gunakan format teks bersih, cukup emoji pada sapaan awal
-- Tampilkan pilihan dengan bullet • bukan emoji angka
+- Tampilkan pilihan dengan bullet • 
+- Setiap pilihan diikuti opsi "atau ketik sendiri"
 - Jika user menjawab di luar topik, arahkan kembali dengan sopan
 - Bahasa Indonesia yang sopan, ramah, dan profesional
 - Jangan sebut bahwa kamu adalah AI`;
 
-  const waBotSystemPrompt =
-    `Kamu adalah asisten virtual dari Future Sakato Dynamics Studio, sebuah studio desain dan perencanaan profesional berbasis di Sijunjung, Sumatera Barat, Indonesia.
+
+/* ─────────────────────────────────────────────────────────────
+   7. SYSTEM PROMPT CLAUDE API — CHAT UMUM / PROMO
+   ───────────────────────────────────────────────────────────── */
+const waBotSystemPrompt =
+`Kamu adalah asisten virtual dari Fusako Studio (Future Sakato Dynamics Studio), sebuah studio desain dan perencanaan profesional berbasis di Sijunjung, Sumatera Barat, Indonesia.
 
 Layanan kami meliputi: desain hunian (rumah tinggal), desain perkantoran, perencanaan kawasan industri, desain fasilitas publik, perencanaan sipil & infrastruktur, desain klinik/fasilitas kesehatan, desain hotel & penginapan, desain cafe & restoran.
 
-Nomor WhatsApp tim kami: +62 851-1703-1202
-Email: futuresakatodynamics@gmail.com
+Nomor WhatsApp tim kami: +62 822-8575-4080
+Email: halo@sakato.studio
+Website: fusakostudio.com
 Lokasi: Sijunjung, Sumatera Barat
 
 Tugasmu:
 - Sambut tamu dengan hangat dan profesional
 - Jawab pertanyaan umum tentang layanan, harga estimasi, proses, dan portofolio
-- Jika pertanyaan sangat spesifik (negosiasi harga detail, pengukuran lapangan, proposal resmi), sarankan untuk melanjutkan ke tim manusia
+- Jika pertanyaan sangat spesifik, sarankan untuk melanjutkan ke tim manusia
 - Balas dalam Bahasa Indonesia yang sopan dan profesional
 - Singkat dan jelas, maksimal 3-4 kalimat per balasan
 - Jangan sebut bahwa kamu adalah AI
-- Jika sesi ini berasal dari promo (ditandai flag fromPromo=true atau kode PROMOTIPE50), di bagian akhir ringkasan percakapan wajib tampilkan tulisan tebal: *PROMOTIPE50* *PROMOTIPE50* *PROMOTIPE50*`;
+- Jika sesi ini berasal dari promo (ditandai flag fromPromo=true atau kode PROMOTIPE50),
+  maka di bagian akhir ringkasan percakapan wajib tampilkan tulisan tebal:
+  *PROMOTIPE50* *PROMOTIPE50* *PROMOTIPE50*`;
 
 
-  /* ── A8. getConsultReply — dipanggil dari handler luar ── */
-  function getConsultReply(userMsg, state) {
-    if (state && state.fromPromo) return null;
-    if (!state || !state.step) {
-      state = { step: 'welcome', data: {}, mode: null, fromPromo: false };
-      return { reply: waConsultSteps[0].getReply({}), state };
-    }
-    const msg = (userMsg || '').toLowerCase().trim();
-    if (state.step === 'welcome') {
-      const isNon = /kantor|ruko|gedung|komersial|toko|pabrik|gudang|cafe|restoran|hotel|klinik|fasilitas|infrastruktur/i.test(msg);
-      state.mode = isNon ? 'non_hunian' : 'hunian';
-      state.data['jenis_konsultasi'] = userMsg;
-      state.step = 'luas_tanah';
-      const steps = state.mode === 'non_hunian' ? waConsultStepsNonHunian : waConsultSteps;
-      const nextStep = steps.find(s => s.id === 'luas_tanah');
-      return {
-        reply:
-          '✅ Baik, kami catat!\n\n' +
-          (state.mode === 'non_hunian'
-            ? 'Kami siap bantu perencanaan bangunan Anda.\nBerikut beberapa pertanyaan singkat:\n\n'
-            : 'Kami siap bantu wujudkan hunian impian Anda!\nBerikut beberapa pertanyaan singkat:\n\n') +
-          nextStep.getReply(state.data),
-        state
-      };
-    }
-    const steps = state.mode === 'non_hunian' ? waConsultStepsNonHunian : waConsultSteps;
-    const currentStep = steps.find(s => s.id === state.step);
-    if (!currentStep) {
-      state.step = 'welcome';
-      return { reply: waConsultSteps[0].getReply({}), state };
-    }
-    if (currentStep.saveKey) state.data[currentStep.saveKey] = userMsg;
-    if (currentStep.nextStep === 'summary') {
-      state.step = 'done';
-      return { reply: buildSummaryBiasa(state.data, state.mode), state };
-    }
-    const nextStep = steps.find(s => s.id === currentStep.nextStep);
-    if (!nextStep) {
-      state.step = 'done';
-      return { reply: buildSummaryBiasa(state.data, state.mode), state };
-    }
-    state.step = nextStep.id;
-    return { reply: nextStep.getReply(state.data), state };
+/* ─────────────────────────────────────────────────────────────
+   8. FUNGSI UTAMA — KONSULTASI STEP-BY-STEP
+      Dipanggil oleh handler chatbot di kode utama website.
+
+   Parameter:
+     userMsg  → string pesan terakhir user
+     state    → objek sesi, simpan di window._consultState
+                { step, data, mode, fromPromo, done }
+
+   Return: { reply: string, opts: array, state: object }
+           atau null jika fromPromo = true (handle di handler lain)
+   ───────────────────────────────────────────────────────────── */
+function getConsultReply(userMsg, state) {
+  /* Jika dari promo → pakai alur promo */
+  const steps = (state && state.fromPromo) ? waConsultStepsPromo : waConsultSteps;
+
+  /* Inisialisasi state baru */
+  if (!state || !state.step) {
+    const initState = { step: 'welcome', data: {}, mode: null, fromPromo: false, done: false };
+    const welcomeStep = steps.find(s => s.id === 'welcome');
+    return { reply: welcomeStep.msg(), opts: welcomeStep.opts, state: initState };
   }
 
+  if (state.done) return null;
 
-  /* ──────────────────────────────────────────────────────────────
-     B. UI ENGINE
-     ────────────────────────────────────────────────────────────── */
+  const msg = (userMsg || '').trim();
 
-  function createEngine(cfg) {
-    const sel  = cfg.containerSelector || '#wrap';
-    const waNo = cfg.waNumber         || '6282285754080';
+  /* Temukan step aktif */
+  const currentStep = steps.find(s => s.id === state.step);
+  if (!currentStep) {
+    state.step = 'welcome';
+    const ws = steps.find(s => s.id === 'welcome');
+    return { reply: ws.msg(), opts: ws.opts, state };
+  }
 
-    // Resolusi elemen (ditemukan di dalam container atau global)
-    const root = document.querySelector(sel) || document;
-    const q    = (id) => document.getElementById(id) || root.querySelector('#' + id);
+  /* Simpan jawaban user */
+  if (currentStep.save) {
+    state.data[currentStep.save] = userMsg;
+  }
 
-    const ME  = () => q('msgs');
-    const OE  = () => q('opts');
-    const INP = () => q('inp');
-    const SND = () => q('snd');
+  /* Tentukan step berikutnya */
+  const nextId = currentStep.next(msg.toLowerCase());
 
-    /** Format *bold* dan _italic_ */
-    function fmt(t) {
-      return t
-        .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
-        .replace(/_(.*?)_/g,   '<em>$1</em>');
+  if (nextId === 'summary') {
+    state.step = 'done';
+    state.done = true;
+    return {
+      reply: buildSummary(state.data, state.mode, state.fromPromo),
+      opts: [
+        { label: '📲 Hubungi Tim Kami via WA', value: '__WA__' },
+        { label: '🔄 Mulai konsultasi baru',   value: '__RESET__' },
+      ],
+      state,
+    };
+  }
+
+  if (nextId === 'selesai_tolak') {
+    state.step = 'selesai_tolak';
+    state.done = true;
+    const tolakStep = steps.find(s => s.id === 'selesai_tolak');
+    return { reply: tolakStep.msg(), opts: [], state };
+  }
+
+  const nextStep = steps.find(s => s.id === nextId);
+  if (!nextStep) {
+    state.step = 'done';
+    state.done = true;
+    return {
+      reply: buildSummary(state.data, state.mode, state.fromPromo),
+      opts: [{ label: '📲 Hubungi Tim Kami via WA', value: '__WA__' }],
+      state,
+    };
+  }
+
+  state.step = nextId;
+  return { reply: nextStep.msg(state.data), opts: nextStep.opts, state };
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   9. FUNGSI PENDUKUNG (INTERNAL)
+   ───────────────────────────────────────────────────────────── */
+
+/** Sapaan sesuai jam lokal */
+function _getSapaan() {
+  const h = new Date().getHours();
+  if (h >= 5  && h < 12) return 'Selamat pagi';
+  if (h >= 12 && h < 15) return 'Selamat siang';
+  if (h >= 15 && h < 19) return 'Selamat sore';
+  return 'Selamat malam';
+}
+
+/** Cocokkan pesan ke template fallback */
+function _matchTemplate(msg) {
+  const m = (msg || '').toLowerCase();
+  for (const t of waTemplates) {
+    if (t.keys.test(m)) return t.reply;
+  }
+  return null;
+}
+
+/** Buka WA dengan pesan konsultasi */
+function _openWA(data, mode, fromPromo) {
+  const text = buildWAMessage(data, mode, fromPromo);
+  const url  = 'https://wa.me/' + FUSAKO_CONFIG.waNumber +
+               '?text=' + encodeURIComponent(text);
+  window.open(url, '_blank');
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   10. INISIALISASI STATE & INTEGRASI WEBSITE
+       Bagian ini menghubungkan semua fungsi di atas ke
+       elemen HTML chatbot yang sudah ada di index.html.
+   ───────────────────────────────────────────────────────────── */
+
+/** State konsultasi global (disimpan di window) */
+window._consultState = {
+  step:      null,
+  data:      {},
+  mode:      null,
+  fromPromo: false,
+  done:      false,
+};
+
+/**
+ * Mulai sesi dari popup promo (dipanggil oleh fsdGoChat di HTML).
+ * @param {string} code - kode promo, misal 'PROMOTIPE50'
+ */
+window._startPromo = function(code) {
+  window._consultState = {
+    step:      'welcome',
+    data:      {},
+    mode:      null,
+    fromPromo: true,
+    done:      false,
+  };
+
+  /* Update warna header chatbot ke oranye (mode promo) */
+  var hdr = document.querySelector('#waPopup .wa-header, .wa-header, #waHeader');
+  if (hdr) hdr.style.background = FUSAKO_CONFIG.colorPromo;
+
+  /* Tampilkan badge promo di header */
+  var badge = document.getElementById('waPromoHeaderBadge');
+  if (!badge) {
+    badge = document.createElement('span');
+    badge.id = 'waPromoHeaderBadge';
+    badge.style.cssText =
+      'background:#fff;color:' + FUSAKO_CONFIG.colorPromo +
+      ';font-size:9px;font-weight:700;padding:2px 7px;' +
+      'border-radius:3px;letter-spacing:1px;margin-left:auto;flex-shrink:0';
+    badge.textContent = code || FUSAKO_CONFIG.promoCode;
+    if (hdr) hdr.appendChild(badge);
+  }
+
+  /* Reset area chat */
+  var msgArea = document.getElementById('waMessages');
+  if (msgArea) msgArea.innerHTML = '';
+  _clearBotOpts();
+
+  /* Kirim pesan awal user (persis seperti fsdGoChat) */
+  setTimeout(function() {
+    var input = document.getElementById('waInput');
+    if (input) {
+      input.value = 'Halo, saya ingin klaim Promo Desain Tipe 50 — Rp 4.499.000';
+      if (typeof sendBotMsg === 'function') sendBotMsg();
+    } else {
+      /* Fallback: langsung trigger step welcome tanpa input */
+      _triggerBotStep('Halo, saya ingin klaim promo');
     }
+  }, 700);
+};
 
-    function addMsg(txt, who, extraClass) {
-      const r = document.createElement('div');
-      r.className = 'mrow ' + who;
-      const b = document.createElement('div');
-      b.className = 'bub ' + who + (extraClass ? ' ' + extraClass : '');
-      b.innerHTML = fmt(txt) + '<div class="tm">' + getTime() + (who === 'usr' ? ' ✓✓' : '') + '</div>';
-      r.appendChild(b);
-      const me = ME();
-      me.appendChild(r);
-      me.scrollTop = me.scrollHeight;
-    }
+/**
+ * Fungsi utama yang dipanggil setiap kali user kirim pesan.
+ * Menggantikan / melengkapi sendBotMsg yang sudah ada.
+ */
+function sendBotMsg() {
+  var input = document.getElementById('waInput');
+  if (!input) return;
+  var msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
 
-    function showTyp() {
-      const me = ME();
-      const r  = document.createElement('div');
-      r.className = 'mrow bot';
-      r.id = 'typ';
-      r.innerHTML = '<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
-      me.appendChild(r);
-      me.scrollTop = me.scrollHeight;
-    }
+  /* Tampilkan bubble user */
+  _appendUserBubble(msg);
 
-    function hideTyp() {
-      const e = document.getElementById('typ');
-      if (e) e.remove();
-    }
-
-    function setOpts(arr, sendFn) {
-      const oe = OE();
-      oe.innerHTML = '';
-      (arr || []).forEach(o => {
-        const b = document.createElement('button');
-        b.className = 'ob' + (o.manual ? ' manual' : '');
-        b.textContent = o.label;
-        b.onclick = () => sendFn(o.value !== null && o.value !== undefined ? o.value : null);
-        oe.appendChild(b);
+  /* Aksi khusus */
+  if (msg === '__WA__') {
+    _openWA(window._consultState.data, window._consultState.mode, window._consultState.fromPromo);
+    return;
+  }
+  if (msg === '__RESET__') {
+    _resetConsult();
+    return;
+  }
+  if (msg === '__BACK_PAKET__') {
+    /* Balik ke step paket_pilih sesuai mode */
+    var s = window._consultState;
+    s.step = s.fromPromo ? 'paket_pilih_promo' : 'paket_pilih';
+    s.done = false;
+    var steps = s.fromPromo ? waConsultStepsPromo : waConsultSteps;
+    var paketStep = steps.find(function(x){ return x.id === s.step; });
+    if (paketStep) {
+      _showTyping(function() {
+        _appendBotBubble(paketStep.msg(s.data), false);
+        _renderOpts(paketStep.opts);
       });
     }
-
-    async function botSay(txt, opts, sendFn, extraClass) {
-      showTyp();
-      await new Promise(r => setTimeout(r, 700 + Math.random() * 500));
-      hideTyp();
-      addMsg(txt, 'bot', extraClass || '');
-      if (sendFn) setOpts(opts || [], sendFn);
-    }
-
-    function clearChat() {
-      ME().innerHTML = '';
-      OE().innerHTML = '';
-    }
-
-    function openWA(text) {
-      window.open('https://wa.me/' + waNo + '?text=' + encodeURIComponent(text), '_blank');
-    }
-
-    return { addMsg, showTyp, hideTyp, setOpts, botSay, clearChat, openWA, INP, SND, ME, OE };
+    return;
   }
 
+  /* Jalankan alur konsultasi */
+  _triggerBotStep(msg);
+}
 
-  /* ──────────────────────────────────────────────────────────────
-     C. CHATBOT BIASA
-     ────────────────────────────────────────────────────────────── */
+function _triggerBotStep(msg) {
+  var s = window._consultState;
 
-  function initBiasa(cfg) {
-    const eng = createEngine(cfg);
-    let state = { step: 'welcome', data: {}, mode: null, fromPromo: false, promoCode: '' };
+  /* Jika state kosong → inisialisasi */
+  if (!s.step) {
+    var init = getConsultReply(null, null);
+    window._consultState = init.state;
+    _showTyping(function() {
+      _appendBotBubble(init.reply, s.fromPromo);
+      _renderOpts(init.opts);
+    });
+    return;
+  }
 
-    async function process(userMsg) {
-      const inp = eng.INP();
-      if (inp) inp.disabled = true;
-      eng.setOpts([], send);
-
-      const step = FLOW_BIASA[state.step];
-      if (!step) { if (inp) inp.disabled = false; return; }
-
-      if (step.save) state.data[step.save] = userMsg;
-      const nextId = step.next(userMsg, state);
-
-      // Deteksi mode saat welcome
-      if (state.step === 'welcome') {
-        state.mode = /kantor|ruko|toko|villa|interior|renovasi|perencanaan/i.test(userMsg)
-          ? 'non_hunian' : 'hunian';
-      }
-
-      if (nextId === 'summary') {
-        state.step = 'done';
-        await eng.botSay(buildSummaryBiasa(state.data, state.mode), [
-          { label: '📲 Hubungi Tim Kami via WA', value: '__WA__' },
-          { label: '🔄 Mulai konsultasi baru',   value: '__RESET__' },
-        ], send);
-      } else {
-        const nxt = FLOW_BIASA[nextId];
-        if (!nxt) { if (inp) inp.disabled = false; return; }
-        state.step = nextId;
-        await eng.botSay(nxt.msg(), nxt.opts, send);
-      }
-
-      if (inp) { inp.disabled = false; inp.focus(); }
+  /* Proses pesan */
+  var result = getConsultReply(msg, s);
+  if (!result) {
+    /* Coba fallback template */
+    var fb = _matchTemplate(msg);
+    if (fb) {
+      _showTyping(function() { _appendBotBubble(fb, false); });
     }
+    return;
+  }
 
-    async function send(val) {
-      const inp = eng.INP();
-      const msg = (val !== null && val !== undefined) ? val : (inp ? inp.value.trim() : '');
-      if (!msg) return;
-      if (inp) inp.value = '';
+  window._consultState = result.state;
+  _showTyping(function() {
+    _appendBotBubble(result.reply, result.state.fromPromo && result.state.step === 'welcome');
+    _renderOpts(result.opts || []);
+  });
+}
 
-      if (msg === '__WA__') {
-        eng.openWA(buildWAMsgBiasa(state.data, state.mode, state.fromPromo, state.promoCode));
+/* ── UI Helpers ── */
+
+function _getTime() {
+  var d = new Date();
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+
+function _appendUserBubble(text) {
+  var area = document.getElementById('waMessages');
+  if (!area) return;
+  var row = document.createElement('div');
+  row.className = 'wa-msg-row usr';
+  row.innerHTML =
+    '<div class="wa-bubble usr">' + _escHtml(text) +
+    '<div class="wa-tm">' + _getTime() + ' ✓✓</div></div>';
+  area.appendChild(row);
+  area.scrollTop = area.scrollHeight;
+}
+
+function _appendBotBubble(text, isPromo) {
+  var area = document.getElementById('waMessages');
+  if (!area) return;
+  var row = document.createElement('div');
+  row.className = 'wa-msg-row bot';
+  var cls = 'wa-bubble bot' + (isPromo ? ' promo' : '');
+  row.innerHTML =
+    '<div class="' + cls + '">' + _fmtText(text) +
+    '<div class="wa-tm">' + _getTime() + '</div></div>';
+  area.appendChild(row);
+  area.scrollTop = area.scrollHeight;
+}
+
+function _showTyping(cb) {
+  var area = document.getElementById('waMessages');
+  if (!area) { if(cb) cb(); return; }
+  var row = document.createElement('div');
+  row.className = 'wa-msg-row bot';
+  row.id = 'wa-typing-row';
+  row.innerHTML =
+    '<div class="wa-bubble bot typing">' +
+    '<span class="dot"></span><span class="dot"></span><span class="dot"></span>' +
+    '</div>';
+  area.appendChild(row);
+  area.scrollTop = area.scrollHeight;
+  setTimeout(function() {
+    var el = document.getElementById('wa-typing-row');
+    if (el) el.remove();
+    if (cb) cb();
+  }, 700 + Math.random() * 500);
+}
+
+function _renderOpts(opts) {
+  var container = document.getElementById('waBotOpts');
+  if (!container) {
+    /* Buat container jika belum ada */
+    container = document.createElement('div');
+    container.id = 'waBotOpts';
+    container.style.cssText =
+      'padding:6px 10px;display:flex;flex-wrap:wrap;gap:5px;' +
+      'background:#ECE5DD;border-top:0.5px solid rgba(0,0,0,0.08)';
+    var area = document.getElementById('waMessages');
+    if (area && area.parentNode) {
+      area.parentNode.insertBefore(container, area.nextSibling);
+    }
+  }
+  container.innerHTML = '';
+  var isPromo = window._consultState.fromPromo;
+  opts.forEach(function(o) {
+    var btn = document.createElement('button');
+    btn.style.cssText =
+      'background:#fff;border:0.5px solid ' + (isPromo ? '#d4930e' : '#25D366') + ';' +
+      'color:' + (isPromo ? '#7a3d00' : '#075E54') + ';' +
+      'border-radius:15px;padding:4px 10px;font-size:11.5px;cursor:pointer;' +
+      'white-space:nowrap;font-family:inherit' +
+      (o.manual ? ';font-style:italic;border-color:#aaa;color:#888' : '');
+    btn.textContent = o.label;
+    btn.addEventListener('click', function() {
+      var val = (o.value !== null && o.value !== undefined) ? o.value : null;
+      if (val === null) {
+        /* Manual: fokus ke input */
+        var inp = document.getElementById('waInput');
+        if (inp) { inp.focus(); inp.placeholder = 'Ketik jawaban Anda...'; }
         return;
       }
-      if (msg === '__RESET__') { doReset(); return; }
-      eng.addMsg(msg, 'usr');
-      await process(msg);
-    }
-
-    async function doReset() {
-      eng.clearChat();
-      state = { step: 'welcome', data: {}, mode: null, fromPromo: false, promoCode: '' };
-      const w = FLOW_BIASA.welcome;
-      await eng.botSay(w.msg(), w.opts, send);
-      state.step = 'welcome';
-    }
-
-    /** Mulai dari promo (dipanggil via FusakoChat.startPromoBiasa) */
-    async function startPromo(code) {
-      eng.clearChat();
-      state = { step: 'welcome', data: {}, mode: null, fromPromo: true, promoCode: code };
-      const promoMsg = getSapaan() + '! 👋\n\n🏷️ *Kode Promo: ' + code + '* berhasil digunakan!\n\nSelamat datang di *Fusako Studio*. Yuk, mulai konsultasi desain Anda dan dapatkan penawaran spesial.\n\nApa yang ingin Anda konsultasikan?';
-      await eng.botSay(promoMsg, FLOW_BIASA.welcome.opts, send, 'promo-tag');
-      state.step = 'welcome';
-    }
-
-    // Bind input & button
-    const sndBtn = eng.SND();
-    if (sndBtn) sndBtn.onclick = () => send(null);
-    const inpEl = eng.INP();
-    if (inpEl) inpEl.addEventListener('keydown', e => { if (e.key === 'Enter') send(null); });
-
-    // Auto-start
-    (async () => {
-      await new Promise(r => setTimeout(r, 350));
-      const w = FLOW_BIASA.welcome;
-      await eng.botSay(w.msg(), w.opts, send);
-      state.step = 'welcome';
-    })();
-
-    return { send, doReset, startPromo };
-  }
-
-
-  /* ──────────────────────────────────────────────────────────────
-     D. CHATBOT PROMO
-     ────────────────────────────────────────────────────────────── */
-
-  function initPromo(cfg) {
-    const eng = createEngine(cfg);
-    let state = { step: 'welcome', data: {}, done: false };
-    let locked = false;
-
-    async function process(userMsg) {
-      locked = true;
-      const step = FLOW_PROMO[state.step];
-      if (!step) { locked = false; return; }
-
-      if (step.save) state.data[step.save] = userMsg;
-      const nextId = step.next(userMsg);
-
-      if (nextId === 'summary') {
-        state.step = 'done';
-        state.done = true;
-        await eng.botSay(buildSummaryPromo(state.data), [], null);
-        // Tampilkan wa-bar jika ada
-        const waBar = document.getElementById('wa-bar');
-        if (waBar) waBar.style.display = 'flex';
-      } else if (nextId === 'selesai_tolak') {
-        state.step = 'selesai_tolak';
-        await eng.botSay(FLOW_PROMO.selesai_tolak.msg(), [], null);
-      } else {
-        const nxt = FLOW_PROMO[nextId];
-        if (!nxt) { locked = false; return; }
-        state.step = nextId;
-        await eng.botSay(nxt.msg(), nxt.opts, send);
+      /* Simulasi user kirim */
+      var inp = document.getElementById('waInput');
+      if (inp) {
+        inp.value = val;
+        sendBotMsg();
       }
+    });
+    container.appendChild(btn);
+  });
+}
 
-      locked = false;
-      const inp = eng.INP();
-      if (inp) inp.focus();
-    }
+function _clearBotOpts() {
+  var c = document.getElementById('waBotOpts');
+  if (c) c.innerHTML = '';
+}
 
-    async function send(val) {
-      if (locked || state.done) return;
-      const inp = eng.INP();
-      const msg = (val !== null && val !== undefined) ? val : (inp ? inp.value.trim() : '');
-      if (!msg) return;
-      if (inp) inp.value = '';
-      eng.addMsg(msg, 'usr');
-      await process(msg);
-    }
+function _resetConsult() {
+  window._consultState = { step: null, data: {}, mode: null, fromPromo: false, done: false };
+  var area = document.getElementById('waMessages');
+  if (area) area.innerHTML = '';
+  _clearBotOpts();
 
-    function openWA() {
-      eng.openWA(buildWAMsgPromo(state.data));
-    }
+  /* Reset warna header */
+  var hdr = document.querySelector('#waPopup .wa-header, .wa-header, #waHeader');
+  if (hdr) hdr.style.background = FUSAKO_CONFIG.colorNormal;
+  var badge = document.getElementById('waPromoHeaderBadge');
+  if (badge) badge.remove();
 
-    /** Dipanggil saat popup promo diklaim */
-    async function startChat() {
-      state = { step: 'welcome', data: {}, done: false };
-      locked = false;
-      eng.clearChat();
-      const waBar = document.getElementById('wa-bar');
-      if (waBar) waBar.style.display = 'none';
+  /* Mulai ulang */
+  setTimeout(function() { _triggerBotStep(null); }, 300);
+}
 
-      eng.addMsg('Halo, saya ingin klaim Promo Desain Tipe 50 — Rp 4.499.000', 'usr');
-      await new Promise(r => setTimeout(r, 400));
-      const w = FLOW_PROMO.welcome;
-      await eng.botSay(w.msg(), w.opts, send, 'promo-msg');
-      state.step = 'welcome';
-    }
+function _escHtml(t) {
+  return (t || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 
-    // Bind
-    const sndBtn = eng.SND();
-    if (sndBtn) sndBtn.onclick = () => send(null);
-    const inpEl = eng.INP();
-    if (inpEl) inpEl.addEventListener('keydown', e => { if (e.key === 'Enter') send(null); });
+function _fmtText(t) {
+  return _escHtml(t)
+    .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
+    .replace(/_(.*?)_/g, '<em>$1</em>')
+    .replace(/\n/g, '<br>');
+}
 
-    return { send, startChat, openWA };
+
+/* ─────────────────────────────────────────────────────────────
+   11. AUTO-INIT
+       Saat halaman load, inisialisasi chatbot.
+       Ubah fsdGoChat() di HTML menjadi:
+         window._startPromo('PROMOTIPE50');
+       agar promo berjalan lewat alur ini.
+   ───────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function() {
+  /* Tambahkan CSS animasi typing jika belum ada */
+  if (!document.getElementById('fusako-bot-style')) {
+    var style = document.createElement('style');
+    style.id = 'fusako-bot-style';
+    style.textContent =
+      '.wa-bubble.promo{background:#FEF3E2!important;border-left:3px solid #d4930e!important}' +
+      '.dot{display:inline-block;width:6px;height:6px;border-radius:50%;' +
+      'background:#aaa;margin:0 2px;animation:waDot 1s infinite}' +
+      '.dot:nth-child(2){animation-delay:.15s}' +
+      '.dot:nth-child(3){animation-delay:.3s}' +
+      '@keyframes waDot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}';
+    document.head.appendChild(style);
   }
 
-
-  /* ──────────────────────────────────────────────────────────────
-     E. PUBLIC API
-     ────────────────────────────────────────────────────────────── */
-
-  /**
-   * FusakoChat.init(cfg)
-   *   Inisialisasi chatbot biasa.
-   *   cfg: { containerSelector, waNumber }
-   *   Return: { send, doReset, startPromo }
-   */
-  function init(cfg) {
-    return initBiasa(cfg || {});
-  }
-
-  /**
-   * FusakoChat.startPromo(code, cfg)
-   *   Inisialisasi chatbot biasa TAPI dimulai dengan mode promo.
-   *   cfg: { containerSelector, waNumber }
-   */
-  function startPromo(code, cfg) {
-    const bot = initBiasa(Object.assign({ _skipAutoStart: true }, cfg || {}));
-    bot.startPromo(code || PROMOCODE);
-    return bot;
-  }
-
-  /**
-   * FusakoChat.initPromoFlow(cfg)
-   *   Inisialisasi chatbot flow promo (dari popup klaim).
-   *   cfg: { containerSelector, waNumber }
-   *   Return: { send, startChat, openWA }
-   */
-  function initPromoFlow(cfg) {
-    return initPromo(cfg || {});
-  }
-
-  /* ──────────────────────────────────────────────────────────────
-     F. ALIAS GLOBAL — KOMPATIBILITAS DENGAN index.html
-        index.html mengakses variabel-variabel ini langsung
-        (dipakai di getTemplateReply, getBotReply, fsdGoChat, dll)
-        tanpa prefix FusakoChat.xxx
-     ────────────────────────────────────────────────────────────── */
-
-  // Yang dipakai langsung di index.html:
-  //   waTemplates            → getTemplateReply(msg)
-  //   waBotSystemPrompt      → getBotReply() systemPrompt
-  //   waBotSystemPromptConsult (opsional, expose saja)
-  //   window._startPromo(code) → backward compat dari chatbot_fusako_v2
-  global.waTemplates             = waTemplates;
-  global.waBotSystemPrompt       = waBotSystemPrompt;
-  global.waBotSystemPromptConsult = waBotSystemPromptConsult;
-  global.waConsultSteps          = waConsultSteps;
-  global.waConsultStepsNonHunian = waConsultStepsNonHunian;
-  global.getSapaan               = getSapaan;
-  global.getConsultReply         = getConsultReply;
-
-  // Backward compat: window._startPromo(code) dari versi lama
-  global._startPromo = function(code) {
-    // Jika FusakoChat sudah di-init, panggil startPromo-nya
-    // Jika belum, init dulu dengan default selector
-    if (global._fusakoChatInstance && global._fusakoChatInstance.startPromo) {
-      global._fusakoChatInstance.startPromo(code);
-    } else {
-      global._fusakoChatInstance = initBiasa({});
-      global._fusakoChatInstance.startPromo(code);
+  /* Sambungkan tombol WA di akhir ringkasan jika ada */
+  document.addEventListener('click', function(e) {
+    var t = e.target;
+    if (t && t.getAttribute && t.getAttribute('data-wa-send') === '1') {
+      _openWA(window._consultState.data, window._consultState.mode, window._consultState.fromPromo);
     }
-  };
+  });
+});
 
-  /* Expose ke global */
-  global.FusakoChat = {
-    init,
-    startPromo,
-    initPromoFlow,
-
-    /* Data & helpers yang mungkin dipakai dari luar */
-    PROMOCODE,
-    waTemplates,
-    waConsultSteps,
-    waConsultStepsNonHunian,
-    waBotSystemPrompt,
-    waBotSystemPromptConsult,
-    getConsultReply,
-    buildSummary:    buildSummaryBiasa,
-    buildWAMessage:  buildWAMsgBiasa,
-    buildSummaryPromo,
-    buildWAMsgPromo,
-    getSapaan,
-  };
-
-})(window);
-
-/* ================================================================
-   CONTOH PENGGUNAAN LENGKAP
-   ================================================================
-
-   === 1. Chatbot biasa ===
-
-   <div id="wrap">
-     <div id="msgs"></div>
-     <div id="opts"></div>
-     <input id="inp" placeholder="Ketik pesan..." />
-     <button id="snd">Kirim</button>
-   </div>
-   <script src="fusako-chatbot.js"></script>
-   <script>
-     FusakoChat.init({ containerSelector: '#wrap', waNumber: '6282285754080' });
-   </script>
-
-
-   === 2. Chatbot biasa dipicu dari kode promo ===
-
-   <script>
-     FusakoChat.startPromo('PROMOTIPE50', { containerSelector: '#chat-panel' });
-   </script>
-
-
-   === 3. Flow promo lengkap (popup → chat) ===
-
-   <script src="fusako-chatbot.js"></script>
-   <script>
-     // Setelah popup popup promo diklik "Klaim":
-     const promoBot = FusakoChat.initPromoFlow({ containerSelector: '#chat-panel' });
-
-     // Tampilkan chat panel, sembunyikan popup, lalu:
-     promoBot.startChat();
-
-     // Tombol "Kirim ke WA" di wa-bar:
-     document.getElementById('wa-kirim').onclick = () => promoBot.openWA();
-   </script>
-
-================================================================ */
+/* ── Ekspor untuk debug/testing di console ── */
+window._fusakoBot = {
+  config:           FUSAKO_CONFIG,
+  state:            function() { return window._consultState; },
+  reset:            _resetConsult,
+  startPromo:       window._startPromo,
+  buildSummary:     buildSummary,
+  buildWAMessage:   buildWAMessage,
+  matchTemplate:    _matchTemplate,
+};

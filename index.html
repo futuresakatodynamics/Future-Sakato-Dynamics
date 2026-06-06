@@ -2662,7 +2662,7 @@ footer {
     <li><a href="#layanan">Layanan<span class="nav-active-popup">Layanan Kami</span></a></li>
     <li><a href="#proyek">Proyek<span class="nav-active-popup">Proyek Kami</span></a></li>
     <li><a href="#kontak" class="nav-cta">Hubungi Kami</a></li>
-
+    <li><button class="btn-paket-nav" onclick="openPaketModal();return false;">🏷️ Paket</button></li>
     <li><a href="sipilhub/index.html">SipilHub</a></li>
   </ul>
   <button class="burger" id="burger" aria-label="Menu">
@@ -2718,7 +2718,7 @@ footer {
 setTimeout(() => {
   const el = document.getElementById('counterNum');
   const target = 100;
-  const duration = 12000; // ms
+  const duration = 5000; // ms
   const start = performance.now();
   function tick(now) {
     const elapsed = now - start;
@@ -4602,13 +4602,80 @@ async function getBotReply(userMsg) {
 }
 
 function sendBotMsg() {
+  // Otak chatbot ada di bot-replies.js (_triggerBotStep)
+  // Promo, eskalasi, nomor WA, tampilan tetap dari index.html
   const input = document.getElementById('waInput');
   const msg = input.value.trim();
   if (!msg || waBotTyping) return;
   waBotTyping = true;
   input.value = '';
+
+  // Aksi khusus dari bot-replies.js
+  if (msg === '__WA__') {
+    _openWA(window._consultState.data, window._consultState.mode, window._consultState.fromPromo);
+    waBotTyping = false;
+    return;
+  }
+  if (msg === '__RESET__') {
+    _resetConsult();
+    waBotTyping = false;
+    return;
+  }
+
+  // Tampilkan bubble user pakai fungsi index.html (addWAMsg)
   addWAMsg(msg, 'user');
-  getBotReply(msg).finally(() => { waBotTyping = false; });
+
+  // Cek eskalasi (tetap dari index.html)
+  const shouldEscalate = waBotReplyCount >= 10 || ESCALATE_KEYS.test(msg);
+  if (shouldEscalate) {
+    const escalMsg = waBotReplyCount >= 10
+      ? '😊 Sepertinya Anda sudah sangat familiar dengan layanan kami! Untuk hasil terbaik, izinkan tim kami melanjutkan diskusi langsung dengan Anda.'
+      : '📋 Untuk kebutuhan ini, tim kami perlu berdiskusi langsung agar bisa memberikan solusi terbaik.';
+    setTimeout(() => {
+      addWAMsg(escalMsg + '\n\nSilakan klik tombol di bawah untuk terhubung via WhatsApp. 👇', 'bot');
+      const btn = document.getElementById('waHumanBtn');
+      if (btn) btn.style.display = 'flex';
+      waBotTyping = false;
+    }, 900);
+    return;
+  }
+
+  // Jalankan otak dari bot-replies.js
+  const result = getConsultReply(msg, window._consultState);
+  if (result) {
+    window._consultState = result.state;
+    setTimeout(() => {
+      addWAMsg(result.reply, 'bot');
+      _renderOpts(result.opts || []);
+      waBotReplyCount++;
+
+      // Promo: setelah 5x reply, tampilkan nomor WA manusia (tetap dari index.html)
+      if (typeof fsdPromoEntry !== 'undefined' && fsdPromoEntry && waBotReplyCount === 5) {
+        setTimeout(() => {
+          addWAMsg('📞 Untuk memastikan slot promo Anda, silakan hubungi tim kami langsung:\n\n<strong>WhatsApp: +62 851-1703-1202</strong>\n\nSebutkan kode <strong>PROMO TIPE50</strong> saat menghubungi agar langsung ditangani. 🙏', 'bot');
+          const btn = document.getElementById('waHumanBtn');
+          if (btn) btn.style.display = 'flex';
+        }, 600);
+      }
+
+      // Tampilkan tombol manusia setelah 10x (tetap dari index.html)
+      if (waBotReplyCount >= 10) {
+        const btn = document.getElementById('waHumanBtn');
+        if (btn && btn.style.display === 'none') btn.style.display = 'flex';
+      }
+
+      waBotTyping = false;
+    }, 700 + Math.random() * 500);
+  } else {
+    // Fallback template jika getConsultReply null
+    const tmpl = _matchTemplate(msg);
+    const reply = tmpl || 'Terima kasih atas pertanyaannya! 😊\n\nBoleh ceritakan sedikit tentang proyek atau kebutuhan desain Anda? Tim kami siap membantu menemukan solusi yang tepat.';
+    setTimeout(() => {
+      addWAMsg(reply, 'bot');
+      waBotReplyCount++;
+      waBotTyping = false;
+    }, 700 + Math.random() * 500);
+  }
 }
 
 function escalateToHuman() {
@@ -4629,7 +4696,13 @@ function toggleWA() {
     if (!waInitDone) {
       waInitDone = true;
       setTimeout(() => {
-        addWAMsg('Halo! 👋 Selamat datang di <strong>Fusako Studio</strong>.\n\nAda yang bisa kami bantu untuk kebutuhan desain dan perencanaan Anda?', 'bot');
+        // Init alur step-by-step dari bot-replies.js
+        const init = getConsultReply(null, null);
+        if (init) {
+          window._consultState = init.state;
+          addWAMsg(init.reply, 'bot');
+          _renderOpts(init.opts || []);
+        }
         injectLangBtn();
       }, 400);
     }
@@ -5193,7 +5266,7 @@ document.addEventListener('keydown', function(e) {
     var o = document.getElementById('fsd-overlay');
     o.style.display = 'flex';
     setTimeout(function(){ o.classList.add('show'); }, 30);
-  }, 8000);
+  }, 16000);
 
   /* Tutup klik overlay (bukan popup) */
   document.getElementById('fsd-overlay').addEventListener('click', function(e){
@@ -5230,12 +5303,10 @@ function fsdGoChat(){
       if (!popup.classList.contains('open')) {
         if (typeof toggleWA === 'function') toggleWA();
       }
-      /* Kirim pesan awal otomatis tentang promo */
+      /* Mulai sesi promo via bot-replies.js */
       setTimeout(function(){
-        var input = document.getElementById('waInput');
-        if (input) {
-          input.value = 'Halo, saya ingin klaim Promo Desain Tipe 50 — Rp 4.499.000';
-          if (typeof sendBotMsg === 'function') sendBotMsg();
+        if (typeof window._startPromo === 'function') {
+          window._startPromo('PROMOTIPE50');
         }
       }, 700);
     }

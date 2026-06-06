@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SipilHub — Pusat Ilmu Teknik Sipil</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H5P79P7CPM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-H5P79P7CPM');
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -156,7 +165,7 @@ section.row-section{margin-bottom:0.5rem}
 .ticker{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.55rem 0;overflow:hidden;margin-bottom:2rem}
 .ticker-inner{display:flex;gap:0;white-space:nowrap;animation:ticker 28s linear infinite}
 .ticker-inner:hover{animation-play-state:paused}
-@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes ticker{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
 .ticker-item{display:inline-flex;align-items:center;gap:10px;padding:0 2.5rem;font-size:0.75rem;font-weight:600;letter-spacing:0.5px;color:var(--muted);text-transform:uppercase}
 .ticker-item strong{color:var(--accent)}
 .ticker-sep{color:var(--border);font-size:1rem}
@@ -220,15 +229,15 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 #mob-ads-overlay{display:none}
 #mob-ads-fab{display:none}
 
-/* ── ADS PANEL (kiri layar) ── */
+/* ── ADS PANEL (kanan layar) ── */
 #ads-wrapper{
   position:fixed;
-  left:14px;
+  right:14px;
   bottom:24px;
   z-index:90;
   display:flex;
   flex-direction:column;
-  align-items:flex-start;
+  align-items:flex-end;
   gap:0;
 }
 #ads-panel{
@@ -491,9 +500,10 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 #fs-ad-box .fs-ad-fallback span{font-size:0.85rem;color:#8a9ab0;font-weight:600}
 #fs-ad-sponsored{
   position:absolute;top:10px;left:10px;
-  background:rgba(10,12,15,0.75);backdrop-filter:blur(4px);
-  font-size:0.58rem;font-weight:700;letter-spacing:1px;
-  color:#5c6b7f;text-transform:uppercase;padding:3px 7px;border-radius:4px;
+  background:rgba(10,12,15,0.85);backdrop-filter:blur(4px);
+  font-size:0.65rem;font-weight:800;letter-spacing:1.5px;
+  color:var(--accent);text-transform:uppercase;padding:4px 10px;border-radius:4px;
+  border:1px solid rgba(232,184,75,0.35);
 }
 #fs-ad-countdown{
   margin-top:14px;
@@ -518,11 +528,11 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 </head>
 <body>
 
-<!-- ── ADS PANEL KIRI ── -->
+<!-- ── ADS PANEL KANAN ── -->
 <div id="ads-wrapper">
   <!-- Tombol Minimize -->
   <button id="ads-minimize-btn" onclick="toggleAds()">
-    <span class="ads-label" id="ads-btn-label">Minimize Ads</span>
+    <span class="ads-label" id="ads-btn-label">ADS · Minimize</span>
     <svg class="ads-toggle-icon" id="ads-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
       <polyline points="18 15 12 9 6 15"/>
     </svg>
@@ -604,7 +614,7 @@ function minimizeAds(){
   var fill  = document.getElementById('ads-countdown-fill');
   panel.classList.add('minimized');
   icon.innerHTML = '<polyline points="6 9 12 15 18 9"/>';
-  document.getElementById('ads-btn-label').textContent = 'Show Ads';
+  document.getElementById('ads-btn-label').textContent = 'ADS · Show';
   bar.style.display = 'block';
   fill.style.transition = 'none';
   fill.style.transform  = 'scaleX(1)';
@@ -621,7 +631,7 @@ function restoreAds(){
   var fill  = document.getElementById('ads-countdown-fill');
   panel.classList.remove('minimized');
   icon.innerHTML = '<polyline points="18 15 12 9 6 15"/>';
-  document.getElementById('ads-btn-label').textContent = 'Minimize Ads';
+  document.getElementById('ads-btn-label').textContent = 'ADS · Minimize';
   bar.style.display = 'none';
   fill.style.transition = 'none';
   fill.style.transform  = 'scaleX(1)';
@@ -1244,7 +1254,7 @@ document.addEventListener('keydown', e => {
   <div id="mob-ads-sheet">
     <div class="mob-sheet-handle"></div>
     <div class="mob-sheet-header">
-      <span class="mob-sheet-title">Display Ads</span>
+      <span class="mob-sheet-title">ADS · IKLAN</span>
       <button class="mob-sheet-close" onclick="closeMobAds()">✕ Tutup</button>
     </div>
     <div class="mob-ads-grid">
@@ -1304,7 +1314,7 @@ document.addEventListener('keydown', e => {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
         <span>fusakostudio.com</span>
       </div>
-      <div id="fs-ad-sponsored">Iklan · Sponsor</div>
+      <div id="fs-ad-sponsored">ADS · IKLAN</div>
     </div>
   </a>
   <div id="fs-ad-countdown">
