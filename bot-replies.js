@@ -1236,6 +1236,154 @@ window._startPromo = function(code) {
  * Fungsi utama yang dipanggil setiap kali user kirim pesan.
  * Menggantikan / melengkapi sendBotMsg yang sudah ada.
  */
+/* ─────────────────────────────────────────────────────────────
+   10b. FILTER KATA KASAR (PROFANITY FILTER)
+        Mendeteksi kata kasar dalam pesan user dan merespons
+        dengan bahasa yang sopan tanpa melanjutkan ke bot.
+
+        Logika pengecualian:
+        - "lantai"  → mengandung "tai" tapi bukan kata kasar
+        - "detapo"  → mengandung substring yang tidak relevan
+        - Jika kata kasar muncul sebagai BAGIAN dari kata jasa
+          yang dikenali (misal nama paket, istilah teknik),
+          filter tidak aktif.
+   ───────────────────────────────────────────────────────────── */
+
+/** Daftar kata kasar beserta pola regex-nya.
+ *  Setiap entri: { pattern: RegExp, safe: RegExp|null }
+ *  safe → jika cocok dengan safe, abaikan (konteks aman).
+ */
+const _profanityList = [
+  /* ── Bahasa Indonesia ── */
+  { pattern: /\banjing\b/i,    safe: null },
+  { pattern: /\bbangsat\b/i,   safe: null },
+  { pattern: /\bbajingan\b/i,  safe: null },
+  { pattern: /\bbrengsek\b/i,  safe: null },
+  { pattern: /\bgoblok\b/i,    safe: null },
+  { pattern: /\btolol\b/i,     safe: null },
+  { pattern: /\bidiot\b/i,     safe: null },
+  { pattern: /\bbego\b/i,      safe: null },
+  /* "tai" → kecualikan: lantai, detail, paket detapo, material */
+  { pattern: /\btai\b/i,       safe: /lantai|detail|material|detapo|atap\s*gentai/i },
+  { pattern: /\bsialan\b/i,    safe: null },
+  { pattern: /\bkeparat\b/i,   safe: null },
+  { pattern: /\bbedebah\b/i,   safe: null },
+  { pattern: /\bbacot\b/i,     safe: null },
+  { pattern: /\bkampret\b/i,   safe: null },
+  { pattern: /\bmonyet\b/i,    safe: null },
+  { pattern: /\bbabi\b/i,      safe: null },
+  { pattern: /\bkontol\b/i,    safe: null },
+  { pattern: /\bmemek\b/i,     safe: null },
+  { pattern: /\bngentot\b/i,   safe: null },
+  /* ── Jawa ── */
+  { pattern: /\bjancok\b/i,    safe: null },
+  { pattern: /\bjancuk\b/i,    safe: null },
+  { pattern: /\basu\b/i,       safe: /^asu$/i },  /* hanya jika berdiri sendiri */
+  { pattern: /\bcangkem\b/i,   safe: null },
+  { pattern: /\bndhasmu\b/i,   safe: null },
+  { pattern: /\bdamput\b/i,    safe: null },
+  { pattern: /\bwedus\b/i,     safe: null },
+  { pattern: /\bjaran\b/i,     safe: /jalan\s*jaran|jenis\s*jaran/i },
+  /* ── Sunda ── */
+  { pattern: /\bkoplok\b/i,    safe: null },
+  { pattern: /\bkehed\b/i,     safe: null },
+  { pattern: /\bbagong\b/i,    safe: null },
+  { pattern: /\bbelegug\b/i,   safe: null },
+  { pattern: /\bjurig\b/i,     safe: null },
+  { pattern: /\bheunceut\b/i,  safe: null },
+  { pattern: /\bsia\b/i,       safe: /\bsia[pn]\b|\bsias[a-z]/i }, /* kecualikan "siap", "siang", dll */
+  /* ── Minangkabau ── */
+  { pattern: /\bpantek\b/i,    safe: null },
+  { pattern: /\banjiang\b/i,   safe: null },
+  { pattern: /\bbaruak\b/i,    safe: null },
+  { pattern: /\bkalera\b/i,    safe: null },
+  { pattern: /\bpoyok\b/i,     safe: null },
+  /* ── Batak ── */
+  { pattern: /\bkimak\b/i,     safe: null },
+  { pattern: /\bbagudung\b/i,  safe: null },
+  { pattern: /\bittak\b/i,     safe: null },
+  /* ── Bugis/Makassar ── */
+  { pattern: /\btelaso\b/i,    safe: null },
+  { pattern: /\bsundala\b/i,   safe: null },
+  { pattern: /\btolo\b/i,      safe: /\btolok\b|\btolongan\b|\btolong\b/i },
+  { pattern: /\bkongkong\b/i,  safe: null },
+  /* ── Palembang ── */
+  { pattern: /\bkampang\b/i,   safe: null },
+  { pattern: /\bbengak\b/i,    safe: null },
+  { pattern: /\bpilat\b/i,     safe: null },
+  /* ── Sasak ── */
+  { pattern: /\btele\b/i,      safe: null },
+  { pattern: /\bbasong\b/i,    safe: null },
+  { pattern: /\bbewi\b/i,      safe: null },
+  { pattern: /\bgodik\b/i,     safe: null },
+  { pattern: /\bbongoh\b/i,    safe: null },
+  { pattern: /\bbodo\b/i,      safe: /\bbodoh\b/i }, /* "bodoh" beda dengan "bodo" kasar */
+  /* ── Manado ── */
+  { pattern: /\btelasota\b/i,  safe: null },
+  { pattern: /\bboke\b/i,      safe: null },
+  { pattern: /\bpendo\b/i,     safe: null },
+  { pattern: /\bsangaya\b/i,   safe: null },
+];
+
+/** Variasi respons sopan agar tidak monoton */
+const _profanityReplies = [
+  /* 1 — Minta gunakan bahasa sopan */
+  '🙏 Mohon maaf, kami ingin mengingatkan dengan hormat — *tolong gunakan bahasa yang sopan* agar kami dapat melayani Anda dengan lebih baik. Kami siap membantu kebutuhan desain dan perencanaan Anda!',
+
+  /* 2 — Minta gunakan bahasa yang baik */
+  '😊 Halo! Kami senang Anda menghubungi Fusako Studio. Demi kenyamanan bersama, *tolong gunakan bahasa yang baik* dalam percakapan ini ya. Ada yang bisa kami bantu seputar proyek Anda?',
+
+  /* 3 — Pendekatan empati + ajak bicara baik-baik */
+  '🌟 Kami memahami mungkin ada hal yang membuat Anda kurang nyaman. Namun kami mohon, *mari kita ngobrol dengan baik-baik* — kami di sini untuk membantu, bukan sebaliknya. Ceritakan kebutuhan Anda, kami dengarkan! 😊',
+
+  /* 4 — Tegas tapi tetap ramah */
+  '⚠️ Ups! Sepertinya ada kata yang kurang tepat. Fusako Studio berkomitmen menjaga suasana percakapan yang nyaman dan profesional. *Yuk, kita mulai ulang dengan bahasa yang lebih baik* — kami siap melayani Anda sepenuh hati! 🙏',
+
+  /* 5 — Ringan dan mengalihkan ke topik positif */
+  '😊 Eh, kayaknya ada yang lagi kurang mood nih! Tenang, kami tetap di sini untuk membantu. *Kalau boleh, gunakan bahasa yang lebih ramah ya* — biar diskusi kita soal desain rumah impian Anda makin seru! 🏠✨',
+];
+
+var _profanityReplyIdx = 0;
+
+/**
+ * Cek apakah pesan mengandung kata kasar.
+ * Mengembalikan true jika ada kata kasar yang tidak termasuk konteks aman.
+ * @param {string} msg
+ * @returns {boolean}
+ */
+function _hasProfanity(msg) {
+  var m = (msg || '').toLowerCase();
+  for (var i = 0; i < _profanityList.length; i++) {
+    var entry = _profanityList[i];
+    if (entry.pattern.test(m)) {
+      /* Cek konteks aman */
+      if (entry.safe && entry.safe.test(m)) continue;
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Tampilkan balasan sopan jika ada kata kasar.
+ * Menggunakan rotasi respons agar tidak monoton.
+ */
+function _handleProfanity() {
+  var reply = _profanityReplies[_profanityReplyIdx % _profanityReplies.length];
+  _profanityReplyIdx++;
+  _showTyping(function() {
+    _appendBotBubble(reply, false);
+    /* Tetap tampilkan opsi utama agar user bisa melanjutkan */
+    var s = window._consultState;
+    if (s && s.step && !s.done) {
+      var steps = s.fromPromo ? waConsultStepsPromo : waConsultSteps;
+      var cur = steps.find(function(x){ return x.id === s.step; });
+      if (cur && cur.opts) _renderOpts(cur.opts);
+    }
+  });
+}
+
+
 function sendBotMsg() {
   var input = document.getElementById('waInput');
   if (!input) return;
@@ -1245,6 +1393,12 @@ function sendBotMsg() {
 
   /* Tampilkan bubble user */
   _appendUserBubble(msg);
+
+  /* ── FILTER KATA KASAR ── */
+  if (_hasProfanity(msg)) {
+    _handleProfanity();
+    return;
+  }
 
   /* Aksi khusus */
   if (msg === '__WA__') {

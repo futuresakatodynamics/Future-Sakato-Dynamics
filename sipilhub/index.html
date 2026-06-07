@@ -229,82 +229,100 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 #mob-ads-overlay{display:none}
 #mob-ads-fab{display:none}
 
-/* ── ADS PANEL (kanan layar) ── */
+/* ── ADS PANEL (kiri layar, full height) ── */
 #ads-wrapper{
   position:fixed;
-  right:14px;
-  bottom:24px;
+  left:0;
+  top:0;
+  bottom:0;
   z-index:90;
   display:flex;
-  flex-direction:column;
-  align-items:flex-end;
+  flex-direction:row;
+  align-items:stretch;
   gap:0;
 }
+/* Panel kartu iklan — geser keluar ke kiri saat minimized */
 #ads-panel{
   display:flex;
   flex-direction:column;
-  gap:8px;
+  justify-content:center;
+  gap:10px;
   width:130px;
+  padding:0 10px;
+  background:rgba(10,12,15,0.82);
+  backdrop-filter:blur(8px);
+  border-right:1px solid var(--border);
   overflow:hidden;
-  transition:max-height .55s cubic-bezier(.4,0,.2,1), opacity .4s ease;
-  max-height:700px;
+  transition:width .45s cubic-bezier(.4,0,.2,1), opacity .4s ease, padding .45s ease;
   opacity:1;
 }
 #ads-panel.minimized{
-  max-height:0;
+  width:0;
   opacity:0;
+  padding:0;
   pointer-events:none;
 }
-/* Tombol minimize */
-#ads-minimize-btn{
+/* Strip tombol minimize — selalu kelihatan di sisi kanan panel */
+#ads-toggle-strip{
   display:flex;
+  flex-direction:column;
   align-items:center;
-  gap:5px;
+  justify-content:center;
+  width:18px;
   background:var(--card2);
-  border:1px solid var(--border);
-  border-radius:7px;
-  padding:4px 9px;
+  border-right:1px solid var(--border);
   cursor:pointer;
-  margin-bottom:6px;
   transition:background .2s, border-color .2s;
-  width:130px;
-  justify-content:space-between;
+  position:relative;
+  flex-shrink:0;
 }
-#ads-minimize-btn:hover{background:var(--bg3);border-color:var(--accent)}
-.ads-label{
-  font-size:0.58rem;
-  font-weight:700;
-  letter-spacing:1.5px;
+#ads-toggle-strip:hover{background:var(--bg3);border-color:var(--accent)}
+#ads-toggle-strip:hover .ads-toggle-icon{color:var(--accent)}
+/* Label vertikal di strip */
+#ads-strip-label{
+  font-size:0.48rem;
+  font-weight:800;
+  letter-spacing:2px;
   color:var(--muted2);
   text-transform:uppercase;
-  opacity:0.8;
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  transform:rotate(180deg);
+  margin-bottom:8px;
+  opacity:0.7;
+  white-space:nowrap;
+  user-select:none;
 }
 .ads-toggle-icon{
-  width:14px;height:14px;flex-shrink:0;
+  width:12px;height:12px;flex-shrink:0;
   color:var(--muted2);
-  transition:transform .3s;
+  transition:transform .3s, color .2s;
 }
-/* Countdown bar */
+/* Countdown bar — vertikal di bawah strip */
 #ads-countdown-bar{
-  width:130px;
-  height:3px;
+  width:3px;
+  height:100%;
   background:var(--border);
   border-radius:2px;
-  margin-bottom:6px;
+  position:absolute;
+  bottom:0;left:0;
   display:none;
   overflow:hidden;
 }
 #ads-countdown-fill{
-  height:100%;
-  background:var(--accent);
   width:100%;
-  transform-origin:left;
+  background:var(--accent);
+  height:100%;
+  transform-origin:bottom;
   transition:none;
 }
+/* Tombol minimize lama — sembunyikan, tidak dipakai */
+#ads-minimize-btn{display:none}
+.ads-label{display:none}
 /* Ad cards */
 .ad-card{
-  width:130px;
-  height:130px;
+  width:110px;
+  height:110px;
   border-radius:10px;
   overflow:hidden;
   background:var(--card);
@@ -313,20 +331,21 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
   position:relative;
   transition:transform .25s, box-shadow .25s, border-color .25s;
   opacity:0;
-  transform:translateY(60px);
+  transform:translateX(-40px);
+  flex-shrink:0;
 }
 .ad-card.ad-visible{
-  animation:adRiseUp .55s cubic-bezier(.22,.68,0,1.2) forwards;
+  animation:adSlideIn .55s cubic-bezier(.22,.68,0,1.2) forwards;
 }
 .ad-card:hover{
-  transform:translateY(-3px) scale(1.03);
+  transform:translateX(3px) scale(1.03);
   box-shadow:0 10px 28px rgba(0,0,0,0.55);
   border-color:rgba(232,184,75,0.35);
 }
-@keyframes adRiseUp{
-  0%{opacity:0;transform:translateY(60px)}
-  60%{opacity:1;transform:translateY(-6px)}
-  100%{opacity:1;transform:translateY(0)}
+@keyframes adSlideIn{
+  0%{opacity:0;transform:translateX(-40px)}
+  60%{opacity:1;transform:translateX(4px)}
+  100%{opacity:1;transform:translateX(0)}
 }
 .ad-card img{
   width:100%;height:100%;object-fit:cover;display:block;
@@ -528,17 +547,8 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 </head>
 <body>
 
-<!-- ── ADS PANEL KANAN ── -->
+<!-- ── ADS PANEL KIRI ── -->
 <div id="ads-wrapper">
-  <!-- Tombol Minimize -->
-  <button id="ads-minimize-btn" onclick="toggleAds()">
-    <span class="ads-label" id="ads-btn-label">ADS · Minimize</span>
-    <svg class="ads-toggle-icon" id="ads-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <polyline points="18 15 12 9 6 15"/>
-    </svg>
-  </button>
-  <!-- Countdown bar (tampil saat diminimize) -->
-  <div id="ads-countdown-bar"><div id="ads-countdown-fill"></div></div>
   <!-- Kartu Iklan -->
   <div id="ads-panel">
     <!-- Ad Slot 1: Promoweb.png → WhatsApp -->
@@ -584,13 +594,21 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
       </div>
     </div>
   </div>
+  <!-- Strip Toggle (selalu kelihatan) -->
+  <div id="ads-toggle-strip" onclick="toggleAds()" title="Tampilkan/sembunyikan iklan">
+    <div id="ads-countdown-bar"><div id="ads-countdown-fill"></div></div>
+    <span id="ads-strip-label">ADS</span>
+    <svg class="ads-toggle-icon" id="ads-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+  </div>
 </div>
 
 <script>
 // ── ADS ANIMATE ON LOAD ──
 (function(){
   var cards = ['ad1','ad2','ad3','ad4'];
-  var delays = [120, 280, 440, 600]; // ms, naik dari bawah satu per satu
+  var delays = [120, 280, 440, 600];
   cards.forEach(function(id, i){
     setTimeout(function(){
       var el = document.getElementById(id);
@@ -601,40 +619,104 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 
 // ── MINIMIZE / RESTORE ──
 var adsMinimized = false;
+var adsCountdownTimer = null;
+var adsCountdownInterval = null;
 
 function toggleAds(){
-  if(!adsMinimized){ minimizeAds(); } else { restoreAds(); }
+  if(!adsMinimized){ startMinimizeCountdown(); } else { restoreAds(); }
 }
 
-function minimizeAds(){
+function startMinimizeCountdown(){
+  // Kalau sudah ada countdown berjalan, batalkan (toggle cancel)
+  if(adsCountdownTimer){ cancelMinimize(); return; }
+
+  var strip = document.getElementById('ads-toggle-strip');
+  var icon  = document.getElementById('ads-toggle-icon');
+  var label = document.getElementById('ads-strip-label');
+
+  var remaining = 15;
+  label.textContent = remaining;
+  icon.innerHTML = '<polyline points="15 18 9 12 15 6"/>'; // tetap panah kiri
+
+  // Tampilkan countdown bar
+  var bar  = document.getElementById('ads-countdown-bar');
+  var fill = document.getElementById('ads-countdown-fill');
+  bar.style.display = 'block';
+  fill.style.transition = 'none';
+  fill.style.transform  = 'scaleY(1)';
+  fill.getBoundingClientRect();
+  fill.style.transition = 'transform 15s linear';
+  fill.style.transform  = 'scaleY(0)';
+
+  strip.style.borderColor = 'var(--accent)';
+
+  adsCountdownInterval = setInterval(function(){
+    remaining--;
+    label.textContent = remaining > 0 ? remaining : '';
+    if(remaining <= 0){
+      clearInterval(adsCountdownInterval);
+      adsCountdownInterval = null;
+      adsCountdownTimer = null;
+      doMinimize();
+    }
+  }, 1000);
+
+  // Simpan ref timer (pakai interval saja, tapi tandai sedang countdown)
+  adsCountdownTimer = true;
+}
+
+function cancelMinimize(){
+  clearInterval(adsCountdownInterval);
+  adsCountdownInterval = null;
+  adsCountdownTimer = null;
+
+  var label = document.getElementById('ads-strip-label');
+  var bar   = document.getElementById('ads-countdown-bar');
+  var fill  = document.getElementById('ads-countdown-fill');
+  var strip = document.getElementById('ads-toggle-strip');
+
+  label.textContent = 'ADS';
+  bar.style.display = 'none';
+  fill.style.transition = 'none';
+  fill.style.transform  = 'scaleY(1)';
+  strip.style.borderColor = '';
+}
+
+function doMinimize(){
   adsMinimized = true;
   var panel = document.getElementById('ads-panel');
   var icon  = document.getElementById('ads-toggle-icon');
   var bar   = document.getElementById('ads-countdown-bar');
-  var fill  = document.getElementById('ads-countdown-fill');
+  var label = document.getElementById('ads-strip-label');
+  var strip = document.getElementById('ads-toggle-strip');
+
   panel.classList.add('minimized');
-  icon.innerHTML = '<polyline points="6 9 12 15 18 9"/>';
-  document.getElementById('ads-btn-label').textContent = 'ADS · Show';
-  bar.style.display = 'block';
-  fill.style.transition = 'none';
-  fill.style.transform  = 'scaleX(1)';
-  fill.getBoundingClientRect();
-  fill.style.transition = 'transform 240s linear';
-  fill.style.transform  = 'scaleX(0)';
+  icon.innerHTML = '<polyline points="9 6 15 12 9 18"/>';
+  label.textContent = 'ADS';
+  bar.style.display = 'none';
+  strip.style.borderColor = '';
+}
+
+function minimizeAds(){
+  // dipanggil dari luar (misal auto-restore cycle) — langsung minimize tanpa countdown
+  cancelMinimize();
+  doMinimize();
 }
 
 function restoreAds(){
+  cancelMinimize();
   adsMinimized = false;
   var panel = document.getElementById('ads-panel');
   var icon  = document.getElementById('ads-toggle-icon');
   var bar   = document.getElementById('ads-countdown-bar');
   var fill  = document.getElementById('ads-countdown-fill');
+  var label = document.getElementById('ads-strip-label');
   panel.classList.remove('minimized');
-  icon.innerHTML = '<polyline points="18 15 12 9 6 15"/>';
-  document.getElementById('ads-btn-label').textContent = 'ADS · Minimize';
+  icon.innerHTML = '<polyline points="15 18 9 12 15 6"/>';
+  label.textContent = 'ADS';
   bar.style.display = 'none';
   fill.style.transition = 'none';
-  fill.style.transform  = 'scaleX(1)';
+  fill.style.transform  = 'scaleY(1)';
   var cards = ['ad1','ad2','ad3','ad4'];
   var delays = [60,160,260,360];
   cards.forEach(function(id, i){
@@ -642,7 +724,7 @@ function restoreAds(){
     if(!el) return;
     el.classList.remove('ad-visible');
     el.style.opacity = '0';
-    el.style.transform = 'translateY(60px)';
+    el.style.transform = 'translateX(-40px)';
     setTimeout(function(){
       el.style.opacity = '';
       el.style.transform = '';
