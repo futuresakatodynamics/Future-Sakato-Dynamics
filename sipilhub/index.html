@@ -225,520 +225,68 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 .thumb-icon svg{opacity:0.6}
 .thumb-icon-label{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.4);text-transform:uppercase}
 
+
 /* ── MOBILE-ONLY ELEMENTS: hidden by default, shown via media query ── */
 #mob-ads-overlay{display:none}
 #mob-ads-fab{display:none}
-
-/* ── ADS PANEL (kiri layar, full height) ── */
-#ads-wrapper{
-  position:fixed;
-  left:0;
-  top:0;
-  bottom:0;
-  z-index:90;
-  display:flex;
-  flex-direction:row;
-  align-items:stretch;
-  gap:0;
-}
-/* Panel kartu iklan — geser keluar ke kiri saat minimized */
-#ads-panel{
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:10px;
-  width:130px;
-  padding:0 10px;
-  background:rgba(10,12,15,0.82);
-  backdrop-filter:blur(8px);
-  border-right:1px solid var(--border);
-  overflow:hidden;
-  transition:width .45s cubic-bezier(.4,0,.2,1), opacity .4s ease, padding .45s ease;
-  opacity:1;
-}
-#ads-panel.minimized{
-  width:0;
-  opacity:0;
-  padding:0;
-  pointer-events:none;
-}
-/* Strip tombol minimize — selalu kelihatan di sisi kanan panel */
-#ads-toggle-strip{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  width:18px;
-  background:var(--card2);
-  border-right:1px solid var(--border);
-  cursor:pointer;
-  transition:background .2s, border-color .2s;
-  position:relative;
-  flex-shrink:0;
-}
-#ads-toggle-strip:hover{background:var(--bg3);border-color:var(--accent)}
-#ads-toggle-strip:hover .ads-toggle-icon{color:var(--accent)}
-/* Label vertikal di strip */
-#ads-strip-label{
-  font-size:0.48rem;
-  font-weight:800;
-  letter-spacing:2px;
-  color:var(--muted2);
-  text-transform:uppercase;
-  writing-mode:vertical-rl;
-  text-orientation:mixed;
-  transform:rotate(180deg);
-  margin-bottom:8px;
-  opacity:0.7;
-  white-space:nowrap;
-  user-select:none;
-}
-.ads-toggle-icon{
-  width:12px;height:12px;flex-shrink:0;
-  color:var(--muted2);
-  transition:transform .3s, color .2s;
-}
-/* Countdown bar — vertikal di bawah strip */
-#ads-countdown-bar{
-  width:3px;
-  height:100%;
-  background:var(--border);
-  border-radius:2px;
-  position:absolute;
-  bottom:0;left:0;
-  display:none;
-  overflow:hidden;
-}
-#ads-countdown-fill{
-  width:100%;
-  background:var(--accent);
-  height:100%;
-  transform-origin:bottom;
-  transition:none;
-}
-/* Tombol minimize lama — sembunyikan, tidak dipakai */
-#ads-minimize-btn{display:none}
-.ads-label{display:none}
-/* Ad cards */
-.ad-card{
-  width:110px;
-  height:110px;
-  border-radius:10px;
-  overflow:hidden;
-  background:var(--card);
-  border:1px solid var(--border);
-  cursor:pointer;
-  position:relative;
-  transition:transform .25s, box-shadow .25s, border-color .25s;
-  opacity:0;
-  transform:translateX(-40px);
-  flex-shrink:0;
-}
-.ad-card.ad-visible{
-  animation:adSlideIn .55s cubic-bezier(.22,.68,0,1.2) forwards;
-}
-.ad-card:hover{
-  transform:translateX(3px) scale(1.03);
-  box-shadow:0 10px 28px rgba(0,0,0,0.55);
-  border-color:rgba(232,184,75,0.35);
-}
-@keyframes adSlideIn{
-  0%{opacity:0;transform:translateX(-40px)}
-  60%{opacity:1;transform:translateX(4px)}
-  100%{opacity:1;transform:translateX(0)}
-}
-.ad-card img{
-  width:100%;height:100%;object-fit:cover;display:block;
-}
-.ad-empty{
-  display:flex;flex-direction:column;align-items:center;
-  justify-content:center;height:100%;gap:6px;padding:0.6rem;text-align:center;
-}
-.ad-empty-icon{
-  width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);
-  display:flex;align-items:center;justify-content:center;margin-bottom:2px;
-}
-.ad-empty-icon svg{width:16px;height:16px;opacity:0.35;}
-.ad-empty-text{
-  font-size:0.6rem;font-weight:700;letter-spacing:0.8px;
-  color:var(--muted2);text-transform:uppercase;line-height:1.35;
-}
-.ad-empty-sub{font-size:0.55rem;color:var(--muted2);opacity:0.55;line-height:1.3;}
-.ad-sponsored-tag{
-  position:absolute;bottom:5px;left:5px;background:rgba(10,12,15,0.75);
-  font-size:0.52rem;font-weight:700;letter-spacing:0.8px;color:var(--muted2);
-  text-transform:uppercase;padding:2px 5px;border-radius:3px;backdrop-filter:blur(4px);
-}
-
-/* Responsive */
-@media(max-width:768px){
-  /* Sembunyikan panel desktop di HP */
-  #ads-wrapper{display:none}
-
-  /* ── MOBILE ADS FLOATING BUTTON ── */
-  #mob-ads-fab{
-    display:flex;
-    position:fixed;
-    bottom:20px;
-    right:16px;
-    z-index:200;
-    width:52px;
-    height:52px;
-    border-radius:50%;
-    background:var(--accent);
-    color:#0a0c0f;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    border:none;
-    box-shadow:0 4px 18px rgba(232,184,75,0.45);
-    transition:transform .2s, box-shadow .2s;
-  }
-  #mob-ads-fab:active{transform:scale(0.92)}
-  #mob-ads-fab svg{width:22px;height:22px}
-  #mob-ads-fab .fab-badge{
-    position:absolute;top:-3px;right:-3px;
-    width:16px;height:16px;border-radius:50%;
-    background:var(--red);border:2px solid var(--bg);
-    font-size:0.55rem;font-weight:800;color:#fff;
-    display:flex;align-items:center;justify-content:center;
-  }
-
-  /* ── MOBILE ADS POPUP ── */
-  #mob-ads-overlay{
-    position:fixed;inset:0;z-index:199;
-    background:rgba(10,12,15,0.7);
-    backdrop-filter:blur(4px);
-    align-items:flex-end;
-    justify-content:center;
-  }
-  #mob-ads-overlay.open{display:flex}
-  #mob-ads-sheet{
-    background:var(--card);
-    border-radius:20px 20px 0 0;
-    border:1px solid var(--border);
-    border-bottom:none;
-    width:100%;
-    max-width:480px;
-    padding:1rem 1rem 2rem;
-    transform:translateY(100%);
-    transition:transform .4s cubic-bezier(.22,.68,0,1.1);
-  }
-  #mob-ads-overlay.open #mob-ads-sheet{transform:translateY(0)}
-  .mob-sheet-handle{
-    width:40px;height:4px;border-radius:2px;
-    background:var(--border);margin:0 auto 1rem;
-  }
-  .mob-sheet-header{
-    display:flex;align-items:center;justify-content:space-between;
-    margin-bottom:0.9rem;
-  }
-  .mob-sheet-title{
-    font-size:0.65rem;font-weight:800;letter-spacing:1.5px;
-    color:var(--muted2);text-transform:uppercase;
-  }
-  .mob-sheet-close{
-    background:var(--bg3);border:none;border-radius:6px;
-    padding:4px 10px;color:var(--muted);font-size:0.75rem;
-    font-weight:700;cursor:pointer;letter-spacing:0.5px;
-  }
-  .mob-ads-grid{
-    display:grid;grid-template-columns:1fr 1fr;gap:8px;
-  }
-  .mob-ad-card{
-    border-radius:10px;overflow:hidden;background:var(--bg3);
-    border:1px solid var(--border);cursor:pointer;position:relative;
-    aspect-ratio:1/1;
-    opacity:0;transform:translateY(30px);
-    transition:transform .25s,box-shadow .2s,border-color .2s;
-  }
-  .mob-ad-card.mob-ad-visible{
-    animation:mobAdUp .45s cubic-bezier(.22,.68,0,1.2) forwards;
-  }
-  @keyframes mobAdUp{
-    0%{opacity:0;transform:translateY(30px)}
-    65%{opacity:1;transform:translateY(-4px)}
-    100%{opacity:1;transform:translateY(0)}
-  }
-  .mob-ad-card img{width:100%;height:100%;object-fit:cover;display:block}
-  .mob-ad-card .ad-empty{height:100%}
-  .mob-ad-card .ad-sponsored-tag{font-size:0.5rem}
-}
-  .hero h1{font-size:3.5rem}
-  .hero-content{padding:0 1.5rem 4rem}
-  .section-header,.scroll-row,.featured-row,.cat-grid,.promo-banner,.stats-strip,.promo-content{padding-left:1.2rem;padding-right:1.2rem;margin-left:0;margin-right:0}
-  .promo-content{flex-direction:column;text-align:center}
-  nav{padding:0 1rem}
-  .nav-links{display:none}
-  .stats-strip{flex-wrap:wrap}
-  .stat-item{min-width:45%}
-  .hero-visual{display:none}
-}
-</style>
-
-<style>
-#fs-ad-overlay{
-  visibility:hidden;
-  pointer-events:none;
-  position:fixed;inset:0;z-index:9999;
-  background:rgba(10,12,15,0.45);
-  backdrop-filter:blur(2px);
-  display:flex;
-  align-items:center;justify-content:center;
-  flex-direction:column;
-  opacity:0;
-  transition:opacity .3s;
-}
-#fs-ad-overlay.show{
-  visibility:visible;
-  pointer-events:auto;
-  opacity:1;
-}
-#fs-ad-box{
-  position:relative;
-  max-width:min(520px,92vw);
-  width:100%;
-  border-radius:16px;
-  overflow:hidden;
-  box-shadow:0 24px 80px rgba(0,0,0,0.8);
-  border:1px solid rgba(232,184,75,0.25);
-  cursor:pointer;
-}
-#fs-ad-box img{
-  width:100%;display:block;
-  object-fit:contain;
-  max-height:70vh;
-  background:#12151a;
-}
-#fs-ad-box .fs-ad-fallback{
-  width:100%;height:280px;
-  display:none;align-items:center;justify-content:center;
-  flex-direction:column;gap:10px;background:#1e222c;
-}
-#fs-ad-box .fs-ad-fallback svg{width:48px;height:48px;opacity:0.3;color:#e8b84b}
-#fs-ad-box .fs-ad-fallback span{font-size:0.85rem;color:#8a9ab0;font-weight:600}
-#fs-ad-sponsored{
-  position:absolute;top:10px;left:10px;
-  background:rgba(10,12,15,0.85);backdrop-filter:blur(4px);
-  font-size:0.65rem;font-weight:800;letter-spacing:1.5px;
-  color:var(--accent);text-transform:uppercase;padding:4px 10px;border-radius:4px;
-  border:1px solid rgba(232,184,75,0.35);
-}
-#fs-ad-countdown{
-  margin-top:14px;
-  display:flex;align-items:center;gap:10px;
-}
-#fs-ad-countdown-wrap{position:relative;width:44px;height:44px;flex-shrink:0}
-#fs-ad-countdown-circle{width:44px;height:44px;display:block}
-#fs-ad-countdown-circle .bg-ring{fill:none;stroke:rgba(255,255,255,0.1);stroke-width:3.5}
-#fs-ad-countdown-circle .prog-ring{fill:none;stroke:#e8b84b;stroke-width:3.5;stroke-linecap:round;transform-origin:50% 50%;transform:rotate(-90deg)}
-#fs-ad-countdown-num{
-  position:absolute;
-  font-family:'Bebas Neue',sans-serif;
-  font-size:1.1rem;color:#e8b84b;
-  left:50%;top:50%;transform:translate(-50%,-50%);
-  pointer-events:none;line-height:1;
-}
-#fs-ad-countdown-label{
-  font-size:0.75rem;font-weight:600;color:#8a9ab0;letter-spacing:0.5px;line-height:1.4;
-}
-#fs-ad-countdown-label strong{color:#f0f2f5}
 </style>
 </head>
 <body>
 
-<!-- ── ADS PANEL KIRI ── -->
-<div id="ads-wrapper">
-  <!-- Kartu Iklan -->
-  <div id="ads-panel">
-    <!-- Ad Slot 1: Promoweb.png → WhatsApp -->
-    <a class="ad-card" id="ad1"
-       href="https://wa.me/6285117301202?text=Hallo%2C%20aku%20mau%20buat%20website"
-       target="_blank" rel="noopener" title="Hubungi via WhatsApp">
-      <img src="jasawebsite/Promoweb.png" alt="Jasa Pembuatan Website"
-           onerror="this.style.display='none';this.parentElement.querySelector('.ad-fallback').style.display='flex'">
-      <div class="ad-fallback ad-empty" style="display:none;position:absolute;inset:0">
-        <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M3 17 L9 11 L13 15 L16 12 L21 17"/></svg></div>
-        <div class="ad-empty-text">Jasa Website</div>
-        <div class="ad-empty-sub">Klik untuk info</div>
-      </div>
-      <div class="ad-sponsored-tag">Sponsor</div>
-    </a>
-    <!-- Ad Slot 2: webfusako.png → fusakostudio.com -->
-    <a class="ad-card" id="ad2"
-       href="https://fusakostudio.com/"
-       target="_blank" rel="noopener" title="Fusako Studio">
-      <img src="jasasipilfusako/webfusako.png" alt="Fusako Studio"
-           onerror="this.style.display='none';this.parentElement.querySelector('.ad-fallback2').style.display='flex'">
-      <div class="ad-fallback2 ad-empty" style="display:none;position:absolute;inset:0">
-        <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="14" rx="2"/></svg></div>
-        <div class="ad-empty-text">Fusako Studio</div>
-        <div class="ad-empty-sub">fusakostudio.com</div>
-      </div>
-      <div class="ad-sponsored-tag">Sponsor</div>
-    </a>
-    <!-- Ad Slot 3 -->
-    <div class="ad-card" id="ad3">
-      <div class="ad-empty">
-        <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="15" x2="12" y2="16"/></svg></div>
-        <div class="ad-empty-text">Add Your Ad</div>
-        <div class="ad-empty-sub">Hubungi kami</div>
-      </div>
-    </div>
-    <!-- Ad Slot 4 -->
-    <div class="ad-card" id="ad4">
-      <div class="ad-empty">
-        <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></div>
-        <div class="ad-empty-text">Iklan Anda</div>
-        <div class="ad-empty-sub">130 × 130 px</div>
-      </div>
-    </div>
-  </div>
-  <!-- Strip Toggle (selalu kelihatan) -->
-  <div id="ads-toggle-strip" onclick="toggleAds()" title="Tampilkan/sembunyikan iklan">
-    <div id="ads-countdown-bar"><div id="ads-countdown-fill"></div></div>
-    <span id="ads-strip-label">ADS</span>
-    <svg class="ads-toggle-icon" id="ads-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <polyline points="15 18 9 12 15 6"/>
-    </svg>
-  </div>
-</div>
-
+<!-- ═══════════════════════════════════════════════════════════════
+     ADS CONTAINER — konten iklan di-load otomatis dari ads.html
+     Untuk tambah/hapus/ganti iklan: edit ads.html saja.
+     index.html tidak perlu disentuh sama sekali.
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="ads-root"></div>
 <script>
-// ── ADS ANIMATE ON LOAD ──
 (function(){
-  var cards = ['ad1','ad2','ad3','ad4'];
-  var delays = [120, 280, 440, 600];
-  cards.forEach(function(id, i){
-    setTimeout(function(){
-      var el = document.getElementById(id);
-      if(el) el.classList.add('ad-visible');
-    }, delays[i]);
-  });
+  fetch('ads.html')
+    .then(function(r){ return r.text(); })
+    .then(function(html){
+      // Ambil isi <body> dari ads.html
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(html, 'text/html');
+
+      // Inject semua <style> dari ads.html ke <head> index.html
+      doc.querySelectorAll('style').forEach(function(s){
+        var st = document.createElement('style');
+        st.textContent = s.textContent;
+        document.head.appendChild(st);
+      });
+
+      // Inject semua <link> stylesheet dari ads.html (jika ada)
+      doc.querySelectorAll('link[rel="stylesheet"]').forEach(function(l){
+        if(!document.querySelector('link[href="'+l.href+'"]')){
+          var lk = document.createElement('link');
+          lk.rel = 'stylesheet'; lk.href = l.href;
+          document.head.appendChild(lk);
+        }
+      });
+
+      // Inject semua elemen <body> dari ads.html ke #ads-root
+      var root = document.getElementById('ads-root');
+      Array.from(doc.body.childNodes).forEach(function(node){
+        root.appendChild(document.importNode(node, true));
+      });
+
+      // Jalankan semua <script> dari ads.html secara berurutan
+      var scripts = root.querySelectorAll('script');
+      scripts.forEach(function(oldScript){
+        var newScript = document.createElement('script');
+        if(oldScript.src){
+          newScript.src = oldScript.src;
+        } else {
+          newScript.textContent = oldScript.textContent;
+        }
+        document.body.appendChild(newScript);
+        oldScript.parentNode.removeChild(oldScript);
+      });
+    })
+    .catch(function(err){
+      console.warn('ads.html tidak dapat dimuat:', err);
+    });
 })();
-
-// ── MINIMIZE / RESTORE ──
-var adsMinimized = false;
-var adsCountdownTimer = null;
-var adsCountdownInterval = null;
-
-function toggleAds(){
-  if(!adsMinimized){ startMinimizeCountdown(); } else { restoreAds(); }
-}
-
-function startMinimizeCountdown(){
-  // Kalau sudah ada countdown berjalan, batalkan (toggle cancel)
-  if(adsCountdownTimer){ cancelMinimize(); return; }
-
-  var strip = document.getElementById('ads-toggle-strip');
-  var icon  = document.getElementById('ads-toggle-icon');
-  var label = document.getElementById('ads-strip-label');
-
-  var remaining = 15;
-  label.textContent = remaining;
-  icon.innerHTML = '<polyline points="15 18 9 12 15 6"/>'; // tetap panah kiri
-
-  // Tampilkan countdown bar
-  var bar  = document.getElementById('ads-countdown-bar');
-  var fill = document.getElementById('ads-countdown-fill');
-  bar.style.display = 'block';
-  fill.style.transition = 'none';
-  fill.style.transform  = 'scaleY(1)';
-  fill.getBoundingClientRect();
-  fill.style.transition = 'transform 15s linear';
-  fill.style.transform  = 'scaleY(0)';
-
-  strip.style.borderColor = 'var(--accent)';
-
-  adsCountdownInterval = setInterval(function(){
-    remaining--;
-    label.textContent = remaining > 0 ? remaining : '';
-    if(remaining <= 0){
-      clearInterval(adsCountdownInterval);
-      adsCountdownInterval = null;
-      adsCountdownTimer = null;
-      doMinimize();
-    }
-  }, 1000);
-
-  // Simpan ref timer (pakai interval saja, tapi tandai sedang countdown)
-  adsCountdownTimer = true;
-}
-
-function cancelMinimize(){
-  clearInterval(adsCountdownInterval);
-  adsCountdownInterval = null;
-  adsCountdownTimer = null;
-
-  var label = document.getElementById('ads-strip-label');
-  var bar   = document.getElementById('ads-countdown-bar');
-  var fill  = document.getElementById('ads-countdown-fill');
-  var strip = document.getElementById('ads-toggle-strip');
-
-  label.textContent = 'ADS';
-  bar.style.display = 'none';
-  fill.style.transition = 'none';
-  fill.style.transform  = 'scaleY(1)';
-  strip.style.borderColor = '';
-}
-
-function doMinimize(){
-  adsMinimized = true;
-  var panel = document.getElementById('ads-panel');
-  var icon  = document.getElementById('ads-toggle-icon');
-  var bar   = document.getElementById('ads-countdown-bar');
-  var label = document.getElementById('ads-strip-label');
-  var strip = document.getElementById('ads-toggle-strip');
-
-  panel.classList.add('minimized');
-  icon.innerHTML = '<polyline points="9 6 15 12 9 18"/>';
-  label.textContent = 'ADS';
-  bar.style.display = 'none';
-  strip.style.borderColor = '';
-}
-
-function minimizeAds(){
-  // dipanggil dari luar (misal auto-restore cycle) — langsung minimize tanpa countdown
-  cancelMinimize();
-  doMinimize();
-}
-
-function restoreAds(){
-  cancelMinimize();
-  adsMinimized = false;
-  var panel = document.getElementById('ads-panel');
-  var icon  = document.getElementById('ads-toggle-icon');
-  var bar   = document.getElementById('ads-countdown-bar');
-  var fill  = document.getElementById('ads-countdown-fill');
-  var label = document.getElementById('ads-strip-label');
-  panel.classList.remove('minimized');
-  icon.innerHTML = '<polyline points="15 18 9 12 15 6"/>';
-  label.textContent = 'ADS';
-  bar.style.display = 'none';
-  fill.style.transition = 'none';
-  fill.style.transform  = 'scaleY(1)';
-  var cards = ['ad1','ad2','ad3','ad4'];
-  var delays = [60,160,260,360];
-  cards.forEach(function(id, i){
-    var el = document.getElementById(id);
-    if(!el) return;
-    el.classList.remove('ad-visible');
-    el.style.opacity = '0';
-    el.style.transform = 'translateX(-40px)';
-    setTimeout(function(){
-      el.style.opacity = '';
-      el.style.transform = '';
-      el.classList.add('ad-visible');
-    }, delays[i]);
-  });
-}
-
-// ── LAPTOP: muncul setiap 4 menit terus menerus (apapun kondisinya) ──
-setInterval(function(){
-  if(window.innerWidth > 768){
-    restoreAds();
-  }
-}, 4 * 60 * 1000);
 </script>
 
 <!-- ── NAVBAR ── -->
@@ -1323,181 +871,6 @@ document.addEventListener('keydown', e => {
   }
 });
 </script>
-<!-- ── MOBILE ADS FAB + POPUP ── -->
-<button id="mob-ads-fab" onclick="openMobAds()" style="display:none" aria-label="Lihat Iklan">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <rect x="2" y="3" width="20" height="14" rx="2"/>
-    <path d="M8 21h8M12 17v4"/>
-  </svg>
-  <div class="fab-badge">4</div>
-</button>
 
-<div id="mob-ads-overlay" onclick="handleOverlayClick(event)">
-  <div id="mob-ads-sheet">
-    <div class="mob-sheet-handle"></div>
-    <div class="mob-sheet-header">
-      <span class="mob-sheet-title">ADS · IKLAN</span>
-      <button class="mob-sheet-close" onclick="closeMobAds()">✕ Tutup</button>
-    </div>
-    <div class="mob-ads-grid">
-      <!-- Slot 1: Promoweb -->
-      <a class="mob-ad-card" id="mob-ad1"
-         href="https://wa.me/6285117301202?text=Hallo%2C%20aku%20mau%20buat%20website"
-         target="_blank" rel="noopener">
-        <img src="jasawebsite/Promoweb.png" alt="Jasa Website"
-             onerror="this.style.display='none';this.parentElement.querySelector('.ad-empty').style.display='flex'">
-        <div class="ad-empty" style="display:none;position:absolute;inset:0">
-          <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="14" rx="2"/></svg></div>
-          <div class="ad-empty-text">Jasa Website</div>
-          <div class="ad-empty-sub">Klik untuk info</div>
-        </div>
-        <div class="ad-sponsored-tag">Sponsor</div>
-      </a>
-      <!-- Slot 2: webfusako.png → fusakostudio.com -->
-      <a class="mob-ad-card" id="mob-ad2"
-         href="https://fusakostudio.com/"
-         target="_blank" rel="noopener">
-        <img src="jasasipilfusako/webfusako.png" alt="Fusako Studio"
-             onerror="this.style.display='none';this.parentElement.querySelector('.ad-empty').style.display='flex'">
-        <div class="ad-empty" style="display:none;position:absolute;inset:0">
-          <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="14" rx="2"/></svg></div>
-          <div class="ad-empty-text">Fusako Studio</div>
-          <div class="ad-empty-sub">fusakostudio.com</div>
-        </div>
-        <div class="ad-sponsored-tag">Sponsor</div>
-      </a>
-      <!-- Slot 3 -->
-      <div class="mob-ad-card" id="mob-ad3">
-        <div class="ad-empty">
-          <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="15" x2="12" y2="16"/></svg></div>
-          <div class="ad-empty-text">Add Your Ad</div>
-          <div class="ad-empty-sub">Hubungi kami</div>
-        </div>
-      </div>
-      <!-- Slot 4 -->
-      <div class="mob-ad-card" id="mob-ad4">
-        <div class="ad-empty">
-          <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg></div>
-          <div class="ad-empty-text">Iklan Anda</div>
-          <div class="ad-empty-sub">Tersedia</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── FULLSCREEN AD OVERLAY (muncul setelah 2 menit) ── -->
-<div id="fs-ad-overlay">
-  <a id="fs-ad-link" href="https://fusakostudio.com/" target="_blank" rel="noopener" style="display:contents">
-    <div id="fs-ad-box">
-      <img src="jasasipilfusako/webfusako.png" alt="Fusako Studio"
-           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-      <div class="fs-ad-fallback">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-        <span>fusakostudio.com</span>
-      </div>
-      <div id="fs-ad-sponsored">ADS · IKLAN</div>
-    </div>
-  </a>
-  <div id="fs-ad-countdown">
-    <div id="fs-ad-countdown-wrap">
-      <svg id="fs-ad-countdown-circle" viewBox="0 0 44 44">
-        <circle class="bg-ring" cx="22" cy="22" r="18"/>
-        <circle class="prog-ring" id="fs-prog" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="0"/>
-      </svg>
-      <div id="fs-ad-countdown-num">15</div>
-    </div>
-    <div id="fs-ad-countdown-label">Iklan akan hilang dalam<br><strong id="fs-sec-text">15 detik</strong></div>
-  </div>
-</div>
-
-<script>
-(function(){
-  var TOTAL = 15;
-  var circ = 2 * Math.PI * 18;
-  var prog = document.getElementById('fs-prog');
-  prog.setAttribute('stroke-dasharray', circ);
-  prog.setAttribute('stroke-dashoffset', '0');
-
-  function showFsAd(){
-    var overlay = document.getElementById('fs-ad-overlay');
-    overlay.classList.add('show');
-    var numEl = document.getElementById('fs-ad-countdown-num');
-    var labelEl = document.getElementById('fs-sec-text');
-    var remaining = TOTAL;
-
-    numEl.textContent = remaining;
-    labelEl.textContent = remaining + ' detik';
-    prog.setAttribute('stroke-dashoffset', '0');
-    prog.style.transition = 'none';
-
-    var tick = setInterval(function(){
-      remaining--;
-      numEl.textContent = remaining;
-      labelEl.textContent = remaining + ' detik';
-      var offset = circ * (1 - remaining / TOTAL);
-      prog.style.transition = 'stroke-dashoffset 0.95s linear';
-      prog.setAttribute('stroke-dashoffset', offset);
-      if(remaining <= 0){
-        clearInterval(tick);
-        overlay.classList.remove('show');
-      }
-    }, 1000);
-  }
-
-  // Pertama muncul setelah 2 menit, lalu setiap 10 menit
-  setTimeout(function(){
-    showFsAd();
-    setInterval(showFsAd, 10 * 60 * 1000);
-  }, 2 * 60 * 1000);
-})();
-</script>
-
-<script>
-// ── SHOW FAB ONLY ON MOBILE ──
-(function(){
-  var fab = document.getElementById('mob-ads-fab');
-  function checkMobile(){
-    fab.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
-  }
-  checkMobile();
-  window.addEventListener('resize', checkMobile);
-})();
-
-// ── HP: muncul setiap 7 menit terus menerus (apapun kondisinya) ──
-setInterval(function(){
-  if(window.innerWidth <= 768){
-    openMobAds();
-  }
-}, 7 * 60 * 1000);
-
-function openMobAds(){
-  if(window.innerWidth > 768) return;
-  var overlay = document.getElementById('mob-ads-overlay');
-  overlay.classList.add('open');
-  var ids = ['mob-ad1','mob-ad2','mob-ad3','mob-ad4'];
-  var delays = [80,180,280,380];
-  ids.forEach(function(id,i){
-    var el = document.getElementById(id);
-    if(!el) return;
-    el.classList.remove('mob-ad-visible');
-    el.style.opacity='0';
-    el.style.transform='translateY(30px)';
-    setTimeout(function(){
-      el.style.opacity='';
-      el.style.transform='';
-      el.classList.add('mob-ad-visible');
-    }, delays[i]);
-  });
-}
-
-function closeMobAds(){
-  document.getElementById('mob-ads-overlay').classList.remove('open');
-}
-
-function handleOverlayClick(e){
-  if(e.target === document.getElementById('mob-ads-overlay')) closeMobAds();
-}
-</script>
 </body>
 </html>
