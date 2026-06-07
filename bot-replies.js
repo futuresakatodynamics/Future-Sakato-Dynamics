@@ -1366,20 +1366,38 @@ function _hasProfanity(msg) {
 
 /**
  * Tampilkan balasan sopan jika ada kata kasar.
- * Menggunakan rotasi respons agar tidak monoton.
+ * Rotasi 5 balasan → lalu ulangi pertanyaan step saat ini.
  */
 function _handleProfanity() {
   var reply = _profanityReplies[_profanityReplyIdx % _profanityReplies.length];
   _profanityReplyIdx++;
+
+  /* Langkah 1 — tampilkan permintaan bicara sopan */
   _showTyping(function() {
     _appendBotBubble(reply, false);
-    /* Tetap tampilkan opsi utama agar user bisa melanjutkan */
-    var s = window._consultState;
-    if (s && s.step && !s.done) {
-      var steps = s.fromPromo ? waConsultStepsPromo : waConsultSteps;
-      var cur = steps.find(function(x){ return x.id === s.step; });
-      if (cur && cur.opts) _renderOpts(cur.opts);
-    }
+    _clearBotOpts();
+
+    /* Langkah 2 — setelah jeda singkat, ulangi pertanyaan step terakhir */
+    setTimeout(function() {
+      var s = window._consultState;
+      if (s && s.step && !s.done) {
+        var steps = s.fromPromo ? waConsultStepsPromo : waConsultSteps;
+        var cur = steps.find(function(x){ return x.id === s.step; });
+        if (cur) {
+          _showTyping(function() {
+            /* Tampilkan ulang pertanyaan step + opsinya */
+            var repeatMsg = cur.msg ? cur.msg(s.data) : null;
+            if (repeatMsg) _appendBotBubble(repeatMsg, false);
+            if (cur.opts) _renderOpts(cur.opts);
+          });
+        }
+      } else {
+        /* Jika state kosong, mulai ulang dari awal */
+        _showTyping(function() {
+          _appendBotBubble('Silakan ceritakan kebutuhan desain atau proyek yang ingin Anda rencanakan. 😊', false);
+        });
+      }
+    }, 1200);
   });
 }
 

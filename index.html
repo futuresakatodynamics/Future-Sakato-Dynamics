@@ -4625,6 +4625,13 @@ function sendBotMsg() {
   // Tampilkan bubble user pakai fungsi index.html (addWAMsg)
   addWAMsg(msg, 'user');
 
+  // Cek kata kasar — delegasikan ke bot-replies.js
+  if (typeof _hasProfanity === 'function' && _hasProfanity(msg)) {
+    if (typeof _handleProfanity === 'function') _handleProfanity();
+    waBotTyping = false;
+    return;
+  }
+
   // Cek eskalasi (tetap dari index.html)
   const shouldEscalate = waBotReplyCount >= 10 || ESCALATE_KEYS.test(msg);
   if (shouldEscalate) {
