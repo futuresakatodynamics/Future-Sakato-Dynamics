@@ -919,12 +919,9 @@ function buildSummary(data, mode, fromPromo) {
   }
 
   t += '\n━━━━━━━━━━━━━━━━━━━━\n';
-  t += '📲 Klik *"Hubungi Tim Kami"* untuk kirim ringkasan ke WhatsApp kami.\n';
-
-  /* ── NOMOR WA ADMIN — PALING AKHIR ── */
-  t += '\n📞 *Nomor WhatsApp Tim Fusako Studio:*\n';
-  t += `*+${cfg.waNumber}*\n\n`;
-  t += 'Tim kami akan segera menghubungi Anda! 🙏';
+  t += '✅ *Konsultasi selesai! Pesan WhatsApp Anda sudah siap.*\n\n';
+  t += '👇 Klik tombol di bawah → WhatsApp terbuka → *tinggal klik Kirim* — data Anda sudah terisi otomatis.\n\n';
+  t += '💬 Tim kami akan segera merespons dan menindaklanjuti konsultasi ini. 🙏';
 
   return t;
 }
@@ -932,69 +929,75 @@ function buildSummary(data, mode, fromPromo) {
 
 /* ─────────────────────────────────────────────────────────────
    5. BUILDER PESAN WHATSAPP OTOMATIS
+      Pesan ini dikirim DARI pelanggan KE Fusako Studio.
+      Pelanggan tinggal buka WA dan klik Kirim.
    ───────────────────────────────────────────────────────────── */
 function buildWAMessage(data, mode, fromPromo) {
   const d = data || {};
   const cfg = FUSAKO_CONFIG;
 
-  const header = fromPromo
-    ? `🏷️ *KLAIM PROMO ${cfg.promoCode} — Fusako Studio*`
-    : (mode === 'non_hunian'
-        ? '🏢 *KONSULTASI BANGUNAN — Fusako Studio*'
-        : '🏠 *KONSULTASI HUNIAN — Fusako Studio*');
+  const nama    = d.nama    ? d.nama    : 'Saya';
+  const sapaan  = d.nama    ? `Halo, perkenalkan nama saya *${d.nama}*.` : 'Halo,';
 
   let lines = [];
 
+  /* ── Salam pembuka ── */
   if (fromPromo) {
-    lines.push(`*${cfg.promoCode}* *${cfg.promoCode}* *${cfg.promoCode}*`);
+    lines.push(`Halo *Fusako Studio*! 👋`);
     lines.push('');
-    lines.push(header);
-    lines.push('');
-    lines.push(`Kode promo      : *${cfg.promoCode}*`);
-    lines.push(`Harga promo     : *${cfg.promoHarga}*`);
+    lines.push(`Saya ingin menggunakan kode promo *${cfg.promoCode}* untuk layanan desain bangunan.`);
   } else {
-    lines.push(header);
+    lines.push(`Halo *Fusako Studio*! 👋`);
     lines.push('');
+    lines.push(`${sapaan} Saya tertarik untuk berkonsultasi mengenai ${d.jenis || 'proyek bangunan'} saya.`);
   }
 
-  if (d.jenis)            lines.push(`Jenis           : ${d.jenis}`);
-  if (d.konfirmasi_luas)  lines.push(`Luas bangunan   : ${d.konfirmasi_luas}`);
-  if (d.status_lahan)     lines.push(`Status lahan    : ${d.status_lahan}`);
-  if (d.luas)             lines.push(`Ukuran lahan    : ${d.luas}`);
-  if (d.kawasan)          lines.push(`Kawasan         : ${d.kawasan}`);
-  if (d.tujuan)           lines.push(`Tujuan          : ${d.tujuan}`);
-  if (d.kamar)            lines.push(`Kamar tidur     : ${d.kamar}`);
-  if (d.ruang_khusus)     lines.push(`Ruang khusus    : ${d.ruang_khusus}`);
-  if (d.konsep)           lines.push(`Konsep desain   : ${d.konsep}`);
-  if (d.lantai)           lines.push(`Jumlah lantai   : ${d.lantai}`);
-  if (d.anggaran)         lines.push(`Anggaran        : ${d.anggaran}`);
-  if (d.layanan)          lines.push(`Layanan         : ${d.layanan}`);
-  if (d.kebutuhan_awal)   lines.push(`Kebutuhan awal  : ${d.kebutuhan_awal}`);
-  if (d.nama)             lines.push(`Nama            : ${d.nama}`);
-  if (d.lokasi)           lines.push(`Lokasi proyek   : ${d.lokasi}`);
-
-  /* ── PAKET TERPILIH — BOLD ── */
   lines.push('');
+  lines.push('Berikut ringkasan kebutuhan saya:');
+  lines.push('━━━━━━━━━━━━━━━━━━━━');
+
+  /* ── Data konsultasi ── */
+  if (fromPromo) {
+    lines.push(`🏷️ Kode promo     : *${cfg.promoCode}*`);
+    lines.push(`💰 Harga promo    : *${cfg.promoHarga}*`);
+  }
+  if (d.jenis)            lines.push(`🏗️ Jenis bangunan : ${d.jenis}`);
+  if (d.konfirmasi_luas)  lines.push(`📏 Luas bangunan  : ${d.konfirmasi_luas}`);
+  if (d.status_lahan)     lines.push(`📋 Status lahan   : ${d.status_lahan}`);
+  if (d.luas)             lines.push(`📐 Ukuran lahan   : ${d.luas}`);
+  if (d.kawasan)          lines.push(`📍 Kawasan        : ${d.kawasan}`);
+  if (d.tujuan)           lines.push(`🎯 Tujuan         : ${d.tujuan}`);
+  if (d.kamar)            lines.push(`🛏️ Kamar tidur    : ${d.kamar}`);
+  if (d.ruang_khusus)     lines.push(`🛋️ Ruang khusus  : ${d.ruang_khusus}`);
+  if (d.konsep)           lines.push(`🎨 Konsep desain  : ${d.konsep}`);
+  if (d.lantai)           lines.push(`🏢 Jumlah lantai  : ${d.lantai}`);
+  if (d.anggaran)         lines.push(`💰 Anggaran       : ${d.anggaran}`);
+  if (d.layanan)          lines.push(`📦 Layanan        : ${d.layanan}`);
+  if (d.kebutuhan_awal)   lines.push(`📝 Kebutuhan      : ${d.kebutuhan_awal}`);
+
+  /* ── Paket terpilih ── */
   lines.push('━━━━━━━━━━━━━━━━━━━━');
   if (d.paket) {
-    lines.push(`*PAKET DIPILIH: ${d.paket}*`);
+    lines.push(`📦 *Paket pilihan  : ${d.paket}*`);
   } else if (fromPromo) {
-    lines.push(`*PAKET DIPILIH: ${cfg.promoCode} — Tipe ${cfg.promoMaxLuas}*`);
+    lines.push(`📦 *Paket pilihan  : ${cfg.promoCode} — Tipe ${cfg.promoMaxLuas}*`);
   }
   if (d.estimasi_luas && d.estimasi_luas !== '-')
-    lines.push(`Estimasi luas   : ${d.estimasi_luas}`);
+    lines.push(`📐 Luas estimasi  : ${d.estimasi_luas}`);
   if (d.estimasi_harga)
-    lines.push(`*Estimasi biaya : ${d.estimasi_harga}*`);
+    lines.push(`💰 *Estimasi biaya : ${d.estimasi_harga}*`);
   lines.push('━━━━━━━━━━━━━━━━━━━━');
 
+  /* ── Data diri ── */
   lines.push('');
-  lines.push('Mohon tindak lanjut konsultasi ini. Terima kasih! 🙏');
+  lines.push('📌 *Data diri saya:*');
+  if (d.nama)   lines.push(`👤 Nama           : ${d.nama}`);
+  if (d.lokasi) lines.push(`📍 Lokasi proyek  : ${d.lokasi}`);
+  if (d.wa)     lines.push(`📲 No. WhatsApp   : ${d.wa}`);
 
-  /* ── NOMOR WA KONSUMEN — PALING AKHIR ── */
-  if (d.wa) {
-    lines.push('');
-    lines.push(`📲 *Nomor WA Konsumen: ${d.wa}*`);
-  }
+  /* ── Penutup ── */
+  lines.push('');
+  lines.push('Mohon ditindaklanjuti. Terima kasih! 🙏');
 
   return lines.join('\n');
 }

@@ -17,6 +17,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+html{overflow-y:scroll}
 :root{
   --bg:#0a0c0f;
   --bg2:#12151a;
@@ -34,7 +35,7 @@
   --green:#4bcf8a;
   --teal:#4bbfe8;
 }
-body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;overflow-x:hidden;min-height:100vh}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;overflow-x:hidden;overflow-y:auto;min-height:100vh}
 
 /* ── NAVBAR ── */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;gap:0;padding:0 2rem;height:64px;background:linear-gradient(to bottom,rgba(10,12,15,0.98) 0%,rgba(10,12,15,0.0) 100%)}
