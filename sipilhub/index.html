@@ -808,11 +808,11 @@ const searchData = [
   { type:'rumus', name:'Periode Alami Struktur', cat:'Dinamika', formula:'T = 2π√(m/k)', vars:'T Periode alami detik, m Massa kg, k Kekakuan N/m' },
   { type:'rumus', name:'Kapasitas Geser Balok Beton', cat:'Struktur Beton', formula:'Vc = 0.17·√f\'c·bw·d', vars:'Vc Kapasitas geser beton N, f\'c Kuat tekan beton MPa, bw Lebar badan balok mm, d Tinggi efektif mm' },
   // Kategori
-  { type:'kategori', name:'Kalkulator Volume', cat:'Kategori Utama', formula:'', vars:'kalkulator volume hitungan beton pasir semen material' },
+  { type:'kategori', name:'Kalkulator Volume', cat:'Kategori Utama', formula:'', vars:'kalkulator volume hitungan beton pasir semen material', link:'kalkulatorvolume/' },
   { type:'kategori', name:'Struktur', cat:'Kategori Utama', formula:'', vars:'struktur baja beton tulangan balok kolom' },
   { type:'kategori', name:'Geoteknik', cat:'Kategori Utama', formula:'', vars:'geoteknik tanah pondasi lereng stabilitas' },
   { type:'kategori', name:'Hidrolika', cat:'Kategori Utama', formula:'', vars:'hidrolika air saluran drainase debit' },
-  { type:'kategori', name:'Referensi SNI', cat:'Kategori Utama', formula:'', vars:'SNI standar nasional indonesia peraturan referensi kode' },
+  { type:'kategori', name:'Referensi SNI', cat:'Kategori Utama', formula:'', vars:'SNI standar nasional indonesia peraturan referensi kode', link:'berandasni/' },
   { type:'kategori', name:'Transportasi', cat:'Kategori Utama', formula:'', vars:'transportasi jalan raya kapasitas lalu lintas' },
   // Topik
   { type:'topik', name:'Profil WF & Perencanaan Sambungan Baut', cat:'Struktur Baja', formula:'', vars:'SNI 1729:2020 baut sambungan baja WF' },
@@ -826,6 +826,34 @@ const searchData = [
   { type:'topik', name:'Analisis Frekuensi Banjir: Log-Pearson III & Gumbel', cat:'Hidrologi', formula:'', vars:'banjir Log-Pearson Gumbel frekuensi hidrologi' },
 ];
 
+// ── GOOGLE DRIVE SEARCH (opsional) ──
+// Isi DRIVE_API_KEY & DRIVE_FOLDER_ID untuk mengaktifkan pencarian dokumen di Google Drive.
+// Folder/dokumen di Drive harus diset "Anyone with link - Viewer" agar bisa diakses via API key.
+const DRIVE_API_KEY = '';
+const DRIVE_FOLDER_ID = '';
+
+async function searchGoogleDrive(query) {
+  if (!DRIVE_API_KEY || !DRIVE_FOLDER_ID || !query) return [];
+  try {
+    const q = encodeURIComponent(`'${DRIVE_FOLDER_ID}' in parents and fullText contains '${query}' and trashed = false`);
+    const url = `https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,mimeType,webViewLink)&key=${DRIVE_API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.files) return [];
+    return data.files.map(f => ({
+      type: 'drive',
+      name: f.name,
+      cat: 'Google Drive',
+      formula: '',
+      vars: '',
+      link: f.webViewLink
+    }));
+  } catch (err) {
+    console.error('Drive search error:', err);
+    return [];
+  }
+}
+
 // ── SEARCH OVERLAY ──
 const overlayHTML = `
 <div id="searchOverlay" style="display:none;position:fixed;top:64px;left:0;right:0;bottom:0;z-index:200;background:rgba(10,12,15,0.85);backdrop-filter:blur(6px)">
@@ -838,15 +866,19 @@ document.body.insertAdjacentHTML('beforeend', overlayHTML);
 const overlay = document.getElementById('searchOverlay');
 const resultsBox = document.getElementById('searchResults');
 
-const typeColor = { rumus:'#e8b84b', kategori:'#4bbfe8', topik:'#4bcf8a' };
-const typeBg = { rumus:'rgba(232,184,75,0.12)', kategori:'rgba(75,191,232,0.12)', topik:'rgba(75,207,138,0.12)' };
-const typeLabel = { rumus:'Rumus', kategori:'Kategori', topik:'Topik' };
+const typeColor = { rumus:'#e8b84b', kategori:'#4bbfe8', topik:'#4bcf8a', drive:'#a78bfa' };
+const typeBg = { rumus:'rgba(232,184,75,0.12)', kategori:'rgba(75,191,232,0.12)', topik:'rgba(75,207,138,0.12)', drive:'rgba(167,139,250,0.12)' };
+const typeLabel = { rumus:'Rumus', kategori:'Kategori', topik:'Topik', drive:'Drive' };
 
-function renderResults(q) {
+let searchSeq = 0;
+
+async function renderResults(q) {
   const kw = q.toLowerCase().trim();
   if(!kw){ overlay.style.display='none'; return; }
 
-  const hits = searchData.filter(d =>
+  const seq = ++searchSeq;
+
+  const localHits = searchData.filter(d =>
     d.name.toLowerCase().includes(kw) ||
     d.cat.toLowerCase().includes(kw) ||
     d.formula.toLowerCase().includes(kw) ||
@@ -854,13 +886,27 @@ function renderResults(q) {
   );
 
   overlay.style.display = 'block';
-  if(!hits.length){
+  if(!localHits.length){
     resultsBox.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--muted);font-size:0.9rem">Tidak ada hasil untuk "<strong style="color:var(--text)">${q}</strong>"</div>`;
-    return;
+  } else {
+    resultsBox.innerHTML = renderHits(localHits, q);
   }
 
-  resultsBox.innerHTML = hits.map(h => `
-    <div onclick="closeSearch()" style="padding:1rem 1.3rem;border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:flex-start;gap:12px;transition:background .15s" 
+  // Cari juga di Google Drive (jika dikonfigurasi), tambahkan hasil tanpa mengganggu hasil lokal
+  const driveHits = await searchGoogleDrive(kw);
+  if (seq !== searchSeq) return; // hasil sudah usang, ada pencarian baru
+  if (driveHits.length) {
+    const allHits = localHits.concat(driveHits);
+    resultsBox.innerHTML = renderHits(allHits, q);
+  }
+}
+
+function renderHits(hits, q) {
+  if(!hits.length){
+    return `<div style="padding:2rem;text-align:center;color:var(--muted);font-size:0.9rem">Tidak ada hasil untuk "<strong style="color:var(--text)">${q}</strong>"</div>`;
+  }
+  return hits.map(h => `
+    <div onclick="goToResult(${h.link ? `'${h.link}'` : 'null'})" style="padding:1rem 1.3rem;border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:flex-start;gap:12px;transition:background .15s" 
          onmouseover="this.style.background='var(--card2)'" onmouseout="this.style.background='transparent'">
       <div style="flex-shrink:0;margin-top:2px">
         <span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.62rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;background:${typeBg[h.type]};color:${typeColor[h.type]}">${typeLabel[h.type]}</span>
@@ -871,6 +917,13 @@ function renderResults(q) {
       </div>
     </div>
   `).join('');
+}
+
+function goToResult(link){
+  if (link) {
+    window.open(link, link.startsWith('http') ? '_blank' : '_self');
+  }
+  closeSearch();
 }
 
 function closeSearch(){
