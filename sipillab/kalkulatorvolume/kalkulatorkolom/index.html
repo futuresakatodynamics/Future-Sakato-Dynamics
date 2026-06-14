@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator Kolom — SipilLab</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f3ee;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; color: #1a1a1a; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 1.5rem; }
+  .container { max-width: 760px; margin: 0 auto; }
+
+  .tipe-kolom-block {
+    margin-bottom: 2rem;
+  }
+
+  .tipe-header {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #1a1a1a; color: #fff;
+    border-radius: 12px 12px 0 0; padding: 10px 18px;
+  }
+  .tipe-header .tipe-label {
+    font-size: 16px; font-weight: 700; letter-spacing: 0.04em;
+  }
+  .btn-hapus-tipe {
+    background: none; border: none; cursor: pointer;
+    color: #aaa; font-size: 18px; padding: 2px 6px; border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .btn-hapus-tipe:hover { color: #ff6b6b; background: rgba(255,100,100,0.12); }
+
+  .section-title {
+    font-size: 11px; font-weight: 600; color: #888;
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px;
+  }
+  .card {
+    background: #fff; border: 1px solid #e5e3dc;
+    border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem;
+  }
+  .card.no-top-radius { border-radius: 0 0 12px 12px; border-top: none; }
+  .card.inner { border-radius: 0; border-left: none; border-right: none; border-bottom: none; margin-bottom: 0; padding-top: 1rem; }
+
+  .field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 140px; }
+  .field label { font-size: 13px; color: #666; }
+  .field input, .field select {
+    width: 100%; padding: 8px 10px;
+    border: 1px solid #d9d7cf; border-radius: 8px;
+    font-size: 14px; background: #fafaf8; color: #1a1a1a;
+    outline: none; transition: border-color 0.15s;
+  }
+  .field input:focus, .field select:focus { border-color: #5a7fd4; }
+
+  .tag {
+    display: inline-block; font-size: 11px; padding: 2px 8px;
+    border-radius: 6px; margin-left: 6px;
+    background: #e8f0fe; color: #2a5ab7; vertical-align: middle;
+  }
+
+  .warning-ahli {
+    background: #fff0f0; border: 1px solid #e53935; border-radius: 10px;
+    padding: 12px 16px; margin-top: 12px;
+    font-size: 13px; color: #c62828; line-height: 1.7; display: none;
+  }
+  .warning-ahli i { margin-right: 6px; }
+
+  .dim-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 8px; }
+  .dim-item { background: #f7f6f1; border-radius: 8px; padding: 10px 12px; }
+  .dim-item .lbl { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .dim-item input {
+    width: 100%; padding: 8px 10px;
+    border: 1px solid #d9d7cf; border-radius: 8px;
+    font-size: 14px; background: #fafaf8; color: #1a1a1a; outline: none;
+    transition: border-color 0.15s;
+  }
+  .dim-item input:focus { border-color: #5a7fd4; }
+
+  .hasil-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .hasil-card { background: #f7f6f1; border-radius: 8px; padding: 14px 16px; }
+  .hasil-card .nama { font-size: 12px; color: #888; margin-bottom: 6px; line-height: 1.4; }
+  .hasil-card .angka { font-size: 22px; font-weight: 700; color: #1a1a1a; }
+  .hasil-card .satuan { font-size: 12px; color: #aaa; margin-left: 3px; }
+  .hasil-card.highlight { background: #e8f0fe; border: 1px solid #c0d0f8; }
+  .hasil-card.highlight .angka { color: #2a5ab7; }
+  .hasil-card.highlight-kg { background: #e6f9f0; border: 1px solid #a0dfc0; }
+  .hasil-card.highlight-kg .angka { color: #1a7a4a; }
+
+  .rumus-box {
+    background: #f0f4ff; border-left: 3px solid #5a7fd4;
+    border-radius: 0 8px 8px 0; padding: 10px 14px;
+    margin-top: 12px; font-size: 12px; color: #555; line-height: 1.9;
+  }
+  .info-note { font-size: 12px; color: #888; margin: 0 0 12px; line-height: 1.6; }
+
+  .sengkang-detail {
+    background: #f7f6f1; border-radius: 8px; padding: 12px 14px;
+    margin-top: 10px; font-size: 12px; color: #555; line-height: 1.9;
+  }
+  .sengkang-detail .row-item { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 3px 0; }
+  .sengkang-detail .row-item:last-child { border-bottom: none; font-weight: 600; }
+  .divider { height: 1px; background: #eee; margin: 12px 0; }
+
+  .sub-title {
+    font-size: 11px; font-weight: 600; color: #5a7fd4;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin: 14px 0 8px;
+  }
+
+  /* Tambah Tipe Kolom Button */
+  .btn-tambah-tipe {
+    width: 100%; padding: 14px;
+    background: #fff; border: 2px dashed #d9d7cf;
+    border-radius: 12px; cursor: pointer;
+    font-size: 14px; color: #666; font-weight: 500;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+    margin-bottom: 1.5rem;
+  }
+  .btn-tambah-tipe:hover { border-color: #5a7fd4; color: #2a5ab7; background: #f0f4ff; }
+  .btn-tambah-tipe i { font-size: 18px; }
+
+  @media (max-width: 480px) {
+    .hasil-grid { grid-template-columns: 1fr; }
+    .dim-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .top-nav {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 1.5rem; padding: 10px 14px;
+    background: #fff; border: 1px solid #e5e3dc; border-radius: 10px;
+  }
+  .top-nav a {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 13px; font-weight: 600; color: #2a5ab7;
+    text-decoration: none; padding: 4px 10px; border-radius: 6px;
+    transition: background 0.15s;
+  }
+  .top-nav a:hover { background: #e8f0fe; }
+  .top-nav .sep { color: #ccc; font-size: 14px; }
+  .top-nav .current { font-size: 13px; color: #888; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="top-nav">
+    <a href="../sipillab/"><img src="images/logo.jpeg" style="width:22px;height:22px;object-fit:cover;border-radius:5px;vertical-align:middle;margin-right:4px;"> Sipil<span style="color:#e8b84b;">Lab</span></a>
+    <span class="sep">›</span>
+    <a href="0kalkulatorvolume.html"><i class="ti ti-arrow-left"></i> Kalkulator Volume</a>
+    <span class="sep">›</span>
+    <span class="current">Kolom Beton</span>
+  </div>
+  <h1>Kalkulator Kolom</h1>
+  <p class="subtitle">Perhitungan volume beton, bekisting, dan kebutuhan besi tulangan kolom</p>
+
+  <div id="tipeList"></div>
+
+  <button class="btn-tambah-tipe" id="btnTambahTipe" onclick="tambahTipe()">
+    <i class="ti ti-plus"></i> Tambah tipe kolom (K2, K3, …)
+  </button>
+</div>
+
+<script>
+  let tipes = []; // array of tipe objects
+
+  function fmt2(n) { return n.toFixed(2).replace('.', ','); }
+  function fmt3(n) { return n.toFixed(3).replace('.', ','); }
+
+  function tambahTipe() {
+    const idx = tipes.length;
+    tipes.push({
+      tinggi: 3.00,
+      jmlKolom: 1,
+      dimA: 0.30,
+      dimB: 0.30
+    });
+    renderAll();
+    // scroll to new block
+    setTimeout(() => {
+      const blocks = document.querySelectorAll('.tipe-kolom-block');
+      if (blocks[idx]) blocks[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  }
+
+  function hapusTipe(idx) {
+    if (tipes.length <= 1) return; // jangan hapus jika hanya 1
+    tipes.splice(idx, 1);
+    renderAll();
+  }
+
+  function updateField(tipeIdx, field, val) {
+    tipes[tipeIdx][field] = parseFloat(val) || 0;
+    hitungTipe(tipeIdx);
+  }
+
+  function renderAll() {
+    const container = document.getElementById('tipeList');
+    container.innerHTML = '';
+    tipes.forEach((t, i) => renderTipe(i, container));
+    // Update tombol hapus — hanya tampil jika lebih dari 1 tipe
+    document.querySelectorAll('.btn-hapus-tipe').forEach((btn, i) => {
+      btn.style.display = tipes.length > 1 ? 'inline-flex' : 'none';
+    });
+    tipes.forEach((_, i) => hitungTipe(i));
+  }
+
+  function renderTipe(idx, container) {
+    const t = tipes[idx];
+    const tipeLabel = 'K' + (idx + 1);
+
+    const block = document.createElement('div');
+    block.className = 'tipe-kolom-block';
+    block.id = `tipe-${idx}`;
+
+    // ── Header ──
+    block.innerHTML = `
+      <div class="tipe-header">
+        <span class="tipe-label">${tipeLabel}</span>
+        <button class="btn-hapus-tipe" onclick="hapusTipe(${idx})" title="Hapus tipe ini" style="display:none">
+          <i class="ti ti-trash"></i>
+        </button>
+      </div>
+    `;
+
+    // ── Card Dimensi ──
+    const cardDim = document.createElement('div');
+    cardDim.className = 'card';
+    cardDim.style.borderRadius = '0';
+    cardDim.style.borderTop = 'none';
+    cardDim.innerHTML = `
+      <p class="section-title">Dimensi &amp; Jumlah Kolom <span class="tag">dapat diubah</span></p>
+      <div class="dim-grid">
+        <div class="dim-item">
+          <div class="lbl">Sisi a — lebar kolom (m)</div>
+          <input type="number" id="dA-${idx}" min="0" step="0.01" value="${t.dimA}" oninput="updateField(${idx},'dimA',this.value)">
+        </div>
+        <div class="dim-item">
+          <div class="lbl">Sisi b — panjang kolom (m)</div>
+          <input type="number" id="dB-${idx}" min="0" step="0.01" value="${t.dimB}" oninput="updateField(${idx},'dimB',this.value)">
+        </div>
+        <div class="dim-item">
+          <div class="lbl">Tinggi kolom — h (m)</div>
+          <input type="number" id="dTinggi-${idx}" min="0" step="0.01" value="${t.tinggi}" oninput="updateField(${idx},'tinggi',this.value)">
+        </div>
+        <div class="dim-item">
+          <div class="lbl">Jumlah kolom (bh)</div>
+          <input type="number" id="dJml-${idx}" min="1" step="1" value="${t.jmlKolom}" oninput="updateField(${idx},'jmlKolom',this.value)">
+        </div>
+      </div>
+    `;
+    block.appendChild(cardDim);
+
+    // ── Warning Ahli Struktur ──
+    const cardWarning = document.createElement('div');
+    cardWarning.id = `warningAhli-${idx}`;
+    cardWarning.className = 'warning-ahli';
+    cardWarning.style.display = 'none';
+    cardWarning.innerHTML = `<i class="ti ti-alert-triangle"></i><strong>Perlu perhitungan ahli struktur.</strong>`;
+    block.appendChild(cardWarning);
+
+    // ── Card Hasil ──
+    const cardHasil = document.createElement('div');
+    cardHasil.className = 'card';
+    cardHasil.style.borderRadius = '0 0 12px 12px';
+    cardHasil.style.borderTop = 'none';
+    cardHasil.innerHTML = `
+      <p class="section-title">Hasil Perhitungan — ${tipeLabel}</p>
+
+      <p class="sub-title"><i class="ti ti-box"></i> Volume Beton K-250</p>
+      <div class="hasil-grid">
+        <div class="hasil-card">
+          <div class="nama">Volume beton per kolom</div>
+          <div><span class="angka" id="vBetonSatu-${idx}">—</span><span class="satuan">m³</span></div>
+        </div>
+        <div class="hasil-card highlight">
+          <div class="nama">Total volume beton (×${tipes[idx].jmlKolom} kolom)</div>
+          <div><span class="angka" id="vBeton-${idx}">—</span><span class="satuan">m³</span></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <p class="sub-title"><i class="ti ti-layout-board"></i> Luas Bekisting</p>
+      <p class="info-note">Keliling 4 sisi = (a + b) × 2, dikali tinggi kolom, dikali jumlah kolom.</p>
+      <div class="hasil-grid">
+        <div class="hasil-card">
+          <div class="nama">Luas bekisting per kolom</div>
+          <div><span class="angka" id="vBekistingSatu-${idx}">—</span><span class="satuan">m²</span></div>
+        </div>
+        <div class="hasil-card highlight">
+          <div class="nama">Total luas bekisting (×${tipes[idx].jmlKolom} kolom)</div>
+          <div><span class="angka" id="vBekisting-${idx}">—</span><span class="satuan">m²</span></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <p class="sub-title" id="subBesiUtama-${idx}"><i class="ti ti-line"></i> Besi Utama D13 (otomatis)</p>
+      <p class="info-note" id="noteBesiUtama-${idx}">Sambungan 60× diameter (60 × 13 mm) ditambahkan jika tinggi kolom > 12 m.</p>
+      <div class="hasil-grid">
+        <div class="hasil-card">
+          <div class="nama">Panjang besi utama per kolom</div>
+          <div><span class="angka" id="vBesiUtamaSatu-${idx}">—</span><span class="satuan">m</span></div>
+        </div>
+        <div class="hasil-card">
+          <div class="nama">Total panjang besi utama D13</div>
+          <div><span class="angka" id="vBesiUtama-${idx}">—</span><span class="satuan">m</span></div>
+        </div>
+        <div class="hasil-card highlight-kg">
+          <div class="nama">Berat besi utama D13</div>
+          <div><span class="angka" id="vBesiUtamaKg-${idx}">—</span><span class="satuan">kg</span></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <p class="sub-title"><i class="ti ti-square"></i> Besi Sengkang D10</p>
+      <p class="info-note">Selimut beton 3 cm per sisi. Kaitan standar 4,5 cm per ujung (2 ujung per sengkang). Jarak sengkang: ¼h zona tepi @10 cm, ½h tengah @15 cm.</p>
+      <div class="hasil-grid">
+        <div class="hasil-card">
+          <div class="nama">Panjang 1 sengkang (keliling + kaitan)</div>
+          <div><span class="angka" id="vSengkang1-${idx}">—</span><span class="satuan">m</span></div>
+        </div>
+        <div class="hasil-card">
+          <div class="nama">Jumlah sengkang zona tepi (¼h ×2)</div>
+          <div><span class="angka" id="jmlSengkangTepi-${idx}">—</span><span class="satuan">buah</span></div>
+        </div>
+        <div class="hasil-card">
+          <div class="nama">Jumlah sengkang zona tengah (½h)</div>
+          <div><span class="angka" id="jmlSengkangTengah-${idx}">—</span><span class="satuan">buah</span></div>
+        </div>
+        <div class="hasil-card">
+          <div class="nama">Jumlah sengkang per kolom</div>
+          <div><span class="angka" id="jmlSengkang-${idx}">—</span><span class="satuan">buah</span></div>
+        </div>
+        <div class="hasil-card">
+          <div class="nama">Total panjang sengkang D10</div>
+          <div><span class="angka" id="vSengkangTotal-${idx}">—</span><span class="satuan">m</span></div>
+        </div>
+        <div class="hasil-card highlight-kg">
+          <div class="nama">Berat besi sengkang D10</div>
+          <div><span class="angka" id="vSengkangKg-${idx}">—</span><span class="satuan">kg</span></div>
+        </div>
+      </div>
+
+      <div class="sengkang-detail" id="sengkangDetail-${idx}" style="display:none">
+        <div class="row-item"><span>a penampang − selimut (2×3 cm)</span><span id="sdA-${idx}">—</span></div>
+        <div class="row-item"><span>b penampang − selimut (2×3 cm)</span><span id="sdB-${idx}">—</span></div>
+        <div class="row-item"><span>Keliling sengkang 2×(a'+b')</span><span id="sdKeliling-${idx}">—</span></div>
+        <div class="row-item"><span>Kaitan (2 × 4,5 cm)</span><span id="sdKaitan-${idx}">9 cm</span></div>
+        <div class="row-item"><span>Panjang 1 sengkang</span><span id="sdTotal-${idx}">—</span></div>
+      </div>
+
+      <div class="rumus-box" id="rumusBox-${idx}">
+        <strong>Rumus perhitungan:</strong><br>
+        Volume beton &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= a × b × h × jumlah kolom<br>
+        Luas bekisting &nbsp;&nbsp;&nbsp;&nbsp;= (a+a+b+b) × h × jumlah kolom<br>
+        Besi utama D13 &nbsp;&nbsp;&nbsp;&nbsp;= (4 × h) per kolom × jumlah kolom + sambungan (jika h &gt; 12 m)<br>
+        Sengkang D10 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= keliling penampang bersih + kaitan
+      </div>
+    `;
+    block.appendChild(cardHasil);
+    container.appendChild(block);
+  }
+
+  function hitungTipe(tipeIdx) {
+    const t = tipes[tipeIdx];
+
+    const dimA = t.dimA || 0;
+    const dimB = t.dimB || 0;
+    const h = t.tinggi || 0;
+    const jml = Math.max(1, Math.round(t.jmlKolom) || 1);
+
+    const kosong = (id) => { const el = document.getElementById(id); if(el) el.textContent = '—'; };
+
+    // ─── Cek luas kolom ───
+    const luasKolom = dimA * dimB;
+    const warningEl = document.getElementById(`warningAhli-${tipeIdx}`);
+    if (warningEl) warningEl.style.display = luasKolom > 0.11 ? 'block' : 'none';
+
+    // Hitung jumlah besi utama otomatis berdasarkan luas
+    function hitungJmlBesi(a, b) {
+      const luas = a * b;
+      const sisiMin = Math.min(a, b);
+      if (sisiMin <= 0.15) return 4;
+      if (sisiMin <= 0.20) return 4;
+      if (sisiMin <= 0.25) return 6;
+      if (sisiMin <= 0.30) return 8;
+      return Math.ceil(2 * (Math.ceil(a / 0.10) + Math.ceil(b / 0.10)));
+    }
+    const jmlBesiUtama = hitungJmlBesi(dimA, dimB);
+
+    // Update label besi utama
+    const elSubBesi = document.getElementById(`subBesiUtama-${tipeIdx}`);
+    if (elSubBesi) elSubBesi.textContent = `Besi Utama D13 (${jmlBesiUtama} batang — otomatis)`;
+
+    // Update label jumlah kolom di hasil cards
+    const elBeton = document.getElementById(`vBeton-${tipeIdx}`);
+    const elBekisting = document.getElementById(`vBekisting-${tipeIdx}`);
+    // update nama cards jml
+    const nBetonKartu = elBeton ? elBeton.closest('.hasil-card').querySelector('.nama') : null;
+    const nBekKartu = elBekisting ? elBekisting.closest('.hasil-card').querySelector('.nama') : null;
+    if (nBetonKartu) nBetonKartu.textContent = `Total volume beton (×${jml} kolom)`;
+    if (nBekKartu) nBekKartu.textContent = `Total luas bekisting (×${jml} kolom)`;
+
+    if (h <= 0 || dimA <= 0 || dimB <= 0) {
+      ['vBetonSatu','vBeton','vBekistingSatu','vBekisting','vBesiUtamaSatu','vBesiUtama','vBesiUtamaKg',
+       'vSengkang1','jmlSengkangTepi','jmlSengkangTengah','jmlSengkang','vSengkangTotal','vSengkangKg'
+      ].forEach(id => kosong(`${id}-${tipeIdx}`));
+      const det = document.getElementById(`sengkangDetail-${tipeIdx}`);
+      if (det) det.style.display = 'none';
+      return;
+    }
+
+    // ─── Volume Beton ───
+    const betonSatu = dimA * dimB * h;
+    const betonTotal = betonSatu * jml;
+
+    // ─── Luas Bekisting ───
+    // 4 sisi: (a+b+a+b) × h
+    const keliling4 = 2 * (dimA + dimB);
+    const bekistingSatu = keliling4 * h;
+    const bekistingTotal = bekistingSatu * jml;
+
+    // ─── Besi Utama D13 ───
+    const diam13 = 0.013;
+    const ldSambungan = 60 * diam13; // 0,78 m
+    const overstek = 40 * diam13; // 40 × 13 mm = 0,52 m per batang
+    const jmlSambunganPerBatang = h > 12 ? Math.floor(h / 12) : 0;
+    // panjang besi per kolom = (jml batang × h) + overstek per batang + sambungan jika perlu
+    const besiUtamaSatu = (jmlBesiUtama * h) + (jmlBesiUtama * overstek) + (jmlSambunganPerBatang * ldSambungan * jmlBesiUtama * 2);
+    const besiUtamaTotal = besiUtamaSatu * jml;
+    const beratBesiUtama = besiUtamaTotal * (13 * 13) * 0.006165;
+
+    // ─── Besi Sengkang D10 ───
+    const selimut = 0.03;
+    const aBersih = dimA - (selimut * 2);
+    const bBersih = dimB - (selimut * 2);
+    const kaitan = 0.045 * 2;
+    const kelilingSnk = 2 * (aBersih + bBersih);
+    const panjang1Sengkang = kelilingSnk + kaitan;
+
+    // Per kolom, 1 tinggi = 2 zona tepi ¼h @10cm + 1 zona tengah ½h @15cm
+    const zonaTepi = h * 0.25;
+    const zonaTengah = h * 0.50;
+    const jmlTepi   = (Math.ceil(zonaTepi / 0.10) + 1) * 2;
+    const jmlTengah = Math.max(0, (Math.ceil(zonaTengah / 0.15) + 1) - 2);
+    const jmlSnkPerKolom = jmlTepi + jmlTengah;
+    const jmlSnkTotal = jmlSnkPerKolom * jml;
+    const totalSengkang = panjang1Sengkang * jmlSnkTotal;
+    const beratSengkang = totalSengkang * (10 * 10) * 0.006165;
+
+    // ─── Tampilkan ───
+    const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+    set(`vBetonSatu-${tipeIdx}`, fmt3(betonSatu));
+    set(`vBeton-${tipeIdx}`, fmt3(betonTotal));
+    set(`vBekistingSatu-${tipeIdx}`, fmt2(bekistingSatu));
+    set(`vBekisting-${tipeIdx}`, fmt2(bekistingTotal));
+    set(`vBesiUtamaSatu-${tipeIdx}`, fmt2(besiUtamaSatu));
+    set(`vBesiUtama-${tipeIdx}`, fmt2(besiUtamaTotal));
+    set(`vBesiUtamaKg-${tipeIdx}`, fmt2(beratBesiUtama));
+    set(`vSengkang1-${tipeIdx}`, fmt2(panjang1Sengkang));
+    set(`jmlSengkangTepi-${tipeIdx}`, jmlTepi);
+    set(`jmlSengkangTengah-${tipeIdx}`, jmlTengah);
+    set(`jmlSengkang-${tipeIdx}`, jmlSnkPerKolom + ` (×${jml} = ${jmlSnkTotal} total)`);
+    set(`vSengkangTotal-${tipeIdx}`, fmt2(totalSengkang));
+    set(`vSengkangKg-${tipeIdx}`, fmt2(beratSengkang));
+
+    const det = document.getElementById(`sengkangDetail-${tipeIdx}`);
+    if (det) {
+      det.style.display = 'block';
+      set(`sdA-${tipeIdx}`, fmt2(aBersih) + ' m');
+      set(`sdB-${tipeIdx}`, fmt2(bBersih) + ' m');
+      set(`sdKeliling-${tipeIdx}`, fmt2(kelilingSnk) + ' m');
+      set(`sdKaitan-${tipeIdx}`, '0,09 m (2 × 4,5 cm)');
+      set(`sdTotal-${tipeIdx}`, fmt2(panjang1Sengkang) + ' m');
+    }
+
+    const noteTeks = h > 12
+      ? `h = ${fmt2(h)} m > 12 m → sambungan lewatan 60 × Ø13 = 0,78 m diterapkan. Jumlah sambungan per batang: ${jmlSambunganPerBatang}. Overstek 40 × Ø13 = 0,52 m per batang sudah termasuk.`
+      : `h = ${fmt2(h)} m ≤ 12 m → tidak perlu sambungan lewatan. Jumlah besi utama otomatis: ${jmlBesiUtama} batang. Overstek 40 × Ø13 = 0,52 m per batang sudah termasuk.`;
+    set(`noteBesiUtama-${tipeIdx}`, noteTeks);
+
+    const azNote = '';
+    const rumusEl = document.getElementById(`rumusBox-${tipeIdx}`);
+    if (rumusEl) rumusEl.innerHTML = `
+      <strong>Rumus perhitungan (nilai saat ini) — K${tipeIdx + 1}:</strong><br>
+      Volume beton &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= a × b × h × n = ${dimA} × ${dimB} × ${h} × ${jml} = <strong>${fmt3(betonTotal)} m³</strong><br>
+      Luas bekisting &nbsp;&nbsp;&nbsp;&nbsp;= (a+a+b+b) × h × n = ${fmt2(keliling4)} × ${h} × ${jml} = <strong>${fmt2(bekistingTotal)} m²</strong><br>
+      Besi utama D13 &nbsp;&nbsp;&nbsp;&nbsp;= (${jmlBesiUtama} × (${h} + 0,52 overstek))${jmlSambunganPerBatang > 0 ? ` + sambungan` : ''} × ${jml} kolom = <strong>${fmt2(besiUtamaTotal)} m</strong> → <strong>${fmt2(beratBesiUtama)} kg</strong><br>
+      Besi sengkang D10 &nbsp;= ${fmt2(panjang1Sengkang)} m × ${jmlSnkTotal} buah = <strong>${fmt2(totalSengkang)} m</strong> → <strong>${fmt2(beratSengkang)} kg</strong>
+    `;
+  }
+
+  // Init 1 tipe default (K1)
+  tipes.push({
+    tinggi: 3.00,
+    jmlKolom: 1,
+    dimA: 0.30,
+    dimB: 0.30
+  });
+  renderAll();
+</script>
+</body>
+</html>

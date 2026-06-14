@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator Balok & Plat Lantai — SipilLab</title>
+<meta name="description" content="Kalkulator otomatis tulangan balok lentur dan plat lantai two-way slab berdasarkan SNI 2847. Input dimensi dan beban, hasil keluar otomatis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600;700;900&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c0f;
+  --bg2:#12151a;
+  --bg3:#1a1e26;
+  --card:#1e222c;
+  --card2:#242836;
+  --accent:#e8b84b;
+  --accent2:#c9921a;
+  --text:#f0f2f5;
+  --muted:#8a9ab0;
+  --muted2:#5c6b7f;
+  --border:#2a3040;
+  --red:#e84b4b;
+  --blue:#4b8de8;
+  --green:#4bcf8a;
+  --teal:#4bbfe8;
+}
+html{overflow-y:scroll}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* ── NAVBAR ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;padding:0 2rem;height:64px;background:rgba(10,12,15,0.97);border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;margin-right:2rem}
+.nav-logo-icon{width:38px;height:38px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+.nav-logo-icon img{width:38px;height:38px;object-fit:cover;border-radius:8px;display:block}
+.nav-logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:2px;color:var(--text)}
+.nav-logo-text span{color:var(--accent)}
+.nav-breadcrumb{display:flex;align-items:center;gap:8px;font-size:0.78rem;font-weight:600;letter-spacing:.5px;color:var(--muted);text-transform:uppercase}
+.nav-breadcrumb .sep{color:var(--muted2)}
+.nav-breadcrumb .current{color:var(--accent)}
+.nav-back{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:0.78rem;font-weight:700;letter-spacing:.5px;color:var(--muted);text-decoration:none;text-transform:uppercase;transition:color .2s}
+.nav-back:hover{color:var(--text)}
+.nav-back svg{width:14px;height:14px}
+
+/* ── PAGE HEADER ── */
+.page-header{padding:100px 3rem 2.5rem;background:linear-gradient(to bottom,#0d1018,var(--bg));border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.page-header::before{content:'';position:absolute;top:-80px;right:-60px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(232,184,75,0.06) 0%,transparent 70%);pointer-events:none}
+.ph-tag{font-size:0.65rem;font-weight:800;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase;margin-bottom:.6rem;opacity:.85}
+.page-header h1{font-family:'Bebas Neue',sans-serif;font-size:3.2rem;letter-spacing:2px;line-height:1;margin-bottom:.75rem}
+.page-header h1 em{color:var(--accent);font-style:normal}
+.ph-desc{font-size:.92rem;color:var(--muted);line-height:1.6;max-width:560px;font-weight:300}
+.ph-badges{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.2rem;position:relative}
+.sni-hint{position:absolute;left:14px;top:100%;width:34px;height:34px;pointer-events:none;animation:sniHintMove 1.8s ease-in-out infinite;opacity:.9;z-index:5}
+.sni-hint svg{width:100%;height:100%;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.5))}
+@keyframes sniHintMove{
+  0%{transform:translate(0,0) scale(1);opacity:.5}
+  40%{transform:translate(-6px,-10px) scale(0.92);opacity:1}
+  60%{transform:translate(-6px,-10px) scale(0.92);opacity:1}
+  100%{transform:translate(0,0) scale(1);opacity:.5}
+}
+.ph-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--border);color:var(--muted);background:var(--card)}
+.ph-badge.gold{border-color:rgba(232,184,75,0.3);color:var(--accent);background:rgba(232,184,75,0.06)}
+
+/* ── MAIN LAYOUT ── */
+main{max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+
+/* ── TAB SWITCHER ── */
+.tab-wrap{display:flex;gap:.5rem;margin-bottom:2rem;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:5px}
+.tab-btn{flex:1;padding:.65rem 1rem;border:none;border-radius:9px;font-family:'Barlow',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:all .2s;color:var(--muted);background:transparent}
+.tab-btn.active{background:var(--accent);color:#0a0c0f}
+.tab-btn:not(.active):hover{color:var(--text);background:rgba(255,255,255,0.05)}
+
+/* ── PANE ── */
+.pane{display:none}.pane.active{display:block}
+
+/* ── CARD BLOCK ── */
+.blk{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:1.2rem;overflow:hidden}
+.blk-head{padding:.85rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.blk-icon{width:28px;height:28px;border-radius:7px;background:rgba(232,184,75,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.blk-icon svg{width:15px;height:15px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.blk-label{font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent)}
+.blk-body{padding:1.1rem 1.25rem}
+
+/* ── FORM GRID ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.85rem}
+@media(max-width:600px){.g2,.g3{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.g2,.g3{grid-template-columns:1fr}}
+
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:.73rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.input-wrap{position:relative}
+.field input{width:100%;height:40px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:0 50px 0 12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:.92rem;font-weight:400;transition:border .2s,background .2s;outline:none}
+.field input:focus{border-color:var(--accent);background:#141820}
+.field input:focus+.unit-tag{color:var(--accent)}
+.unit-tag{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:.68rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted2);pointer-events:none}
+
+/* ── CALCULATE BUTTON ── */
+.calc-btn{width:100%;height:48px;background:var(--accent);color:#0a0c0f;border:none;border-radius:11px;font-family:'Barlow',sans-serif;font-size:.9rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:1.5rem;display:flex;align-items:center;justify-content:center;gap:9px}
+.calc-btn:hover{background:var(--accent2);transform:translateY(-1px)}
+.calc-btn svg{width:18px;height:18px;stroke:#0a0c0f;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── RESULTS ── */
+.results{display:none;margin-top:1.5rem}
+.results.show{display:block}
+
+.res-header{display:flex;align-items:center;gap:10px;margin-bottom:1.2rem;padding-bottom:.85rem;border-bottom:1px solid var(--border)}
+.res-header-icon{width:32px;height:32px;border-radius:8px;background:rgba(75,207,138,0.12);display:flex;align-items:center;justify-content:center}
+.res-header-icon svg{width:17px;height:17px;stroke:var(--green);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.res-header h3{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text)}
+.res-header span{font-size:.75rem;color:var(--muted)}
+
+/* ── METRIC CARDS ── */
+.metric-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.7rem;margin-bottom:1.2rem}
+.metric{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem}
+.metric .m-label{font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted2);margin-bottom:5px}
+.metric .m-val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:1px;color:var(--text);line-height:1}
+.metric .m-sub{font-size:.68rem;color:var(--muted);margin-top:3px}
+.metric.accent{border-color:rgba(232,184,75,.25);background:rgba(232,184,75,.04)}
+.metric.accent .m-val{color:var(--accent)}
+
+/* ── RESULT SECTION LABEL ── */
+.r-sec{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);margin:1.1rem 0 .55rem;display:flex;align-items:center;gap:8px}
+.r-sec::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── RESULT TABLE ── */
+.res-tbl{width:100%;border-collapse:collapse;font-size:.83rem;margin-bottom:.3rem}
+.res-tbl th{text-align:left;padding:7px 10px;font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted2);background:var(--bg3);border-bottom:1px solid var(--border)}
+.res-tbl td{padding:8px 10px;border-bottom:1px solid rgba(42,48,64,.5);color:var(--text);vertical-align:middle}
+.res-tbl tr:last-child td{border-bottom:none}
+.res-tbl td:last-child{text-align:right;font-weight:600;color:var(--muted)}
+.res-tbl tr:hover td{background:rgba(255,255,255,.02)}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:5px;font-size:.68rem;font-weight:800;letter-spacing:.8px;text-transform:uppercase}
+.b-ok{background:rgba(75,207,138,.12);color:var(--green);border:1px solid rgba(75,207,138,.2)}
+.b-fail{background:rgba(232,75,75,.12);color:var(--red);border:1px solid rgba(232,75,75,.2)}
+.b-warn{background:rgba(232,184,75,.12);color:var(--accent);border:1px solid rgba(232,184,75,.2)}
+
+/* ── TULANGAN RESULT HIGHLIGHT ── */
+.tul-result{background:rgba(232,184,75,.07);border:1px solid rgba(232,184,75,.25);border-radius:11px;padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:.5rem}
+.tul-result .tr-label{font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.tul-result .tr-value{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:1px;color:var(--accent)}
+.tul-result .tr-verdict{font-size:.68rem}
+
+/* ── DIVIDER ── */
+.div{height:1px;background:var(--border);margin:1.2rem 0}
+
+/* ── FOOTER ── */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:1.8rem 3rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:.72rem;color:var(--muted)}
+footer .fl{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;color:var(--text)}
+footer .fl span{color:var(--accent)}
+
+/* ── SNI MODAL ── */
+.sni-overlay{position:fixed;inset:0;background:rgba(5,6,9,0.8);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:1.5rem}
+.sni-overlay.show{display:flex}
+.sni-modal{width:100%;max-width:900px;height:90vh;background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.sni-modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--border);background:var(--bg3);flex-shrink:0}
+.sni-modal-head h3{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:1.5px;color:var(--text)}
+.sni-modal-head h3 span{color:var(--accent)}
+.sni-close{background:var(--card);border:1px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0}
+.sni-close:hover{color:var(--text);border-color:var(--accent)}
+.sni-close svg{width:16px;height:16px}
+.sni-modal-body{flex:1;overflow:hidden}
+.sni-modal-body iframe{width:100%;height:100%;border:0;display:block}
+
+/* ── SPLIT VIEW ── */
+body.sni-split{overflow:hidden}
+body.sni-split nav{left:50vw}
+.sni-split-panel{position:fixed;top:0;left:0;width:50vw;height:100vh;z-index:900;background:var(--bg2);border-right:1px solid var(--border);display:none;flex-direction:column}
+body.sni-split .sni-split-panel{display:flex}
+.sni-split-head{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--border);background:var(--bg3);flex-shrink:0;height:64px}
+.sni-split-head h3{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1.5px;color:var(--text)}
+.sni-split-head h3 span{color:var(--accent)}
+.sni-split-body{flex:1;overflow-y:auto;min-height:0}
+.sni-split-body iframe{width:100%;height:100%;border:0;display:block}
+body.sni-split .page-wrap{margin-left:50vw;width:50vw;height:100vh;overflow-y:auto}
+@media (max-width:860px){
+  body.sni-split nav{left:0}
+  .sni-split-panel{width:100vw;height:50vh}
+  body.sni-split .page-wrap{margin-left:0;width:100vw;height:50vh;margin-top:50vh}
+}
+</style>
+</head>
+<body>
+<div class="page-wrap" id="pageWrap">
+
+<!-- NAVBAR -->
+<nav>
+  <a href="../" class="nav-logo">
+    <div class="nav-logo-icon">
+      <img src="../images/logo.jpeg" alt="SipilLab Logo">
+    </div>
+    <div class="nav-logo-text">Sipil<span>Lab</span></div>
+  </a>
+  <div class="nav-breadcrumb">
+    <span>Kalkulator</span>
+    <span class="sep">›</span>
+    <span class="current">Balok & Plat</span>
+  </div>
+  <a href="../" class="nav-back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Kembali
+  </a>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="ph-tag">Kalkulator Struktur</div>
+  <h1>Balok & <em>Plat Lantai</em></h1>
+  <p class="ph-desc">Hitung kebutuhan tulangan balok lentur dan plat lantai two-way slab secara otomatis. Input dimensi dan beban, hasil & kontrol keluar langsung.</p>
+  <div class="ph-badges">
+    <span class="ph-badge gold" id="sniBadge" onclick="openSniModal()" style="cursor:pointer">SNI 2847:2019</span>
+    <div class="sni-hint" id="sniHint" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="var(--accent)" stroke="var(--bg)" stroke-width="1"><path d="M3 2l6 17 2.5-6.5L18 10z"/></svg>
+    </div>
+    <span class="ph-badge">PBBI / Tabel Koefisien Momen</span>
+    <span class="ph-badge">Kontrol Otomatis</span>
+    <span class="ph-badge">Gratis</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+  <!-- TAB SWITCH -->
+  <div class="tab-wrap">
+    <button class="tab-btn active" onclick="switchTab('balok',this)">
+      Balok Lentur
+    </button>
+    <button class="tab-btn" onclick="switchTab('plat',this)">
+      Plat Lantai (Two-Way)
+    </button>
+  </div>
+
+  <!-- ═══════ PANE BALOK ═══════ -->
+  <div id="pane-balok" class="pane active">
+
+    <div class="blk">
+      <div class="blk-head">
+        <div class="blk-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
+        <span class="blk-label">Material</span>
+      </div>
+      <div class="blk-body">
+        <div class="g3">
+          <div class="field"><label>f'c beton</label><div class="input-wrap"><input id="b_fc" type="number" value="20"><span class="unit-tag">MPa</span></div></div>
+          <div class="field"><label>fy lentur</label><div class="input-wrap"><input id="b_fy" type="number" value="400"><span class="unit-tag">MPa</span></div></div>
+          <div class="field"><label>fy geser</label><div class="input-wrap"><input id="b_fyv" type="number" value="240"><span class="unit-tag">MPa</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="blk">
+      <div class="blk-head">
+        <div class="blk-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18"/></svg></div>
+        <span class="blk-label">Dimensi Balok</span>
+      </div>
+      <div class="blk-body">
+        <div class="g3">
+          <div class="field"><label>Lebar (b)</label><div class="input-wrap"><input id="b_b" type="number" value="200"><span class="unit-tag">mm</span></div></div>
+          <div class="field"><label>Tinggi (h)</label><div class="input-wrap"><input id="b_h" type="number" value="350"><span class="unit-tag">mm</span></div></div>
+          <div class="field"><label>Selimut beton</label><div class="input-wrap"><input id="b_ts" type="number" value="20"><span class="unit-tag">mm</span></div></div>
+        </div>
+        <div class="g2" style="margin-top:.85rem">
+          <div class="field"><label>Diameter tulangan lentur (D)</label><div class="input-wrap"><input id="b_D" type="number" value="16"><span class="unit-tag">mm</span></div></div>
+          <div class="field"><label>Diameter sengkang (P)</label><div class="input-wrap"><input id="b_P" type="number" value="10"><span class="unit-tag">mm</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="blk">
+      <div class="blk-head">
+        <div class="blk-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <span class="blk-label">Beban Rencana</span>
+      </div>
+      <div class="blk-body">
+        <div class="g3">
+          <div class="field"><label>Mu+ momen positif</label><div class="input-wrap"><input id="b_mup" type="number" value="20"><span class="unit-tag">kNm</span></div></div>
+          <div class="field"><label>Mu− momen negatif</label><div class="input-wrap"><input id="b_mun" type="number" value="43"><span class="unit-tag">kNm</span></div></div>
+          <div class="field"><label>Vu gaya geser</label><div class="input-wrap"><input id="b_vu" type="number" value="56"><span class="unit-tag">kN</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="hitungBalok()">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Hitung Tulangan Balok
+    </button>
+
+    <!-- HASIL BALOK -->
+    <div class="results blk" id="res-balok">
+      <div class="blk-head">
+        <div class="blk-icon" style="background:rgba(75,207,138,.12)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" stroke-width="2.5"/></svg></div>
+        <span class="blk-label" style="color:var(--green)">Hasil Perhitungan</span>
+      </div>
+      <div class="blk-body" id="res-balok-body"></div>
+    </div>
+  </div>
+
+  <!-- ═══════ PANE PLAT ═══════ -->
+  <div id="pane-plat" class="pane">
+
+    <div class="blk">
+      <div class="blk-head">
+        <div class="blk-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg></div>
+        <span class="blk-label">Material</span>
+      </div>
+      <div class="blk-body">
+        <div class="g2">
+          <div class="field"><label>f'c beton</label><div class="input-wrap"><input id="p_fc" type="number" value="20"><span class="unit-tag">MPa</span></div></div>
+          <div class="field"><label>fy tulangan</label><div class="input-wrap"><input id="p_fy" type="number" value="240"><span class="unit-tag">MPa</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="blk">
+      <div class="blk-head">
+        <div class="blk-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+        <span class="blk-label">Geometri Plat</span>
+      </div>
+      <div class="blk-body">
+        <div class="g3">
+          <div class="field"><label>Lx (bentang pendek)</label><div class="input-wrap"><input id="p_lx" type="number" value="3"><span class="unit-tag">m</span></div></div>
+          <div class="field"><label>Ly (bentang panjang)</label><div class="input-wrap"><input id="p_ly" type="number" value="4.5"><span class="unit-tag">m</span></div></div>
+          <div class="field"><label>Tebal plat (h)</label><div class="input-wrap"><input id="p_h" type="number" value="120"><span class="unit-tag">mm</span></div></div>
+        </div>
+        <div class="g2" style="margin-top:.85rem">
+          <div class="field"><label>Diameter tulangan (Ø)</label><div class="input-wrap"><input id="p_dia" type="number" value="10"><span class="unit-tag">mm</span></div></div>
+          <div class="field"><label>Selimut beton (ts)</label><div class="input-wrap"><input id="p_ts" type="number" value="20"><span class="unit-tag">mm</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="blk">
+      <div class="blk-head">
+        <div class="blk-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <span class="blk-label">Beban Plat</span>
+      </div>
+      <div class="blk-body">
+        <p style="font-size:.75rem;color:var(--muted);margin-bottom:.9rem">Berat sendiri plat dihitung otomatis (γ beton = 24 kN/m³)</p>
+        <div class="g2">
+          <div class="field"><label>Finishing lantai</label><div class="input-wrap"><input id="p_fin" type="number" value="1.1"><span class="unit-tag">kN/m²</span></div></div>
+          <div class="field"><label>Plafon + rangka</label><div class="input-wrap"><input id="p_plafon" type="number" value="0.2"><span class="unit-tag">kN/m²</span></div></div>
+        </div>
+        <div class="g2" style="margin-top:.85rem">
+          <div class="field"><label>Instalasi ME</label><div class="input-wrap"><input id="p_me" type="number" value="0.5"><span class="unit-tag">kN/m²</span></div></div>
+          <div class="field"><label>Beban hidup (QL)</label><div class="input-wrap"><input id="p_ql" type="number" value="3"><span class="unit-tag">kN/m²</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="hitungPlat()">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Hitung Penulangan Plat
+    </button>
+
+    <div class="results blk" id="res-plat">
+      <div class="blk-head">
+        <div class="blk-icon" style="background:rgba(75,207,138,.12)"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" stroke-width="2.5"/></svg></div>
+        <span class="blk-label" style="color:var(--green)">Hasil Perhitungan</span>
+      </div>
+      <div class="blk-body" id="res-plat-body"></div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="fl">Sipil<span>Lab</span></div>
+  <div>Kalkulator Struktur — Balok & Plat Lantai · SNI 2847:2019</div>
+  <div style="color:var(--muted2)">© 2025 SipilLab · Semua perhitungan bersifat referensi</div>
+</footer>
+</div>
+
+<script>
+function switchTab(id, el) {
+  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('pane-' + id).classList.add('active');
+}
+
+function v(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function f3(n) { return (+n).toFixed(3); }
+function f4(n) { return (+n).toFixed(4); }
+function f2(n) { return (+n).toFixed(2); }
+function f1(n) { return (+n).toFixed(1); }
+function f6(n) { return (+n).toFixed(6); }
+
+function badgeOk(txt) { return `<span class="badge b-ok">✓ ${txt}</span>`; }
+function badgeFail(txt) { return `<span class="badge b-fail">✗ ${txt}</span>`; }
+function badgeWarn(txt) { return `<span class="badge b-warn">${txt}</span>`; }
+
+function row(label, val, unit='') {
+  return `<tr><td>${label}</td><td>${val}${unit ? ' <span style="font-size:.68rem;color:var(--muted2)">' + unit + '</span>' : ''}</td></tr>`;
+}
+
+function tbl(rows) {
+  return `<table class="res-tbl"><thead><tr><th>Parameter</th><th style="text-align:right">Nilai</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+/* ══════════════ BALOK ══════════════ */
+function hitungBalok() {
+  const fc = v('b_fc'), fy = v('b_fy'), fyv = v('b_fyv');
+  const b = v('b_b'), h = v('b_h'), ts = v('b_ts');
+  const D = v('b_D'), P = v('b_P');
+  const Mup = v('b_mup'), Mun = v('b_mun'), Vu = v('b_vu');
+  const PI = Math.PI;
+
+  const b1 = fc <= 30 ? 0.85 : Math.max(0.65, 0.85 - 0.05 * (fc - 30) / 7);
+  const rb = b1 * 0.85 * fc / fy * 600 / (600 + fy);
+  const Rmax = 0.75 * rb * fy * (1 - 0.5 * 0.75 * rb * fy / (0.85 * fc));
+  const phi_l = 0.8, phi_g = 0.6;
+  const ds = ts + P + D / 2;
+  const ns_raw = (b - 2 * ds) / (25 + D);
+  const ns = Math.max(1, Math.floor(ns_raw));
+
+  function lentur(Mu, tag) {
+    const Mn = Mu / phi_l;
+    const d0 = 40, d = h - d0;
+    const Rn = Mn * 1e6 / (b * d * d);
+    const cekRn = Rn < Rmax;
+    const r_hit = 0.85 * fc / fy * (1 - Math.sqrt(Math.max(0, 1 - 2 * Rn / (0.85 * fc))));
+    const rmin1 = Math.sqrt(fc) / (4 * fy);
+    const rmin2 = 1.4 / fy;
+    const rmin = Math.max(rmin1, rmin2);
+    const r = Math.max(r_hit, rmin);
+    const As_p = r * b * d;
+    const n_p = As_p / (PI / 4 * D * D);
+    const n = Math.ceil(n_p);
+    const As = n * PI / 4 * D * D;
+    const nb = n / ns;
+    const d_act = ts + P + D / 2 + (nb > 1 ? (D + 25) * (Math.ceil(nb) - 1) / Math.ceil(nb) : 0);
+    const d2 = h - d_act;
+    const a = As * fy / (0.85 * fc * b);
+    const Mn2 = As * fy * (d2 - a / 2) * 1e-6;
+    const phiMn = phi_l * Mn2;
+    const aman = phiMn >= Mu;
+    return { tag, Mu, Mn: f3(Mn), d: f1(d), Rn: f4(Rn), cekRn, r: f6(r), rmin: f6(rmin), As_p: f2(As_p), n_p: f3(n_p), n, As: f2(As), phiMn: f3(phiMn), aman, D };
+  }
+
+  const pos = lentur(Mup, 'Momen Positif (Mu+)');
+  const neg = lentur(Mun, 'Momen Negatif (Mu−)');
+
+  // Geser
+  const dv = h - ds;
+  const Vc = Math.sqrt(fc) / 6 * b * dv * 1e-3;
+  const phiVc = phi_g * Vc;
+  const pGeser = Vu > phiVc;
+  const phiVs = Vu - phiVc;
+  const Vs = phiVs / phi_g;
+  const Av = 2 * PI / 4 * P * P;
+  const s_p = pGeser ? Av * fyv * dv / (Vs * 1e3) : 999;
+  const s_max = Math.min(dv / 2, 250);
+  const s_use = Math.min(s_p, s_max);
+  const s_final = Math.floor(s_use / 10) * 10;
+
+  function sectionHtml(t) {
+    return `
+    <div class="r-sec">${t.tag}</div>
+    <div class="metric-row">
+      <div class="metric"><div class="m-label">Mu rencana</div><div class="m-val">${t.Mu}</div><div class="m-sub">kNm</div></div>
+      <div class="metric"><div class="m-label">d efektif</div><div class="m-val">${t.d}</div><div class="m-sub">mm</div></div>
+      <div class="metric"><div class="m-label">Rn</div><div class="m-val">${t.Rn}</div><div class="m-sub">&nbsp;</div></div>
+      <div class="metric"><div class="m-label">Cek Rn &lt; Rmax</div><div class="m-val" style="font-size:1rem;padding-top:4px">${t.cekRn ? badgeOk('OK') : badgeFail('LEWATI')}</div></div>
+    </div>
+    ${tbl(
+      row('ρ dihitung', t.r) +
+      row('ρ minimum', t.rmin) +
+      row('As perlu', t.As_p, 'mm²') +
+      row('n tulangan perlu', t.n_p, 'bh') +
+      row('n dipakai', `<strong>${t.n} D${t.D}</strong>`) +
+      row('As terpakai', t.As, 'mm²') +
+      row('φMn terpakai', t.phiMn, 'kNm') +
+      row('Kontrol φMn ≥ Mu', t.aman ? badgeOk('AMAN') : badgeFail('TIDAK AMAN'))
+    )}
+    <div class="tul-result">
+      <div><div class="tr-label">${t.tag}</div><div class="tr-value">${t.n} D${t.D}</div></div>
+      <div class="tr-verdict">${t.aman ? badgeOk('Aman') : badgeFail('Tidak Aman')}</div>
+    </div>`;
+  }
+
+  const html = `
+    <div class="metric-row">
+      <div class="metric accent"><div class="m-label">β₁</div><div class="m-val">${f3(b1)}</div></div>
+      <div class="metric accent"><div class="m-label">ρ balance</div><div class="m-val" style="font-size:1.1rem;padding-top:6px">${f6(rb)}</div></div>
+      <div class="metric accent"><div class="m-label">Rmax</div><div class="m-val">${f4(Rmax)}</div></div>
+      <div class="metric"><div class="m-label">Selimut ds</div><div class="m-val">${f1(ds)}</div><div class="m-sub">mm</div></div>
+    </div>
+
+    ${sectionHtml(pos)}
+    ${sectionHtml(neg)}
+
+    <div class="r-sec">Tulangan Geser (Sengkang)</div>
+    <div class="metric-row">
+      <div class="metric"><div class="m-label">Vc beton</div><div class="m-val">${f3(Vc)}</div><div class="m-sub">kN</div></div>
+      <div class="metric"><div class="m-label">φVc</div><div class="m-val">${f3(phiVc)}</div><div class="m-sub">kN</div></div>
+      <div class="metric"><div class="m-label">Status</div><div class="m-val" style="font-size:1rem;padding-top:4px">${pGeser ? badgeFail('Perlu Sengkang') : badgeOk('Beton Cukup')}</div></div>
+      <div class="metric"><div class="m-label">s maks</div><div class="m-val">${f1(s_max)}</div><div class="m-sub">mm</div></div>
+    </div>
+    ${tbl(
+      row('d efektif geser', f1(dv), 'mm') +
+      row('Av (2P' + P + ')', f2(Av), 'mm²') +
+      (pGeser ? row('s perlu', f1(s_p), 'mm') : '') +
+      row('s dipakai', `<strong>${s_final} mm</strong>`)
+    )}
+    <div class="tul-result">
+      <div><div class="tr-label">Sengkang</div><div class="tr-value">2 P${P} – ${s_final}</div></div>
+      <div>${badgeOk('OK')}</div>
+    </div>`;
+
+  document.getElementById('res-balok-body').innerHTML = html;
+  const el = document.getElementById('res-balok');
+  el.classList.add('show');
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ══════════════ PLAT ══════════════ */
+function hitungPlat() {
+  const fc = v('p_fc'), fy = v('p_fy');
+  const Lx = v('p_lx'), Ly = v('p_ly');
+  const h = v('p_h'), dia = v('p_dia'), ts = v('p_ts');
+  const Qfin = v('p_fin'), Qplafon = v('p_plafon'), Qme = v('p_me'), QL = v('p_ql');
+  const PI = Math.PI;
+
+  const ratio = Ly / Lx;
+  const TABEL = [
+    {r:1.0,clx:36,cly:36,ctx:76,cty:76},{r:1.1,clx:40,cly:32,ctx:84,cty:69},
+    {r:1.2,clx:44,cly:27,ctx:92,cty:63},{r:1.3,clx:48,cly:23,ctx:100,cty:57},
+    {r:1.4,clx:50,cly:19,ctx:107,cty:51},{r:1.5,clx:53,cly:16,ctx:114,cty:46},
+    {r:1.6,clx:55,cly:14,ctx:120,cty:41},{r:1.7,clx:57,cly:12,ctx:125,cty:36},
+    {r:1.8,clx:59,cly:10,ctx:130,cty:32},{r:1.9,clx:61,cly:9,ctx:133,cty:28},
+    {r:2.0,clx:62,cly:8,ctx:136,cty:25}
+  ];
+
+  let coef = ratio >= 2.0 ? TABEL[TABEL.length-1] : TABEL[0];
+  for (let i = 0; i < TABEL.length - 1; i++) {
+    if (ratio >= TABEL[i].r && ratio < TABEL[i+1].r) {
+      const t = (ratio - TABEL[i].r) / 0.1;
+      coef = {
+        r: ratio,
+        clx: TABEL[i].clx + t*(TABEL[i+1].clx-TABEL[i].clx),
+        cly: TABEL[i].cly + t*(TABEL[i+1].cly-TABEL[i].cly),
+        ctx: TABEL[i].ctx + t*(TABEL[i+1].ctx-TABEL[i].ctx),
+        cty: TABEL[i].cty + t*(TABEL[i+1].cty-TABEL[i].cty),
+      };
+      break;
+    }
+  }
+
+  const QD_sw = 24 * (h / 1000);
+  const QD = QD_sw + Qfin + Qplafon + Qme;
+  const Qu = 1.2 * QD + 1.6 * QL;
+  const Mulx = coef.clx * 0.001 * Qu * Lx * Lx;
+  const Muly = coef.cly * 0.001 * Qu * Lx * Lx;
+  const Mutx = coef.ctx * 0.001 * Qu * Lx * Lx;
+  const Muty = coef.cty * 0.001 * Qu * Lx * Lx;
+  const Mu_max = Math.max(Mulx, Muly, Mutx, Muty);
+
+  const phi = 0.8;
+  const b1 = fc <= 30 ? 0.85 : Math.max(0.65, 0.85 - 0.05*(fc-30)/7);
+  const ds = ts + dia / 2;
+  const d = h - ds;
+  const b = 1000;
+  const Mn = Mu_max / phi;
+  const Rn = Mn * 1e6 / (b * d * d);
+  const rb = b1 * 0.85 * fc / fy * 600 / (600 + fy);
+  const Rmax = 0.75 * rb * fy * (1 - 0.5 * 0.75 * rb * fy / (0.85 * fc));
+  const cek = Rn < Rmax;
+  const r_hit = 0.85 * fc / fy * (1 - Math.sqrt(Math.max(0, 1 - 2 * Rn / (0.85 * fc))));
+  const rmin = 1.4 / fy;
+  const r = Math.max(r_hit, rmin);
+  const As = r * b * d;
+  const s_p = PI / 4 * dia * dia * b / As;
+  const s_max = Math.min(2 * h, 200);
+  const s_ambil = Math.floor(Math.min(s_p, s_max) / 5) * 5;
+  const As_pak = PI / 4 * dia * dia * b / s_ambil;
+  const jenis = ratio >= 2.0 ? 'Satu Arah' : 'Dua Arah (Two-Way Slab)';
+
+  const muRows = `
+    <tr><td>Lap. arah x — Clx = ${f1(coef.clx)}</td><td>${f4(Mulx)} <span style="font-size:.68rem;color:var(--muted2)">kNm/m</span></td></tr>
+    <tr><td>Lap. arah y — Cly = ${f1(coef.cly)}</td><td>${f4(Muly)} <span style="font-size:.68rem;color:var(--muted2)">kNm/m</span></td></tr>
+    <tr><td>Tump. arah x — Ctx = ${f1(coef.ctx)}</td><td>${f4(Mutx)} <span style="font-size:.68rem;color:var(--muted2)">kNm/m</span></td></tr>
+    <tr><td>Tump. arah y — Cty = ${f1(coef.cty)}</td><td>${f4(Muty)} <span style="font-size:.68rem;color:var(--muted2)">kNm/m</span></td></tr>`;
+
+  const html = `
+    <div class="metric-row">
+      <div class="metric accent"><div class="m-label">Ly / Lx</div><div class="m-val">${f2(ratio)}</div><div class="m-sub">${jenis}</div></div>
+      <div class="metric"><div class="m-label">QD total</div><div class="m-val">${f3(QD)}</div><div class="m-sub">kN/m²</div></div>
+      <div class="metric"><div class="m-label">Qu terfaktor</div><div class="m-val">${f3(Qu)}</div><div class="m-sub">kN/m²</div></div>
+      <div class="metric accent"><div class="m-label">Mu maks</div><div class="m-val">${f4(Mu_max)}</div><div class="m-sub">kNm/m</div></div>
+    </div>
+
+    <div class="r-sec">Koefisien Momen (Ly/Lx = ${f2(ratio)})</div>
+    <table class="res-tbl">
+      <thead><tr><th>Posisi</th><th style="text-align:right">Mu (kNm/m)</th></tr></thead>
+      <tbody>${muRows}</tbody>
+    </table>
+
+    <div class="r-sec">Penulangan (per meter lebar)</div>
+    <div class="metric-row">
+      <div class="metric"><div class="m-label">ds selimut eff.</div><div class="m-val">${f1(ds)}</div><div class="m-sub">mm</div></div>
+      <div class="metric"><div class="m-label">d efektif</div><div class="m-val">${f1(d)}</div><div class="m-sub">mm</div></div>
+      <div class="metric"><div class="m-label">Rmax</div><div class="m-val">${f4(Rmax)}</div></div>
+      <div class="metric"><div class="m-label">Rn &lt; Rmax?</div><div class="m-val" style="font-size:1rem;padding-top:4px">${cek ? badgeOk('OK') : badgeFail('Cek')}</div></div>
+    </div>
+    ${tbl(
+      row('ρ dihitung', f6(r_hit)) +
+      row('ρ minimum (1.4/fy)', f6(rmin)) +
+      row('ρ dipakai', f6(r)) +
+      row('As perlu', f2(As), 'mm²/m') +
+      row('s perlu', f1(s_p), 'mm') +
+      row('s maks (min 2h, 200)', f1(s_max), 'mm') +
+      row('As terpakai', f2(As_pak), 'mm²/m')
+    )}
+    <div class="tul-result">
+      <div><div class="tr-label">Tulangan dipakai</div><div class="tr-value">Ø${dia} – ${s_ambil}</div></div>
+      <div>${badgeOk('OK')}</div>
+    </div>`;
+
+  document.getElementById('res-plat-body').innerHTML = html;
+  const el = document.getElementById('res-plat');
+  el.classList.add('show');
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+
+<!-- SNI SPLIT PANEL -->
+<div class="sni-split-panel" id="sniPanel">
+  <div class="sni-split-head">
+    <h3>SNI <span>2847:2019</span></h3>
+    <div class="sni-close" onclick="closeSniSplit()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+  </div>
+  <div class="sni-split-body">
+    <iframe src="https://drive.google.com/file/d/105SmFBWoPdQv2rEIFexvz98sd1Kq0VbE/preview" allow="autoplay"></iframe>
+  </div>
+</div>
+
+<script>
+function openSniModal(){
+  document.body.classList.add('sni-split');
+  var h=document.getElementById('sniHint'); if(h) h.style.display='none';
+}
+function closeSniSplit(){
+  document.body.classList.remove('sni-split');
+}
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeSniSplit();
+});
+</script>
+</body>
+</html>
