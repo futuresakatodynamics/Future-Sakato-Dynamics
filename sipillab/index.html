@@ -64,7 +64,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .nav-links a{color:var(--muted);text-decoration:none;font-size:0.85rem;font-weight:600;letter-spacing:0.5px;padding:0.4rem 0.85rem;border-radius:6px;transition:color .2s,background .2s;text-transform:uppercase}
 .nav-links a:hover{color:var(--text);background:rgba(255,255,255,0.05)}
 .nav-links a.active{color:var(--accent)}
-.nav-right{margin-left:auto;display:flex;align-items:center;gap:0.75rem}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:0.75rem;flex-shrink:0}
 .nav-search{background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:0.4rem 0.9rem;color:var(--text);font-family:'Barlow',sans-serif;font-size:0.85rem;width:280px;outline:none;transition:border .2s,background .2s}
 .nav-search::placeholder{color:var(--muted2)}
 .nav-search:focus{border-color:var(--accent);background:rgba(232,184,75,0.06)}
@@ -108,6 +108,49 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .hero-btn-secondary{background:rgba(255,255,255,0.08);color:var(--text);border:1px solid rgba(255,255,255,0.15)}
 .hero-btn-secondary:hover{background:rgba(255,255,255,0.14)}
 .hero-btn svg{width:18px;height:18px;flex-shrink:0}
+
+/* ── HAMBURGER & MOBILE MENU ── */
+.nav-hamburger{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:40px;height:40px;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0;position:relative;z-index:101}
+.nav-hamburger span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .25s}
+.nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-hamburger.open span:nth-child(2){opacity:0}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;z-index:99;background:rgba(10,12,15,0.98);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);flex-direction:column;padding:0.5rem 0 1rem}
+.nav-mobile-menu.open{display:flex}
+.nav-mobile-menu a{padding:0.85rem 2rem;color:var(--muted);text-decoration:none;font-size:0.95rem;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;border-bottom:1px solid rgba(42,48,64,0.4);transition:color .15s,background .15s}
+.nav-mobile-menu a:last-child{border-bottom:none}
+.nav-mobile-menu a:hover,.nav-mobile-menu a.active{color:var(--accent);background:rgba(232,184,75,0.05)}
+
+@media(max-width:768px){
+  .nav-links{display:none !important}
+  .nav-hamburger{display:flex !important}
+  .nav-search{width:140px}
+  .section-header{padding:0 1rem}
+  .cat-grid{padding:0 1rem}
+  .scroll-row{padding:0.5rem 1rem 1.2rem}
+  .featured-row{padding:0 1rem 1.5rem}
+  .stats-strip{margin:0 1rem 2rem;flex-wrap:wrap}
+  .stat-item{flex:1 1 45%;border-right:none;border-bottom:1px solid var(--border)}
+  .stat-item:nth-child(odd){border-right:1px solid var(--border)}
+  footer{padding:2rem 1rem;flex-direction:column;gap:1rem}
+}
+@media(max-width:480px){
+  .nav-search{display:none !important}
+  nav{padding:0 1rem}
+}
+@media(max-width:768px){
+  .hero{height:auto;min-height:100svh;max-height:none;overflow:visible;align-items:flex-start;padding-top:80px}
+  .hero-content{padding:2rem 1.5rem 4rem;max-width:100%}
+  .hero h1{font-size:clamp(2.4rem,10vw,4rem);line-height:0.95}
+  .hero-desc{font-size:0.9rem}
+  .hero-visual{display:none}
+  .hero-bg{overflow:hidden}
+}
+@media(min-width:769px) and (max-width:1024px){
+  .hero-content{padding:0 2.5rem 4rem;max-width:100%}
+  .hero h1{font-size:clamp(3.5rem,7vw,5rem)}
+  .hero-visual{opacity:0.08}
+}
 
 /* ── MAIN ── */
 main{padding-top:1rem;padding-bottom:4rem}
@@ -243,9 +286,50 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 .thumb-icon-label{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.4);text-transform:uppercase}
 
 
+/* ── PROMO BANNER RESPONSIVE ── */
+@media(max-width:768px){
+  .promo-banner{margin:0 1rem 2rem;min-height:auto}
+  .promo-content{flex-direction:column;align-items:flex-start;gap:1.2rem;padding:1.5rem 1.5rem}
+  .promo-text h2{font-size:clamp(1.8rem,8vw,2.4rem)}
+  .promo-text p{font-size:0.82rem;max-width:100%}
+  .promo-btn{width:100%;text-align:center;padding:0.75rem 1rem}
+}
+
 /* ── MOBILE-ONLY ELEMENTS: hidden by default, shown via media query ── */
 #mob-ads-overlay{display:none}
 #mob-ads-fab{display:none}
+
+/* ── AUTO-SCROLL ROWS ── */
+.scroll-row-wrap,.featured-row-wrap{overflow:hidden;position:relative}
+.scroll-row-inner,.featured-row-inner{display:flex;gap:1rem;width:max-content;animation:scrollLeft 30s linear infinite}
+.scroll-row-inner:hover,.featured-row-inner:hover{animation-play-state:paused}
+@keyframes scrollLeft{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+
+/* ── CARD CLICK POP-UP ── */
+.card:active,.rumus-card:active,.feat-card:active,.cat-card:active{
+  transform:translateY(-10px) scale(1.04) !important;
+  box-shadow:0 24px 50px rgba(0,0,0,0.6) !important;
+  transition:transform .12s,box-shadow .12s !important;
+  z-index:10;
+}
+
+/* ── STAT ITEM CLICKABLE ── */
+.stat-item[onclick]:hover{background:var(--card2);transition:background .2s}
+.stat-item[onclick]:hover .stat-num{color:var(--accent2)}
+
+/* ── STATS ANIMATE ── */
+.stat-animate{
+  opacity:0;
+  transform:translateY(32px);
+  transition:opacity .55s ease, transform .55s ease;
+}
+.stat-animate.in-view{
+  opacity:1;
+  transform:translateY(0);
+}
 </style>
 </head>
 <body>
@@ -325,9 +409,20 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
   </div>
   <div class="nav-right">
     <input class="nav-search" type="text" id="navSearch" placeholder="Cari topik, rumus..." autocomplete="off">
+    <button class="nav-hamburger" id="navHamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
-
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <a href="https://fusakostudio.com/">Beranda</a>
+  <a href="404.html">Rumus</a>
+  <a href="404.html">Material</a>
+  <a href="404.html">Struktur</a>
+  <a href="404.html">Geoteknik</a>
+  <a href="404.html">Hidro</a>
+  <a href="kalkulatorvolume/">Kalkulator</a>
+</div>
 <!-- ── HERO ── -->
 <section class="hero">
   <div class="hero-img">
@@ -410,11 +505,11 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 <main>
 
 <!-- ── STATS ── -->
-<div class="stats-strip">
-  <div class="stat-item"><div class="stat-num">240+</div><div class="stat-label">Rumus & Formula</div></div>
-  <div class="stat-item"><div class="stat-num">18</div><div class="stat-label">Kategori Topik</div></div>
-  <div class="stat-item"><div class="stat-num">50+</div><div class="stat-label">Referensi SNI</div></div>
-  <div class="stat-item"><div class="stat-num">12</div><div class="stat-label">Kalkulator Interaktif</div></div>
+<div class="stats-strip" id="statsStrip">
+  <div class="stat-item stat-animate"><div class="stat-num" data-target="240" data-suffix="+">0</div><div class="stat-label">Rumus & Formula</div></div>
+  <div class="stat-item stat-animate"><div class="stat-num" data-target="18" data-suffix="">0</div><div class="stat-label">Kategori Topik</div></div>
+  <div class="stat-item stat-animate" onclick="location.href='berandasni/'" style="cursor:pointer" title="Lihat Referensi SNI"><div class="stat-num" data-target="50" data-suffix="+">0</div><div class="stat-label">Referensi SNI</div></div>
+  <div class="stat-item stat-animate" onclick="location.href='kalkulatorvolume/'" style="cursor:pointer" title="Lihat Kalkulator Interaktif"><div class="stat-num" data-target="12" data-suffix="">0</div><div class="stat-label">Kalkulator Interaktif</div></div>
 </div>
 
 <!-- ── KATEGORI UTAMA ── -->
@@ -935,11 +1030,106 @@ searchInput.addEventListener('input', e => renderResults(e.target.value));
 searchInput.addEventListener('keydown', e => { if(e.key==='Escape') closeSearch(); });
 overlay.addEventListener('click', e => { if(e.target===overlay) closeSearch(); });
 
+// ── HAMBURGER MENU ──
+const hamburger = document.getElementById('navHamburger');
+const mobileMenu = document.getElementById('navMobileMenu');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+});
+mobileMenu.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+  });
+});
+
 document.addEventListener('keydown', e => {
   if(e.key==='/' && document.activeElement !== searchInput){
     e.preventDefault(); searchInput.focus();
   }
 });
+
+// ── AUTO-SCROLL INFINITE MARQUEE (selang-seling arah) ──
+(function(){
+  const s = document.createElement('style');
+  s.textContent = '@keyframes scrollLeft{0%{transform:translateX(0)}100%{transform:translateX(-50%)}} @keyframes scrollRight{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}';
+  document.head.appendChild(s);
+
+  const rows = document.querySelectorAll('.scroll-row, .featured-row');
+  rows.forEach((row, rowIndex) => {
+    const isScroll = row.classList.contains('scroll-row');
+    const dir = rowIndex % 2 === 0 ? 'scrollLeft' : 'scrollRight';
+    const computedPad = isScroll ? '0.5rem 0 1.2rem' : '0 0 1.5rem';
+
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'overflow:hidden;position:relative;padding:' + computedPad;
+    row.parentNode.insertBefore(wrap, row);
+
+    const inner = document.createElement('div');
+    inner.style.cssText = 'display:flex;gap:1rem;width:max-content;animation:' + dir + ' 30s linear infinite';
+
+    const original = document.createElement('div');
+    original.style.cssText = 'display:flex;gap:1rem';
+    const clone = document.createElement('div');
+    clone.style.cssText = 'display:flex;gap:1rem';
+    clone.setAttribute('aria-hidden','true');
+
+    Array.from(row.children).forEach(c => {
+      original.appendChild(c.cloneNode(true));
+      clone.appendChild(c.cloneNode(true));
+    });
+
+    inner.appendChild(original);
+    inner.appendChild(clone);
+    wrap.appendChild(inner);
+    row.parentNode.removeChild(row);
+
+    inner.addEventListener('mouseenter', () => inner.style.animationPlayState = 'paused');
+    inner.addEventListener('mouseleave', () => inner.style.animationPlayState = 'running');
+  });
+})();
+
+
+// ── STATS: slide-up + count-up (ulang tiap masuk viewport) ──
+(function(){
+  const strip = document.getElementById('statsStrip');
+  if(!strip) return;
+  const items = strip.querySelectorAll('.stat-animate');
+  const nums  = strip.querySelectorAll('.stat-num[data-target]');
+  let rafIds = [];
+  let tIds = [];
+
+  function countUp(el){
+    const target = parseInt(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const duration = 900;
+    const start = performance.now();
+    function step(now){
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      el.textContent = Math.floor(eased * target) + suffix;
+      if(progress < 1){ const id = requestAnimationFrame(step); rafIds.push(id); }
+    }
+    const id = requestAnimationFrame(step); rafIds.push(id);
+  }
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        rafIds.forEach(id => cancelAnimationFrame(id)); rafIds = [];
+        tIds.forEach(id => clearTimeout(id)); tIds = [];
+        items.forEach(item => item.classList.remove('in-view'));
+        nums.forEach(num => { num.textContent = '0'; });
+        items.forEach((item, i) => { tIds.push(setTimeout(() => item.classList.add('in-view'), i * 100)); });
+        nums.forEach((num, i) => { tIds.push(setTimeout(() => countUp(num), i * 100 + 150)); });
+      }
+    });
+  }, { threshold: 0, rootMargin: '0px 0px -60px 0px' });
+
+  obs.observe(strip);
+})();
+
 </script>
 
 </body>
