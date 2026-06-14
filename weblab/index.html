@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebLab — Studio Digital Profesional</title>
+<style>
+  :root {
+    --bg: #050508;
+    --card: #0f0f1e;
+    --accent1: #7c3aff;
+    --accent2: #00d4ff;
+    --accent3: #ff2d78;
+    --accent4: #ff8c00;
+    --text: #e8e8ff;
+    --muted: #6b6b9a;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;overflow-x:hidden}
+  .cursor{position:fixed;width:12px;height:12px;border-radius:50%;background:var(--accent2);mix-blend-mode:screen;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width 0.2s,height 0.2s;opacity:0.9}
+  .cursor-ring{position:fixed;width:36px;height:36px;border-radius:50%;border:1px solid rgba(124,58,255,0.5);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width 0.3s,height 0.3s}
+  #bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1.4rem 5rem;transition:background 0.4s,padding 0.4s}
+  nav.scrolled{background:rgba(5,5,8,0.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(124,58,255,0.15);padding:1rem 5rem}
+  .logo{font-weight:900;font-size:1.4rem;letter-spacing:4px;background:linear-gradient(90deg,#fff,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none;text-transform:uppercase}
+  nav ul{display:flex;gap:3rem;list-style:none}
+  nav ul a{color:rgba(255,255,255,0.5);text-decoration:none;font-size:0.8rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:color 0.3s}
+  nav ul a:hover{color:#fff}
+  .nav-cta{padding:0.55rem 1.5rem;border:1px solid rgba(255,255,255,0.3);border-radius:2px;color:#fff;text-decoration:none;font-size:0.78rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;transition:all 0.3s;background:transparent;font-family:Arial,Helvetica,sans-serif;cursor:pointer}
+  .nav-cta:hover{background:#fff;color:#000}
+
+  .hero{position:relative;z-index:10;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+  .hero-text-top{position:absolute;top:14vh;left:0;right:0;text-align:center;z-index:20;animation:fadeInDown 1s 0.3s ease forwards;opacity:0}
+  .hero-eyebrow{font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.8rem;font-weight:600}
+  .hero-title{font-size:clamp(3.5rem,7vw,6.5rem);font-weight:900;letter-spacing:-3px;line-height:1;color:#fff;text-transform:uppercase}
+  .hero-title span{color:transparent;-webkit-text-stroke:1px rgba(255,255,255,0.35)}
+  .hero-sub{margin-top:1rem;font-size:0.85rem;color:rgba(255,255,255,0.35);letter-spacing:1.5px}
+  .laptop-scene{position:relative;z-index:15;width:min(1200px,95vw);margin-top:2vh;filter:drop-shadow(0 40px 80px rgba(124,58,255,0.2));animation:fadeInUp 1.2s 0.6s ease forwards;opacity:0}
+  .laptop-float{animation:laptopFloat 5s ease-in-out infinite}
+  @keyframes laptopFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  .hero-btns-bottom{position:absolute;bottom:10vh;left:0;right:0;display:flex;gap:1.5rem;justify-content:center;z-index:20;animation:fadeInUp 1s 1.4s ease forwards;opacity:0}
+  .btn-primary{padding:0.85rem 2.2rem;background:#fff;color:#000;font-weight:700;font-size:0.82rem;letter-spacing:1.5px;text-decoration:none;text-transform:uppercase;transition:all 0.3s;border:none;cursor:pointer;font-family:Arial,Helvetica,sans-serif;border-radius:2px}
+  .btn-primary:hover{background:rgba(255,255,255,0.85);transform:translateY(-2px)}
+  .btn-outline{padding:0.85rem 2.2rem;background:rgba(255,255,255,0.07);color:#fff;font-weight:700;font-size:0.82rem;letter-spacing:1.5px;text-decoration:none;text-transform:uppercase;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);transition:all 0.3s;cursor:pointer;font-family:Arial,Helvetica,sans-serif;border-radius:2px}
+  .btn-outline:hover{background:rgba(255,255,255,0.14);transform:translateY(-2px)}
+  .scroll-indicator{position:absolute;bottom:4vh;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:0.4rem;color:rgba(255,255,255,0.28);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;animation:fadeInUp 1s 1.8s ease forwards;opacity:0;z-index:20}
+  .scroll-line{width:1px;height:36px;background:linear-gradient(180deg,rgba(255,255,255,0.4),transparent);animation:scrollDrop 2s ease-in-out infinite}
+  @keyframes scrollDrop{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+  /* SECTION 2 */
+  .ah-header{text-align:center;margin-bottom:3rem}
+  .section-tag{display:inline-block;font-size:0.68rem;letter-spacing:3.5px;text-transform:uppercase;color:var(--accent2);margin-bottom:0.8rem;font-weight:700}
+  .ah-header h2{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:900;color:#fff;letter-spacing:-1px;text-transform:uppercase;line-height:1.05}
+  .ah-header h2 em{font-style:normal;color:var(--accent2)}
+  .ah-header p{color:var(--muted);font-size:0.88rem;max-width:480px;margin:0.8rem auto 0;line-height:1.7}
+
+  .screen-frame-wrap{max-width:1100px;margin:0 auto}
+  #alur-harga{position:relative;z-index:10;padding:7rem 2rem 8rem;background:linear-gradient(180deg,transparent,rgba(124,58,255,0.03),transparent)}
+
+  /* DECK STACK */
+  .deck-wrap{max-width:800px;margin:0 auto;position:relative;height:600px;padding-right:48px;padding-bottom:18px;cursor:pointer}
+  .deck-hint{text-align:center;margin-bottom:1.4rem;color:var(--accent2);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;opacity:0.7;display:flex;align-items:center;justify-content:center;gap:0.5rem}
+  .deck-hint::before,.deck-hint::after{content:'';flex:1;height:1px;background:rgba(0,212,255,0.2)}
+  /* kartu: tidak pakai inset — pakai top/left/right/bottom manual */
+  .deck-card{position:absolute;border-radius:10px;overflow:hidden;transition:transform 0.5s cubic-bezier(0.34,1.1,0.64,1),top 0.5s,left 0.5s,right 0.5s,box-shadow 0.4s,opacity 0.4s}
+  /* FRONT: rata kiri-atas, full lebar minus offset kanan */
+  .deck-card.front{top:0;left:0;right:48px;bottom:18px;z-index:2;transform:perspective(1200px) rotateY(-5deg);box-shadow:0 20px 70px rgba(0,0,0,0.6),0 0 50px rgba(124,58,255,0.2);opacity:1;pointer-events:auto}
+  /* BACK: geser kanan+bawah supaya ngintip */
+  .deck-card.back{top:18px;left:48px;right:0;bottom:0;z-index:1;transform:perspective(1200px) rotateY(5deg);box-shadow:0 8px 30px rgba(0,0,0,0.4);opacity:0.65;pointer-events:auto}
+  .deck-card.back:hover{opacity:0.85;top:14px;left:42px}
+  .deck-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1rem}
+  .deck-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);border:1px solid rgba(124,58,255,0.3);transition:all 0.3s;cursor:pointer}
+  .deck-dot.active{background:var(--accent2);border-color:var(--accent2);box-shadow:0 0 8px rgba(0,212,255,0.6)}
+  .deck-swap-btn{background:rgba(124,58,255,0.12);border:1px solid rgba(124,58,255,0.3);color:var(--accent2);font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:0.45rem 1.2rem;border-radius:20px;cursor:pointer;transition:all 0.3s;font-family:Arial,Helvetica,sans-serif}
+  .deck-swap-btn:hover{background:rgba(124,58,255,0.25);border-color:var(--accent2)}
+  .screen-frame{border-radius:10px;overflow:hidden;border:1.5px solid rgba(124,58,255,0.3);box-shadow:0 0 60px rgba(124,58,255,0.12),0 0 120px rgba(0,212,255,0.06);background:#06081c;display:flex;flex-direction:column;min-height:520px}
+  .sf-rainbow{height:2px;background:linear-gradient(90deg,#7c3aff,#00d4ff,#ff2d78);flex-shrink:0}
+  .sf-topbar{height:36px;background:#0c0e26;display:flex;align-items:center;padding:0 14px;gap:7px;flex-shrink:0;border-bottom:1px solid rgba(124,58,255,0.2)}
+  .sf-dot{width:10px;height:10px;border-radius:50%}
+  .sf-dot.r{background:#ff5f56}.sf-dot.y{background:#ffbd2e}.sf-dot.g{background:#27c93f}
+  .sf-url{flex:1;text-align:center;font-size:11px;font-family:monospace;color:rgba(255,255,255,0.3)}
+  .sf-split{flex:1;display:grid;grid-template-columns:1fr 1fr}
+  .sf-pane{padding:28px 26px;overflow-y:auto;cursor:pointer;transition:background 0.25s;position:relative}
+  .sf-pane:hover{background:rgba(124,58,255,0.04)}
+  .sf-pane-left{border-right:1px solid rgba(124,58,255,0.15)}
+  .sf-pane-label{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent2);margin-bottom:16px}
+  .sf-click-hint{font-size:9px;color:var(--accent2);letter-spacing:1px;text-transform:uppercase;opacity:0.5;margin-top:14px}
+  .sf-step{display:flex;gap:10px;align-items:flex-start;margin-bottom:16px;position:relative}
+  .sf-step-vline{position:absolute;left:13px;top:27px;bottom:-16px;width:1px;background:rgba(124,58,255,0.22)}
+  .sf-step:last-child .sf-step-vline{display:none}
+  .sf-num{width:26px;height:26px;border-radius:50%;border:1px solid rgba(124,58,255,0.5);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--accent1);flex-shrink:0;background:#0a0a1e}
+  .sf-stitle{font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.5px}
+  .sf-sdesc{font-size:10px;color:var(--muted);line-height:1.6;margin-top:3px}
+  .sf-pkg{background:rgba(255,255,255,0.025);border:1px solid rgba(124,58,255,0.18);border-radius:8px;padding:12px 13px;margin-bottom:10px;position:relative;overflow:hidden}
+  .sf-pkg::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .sf-pkg.p1::before{background:linear-gradient(90deg,#7c3aff,#00d4ff)}
+  .sf-pkg.p2::before{background:linear-gradient(90deg,#00d4ff,#ff8c00)}
+  .sf-pkg.p3::before{background:linear-gradient(90deg,#ff2d78,#ff8c00)}
+  .sf-pkg.p3{border-color:rgba(255,45,120,0.3);background:rgba(255,45,120,0.04)}
+  .sf-badge{position:absolute;top:9px;right:10px;font-size:7px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:20px;background:rgba(255,45,120,0.15);color:#ff2d78;border:1px solid rgba(255,45,120,0.3)}
+  .sf-plabel{font-size:7px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent2);margin-bottom:3px}
+  .sf-pname{font-size:11px;font-weight:700;color:#fff;margin-bottom:5px}
+  .sf-price-row{display:flex;align-items:baseline;gap:5px;margin-bottom:4px}
+  .sf-old{font-size:9px;color:var(--muted);text-decoration:line-through}
+  .sf-price{font-size:16px;font-weight:900;color:#fff}
+  .sf-price sup{font-size:8px;font-weight:700;vertical-align:super}
+  .sf-period{font-size:8px;color:var(--muted)}
+  .sf-feats{list-style:none;margin-top:5px}
+  .sf-feats li{font-size:9px;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:5px;margin-bottom:3px}
+  .sf-feats li::before{content:'checkmark';color:var(--accent1);font-size:10px;flex-shrink:0}
+  .sf-pkg.p3 .sf-feats li::before{color:#ff2d78}
+
+  /* POPUP */
+  .popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(8px)}
+  .popup-overlay.open{opacity:1;pointer-events:all}
+  .popup-box{background:#0d0d22;border:1px solid rgba(124,58,255,0.3);border-radius:16px;padding:2.5rem;max-width:650px;width:90vw;max-height:85vh;overflow-y:auto;position:relative;transform:translateY(30px);transition:transform 0.3s;scrollbar-width:thin;scrollbar-color:var(--accent1) transparent}
+  .popup-overlay.open .popup-box{transform:translateY(0)}
+  .popup-close{position:absolute;top:1.2rem;right:1.4rem;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:1rem;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s}
+  .popup-close:hover{background:rgba(255,255,255,0.15)}
+  .popup-eyebrow{font-size:0.62rem;letter-spacing:3px;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:0.6rem}
+  .popup-h2{font-size:clamp(1.4rem,3vw,2rem);font-weight:900;color:#fff;letter-spacing:-0.5px;text-transform:uppercase;margin-bottom:1.8rem}
+  .pop-step{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.4rem;position:relative}
+  .pop-step-vline{position:absolute;left:16px;top:34px;bottom:-1.4rem;width:1px;background:rgba(124,58,255,0.25)}
+  .pop-step:last-child .pop-step-vline{display:none}
+  .pop-num{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(124,58,255,0.6);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:var(--accent1);flex-shrink:0;background:#0a0a1e}
+  .pop-stitle{font-size:0.88rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:0.25rem}
+  .pop-sdesc{font-size:0.82rem;color:var(--muted);line-height:1.65}
+  .pop-pkg{background:rgba(255,255,255,0.025);border:1px solid rgba(124,58,255,0.2);border-radius:10px;padding:1.2rem 1.4rem;margin-bottom:1rem;position:relative;overflow:hidden}
+  .pop-pkg::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .pop-pkg.p1::before{background:linear-gradient(90deg,#7c3aff,#00d4ff)}
+  .pop-pkg.p2::before{background:linear-gradient(90deg,#00d4ff,#ff8c00)}
+  .pop-pkg.p3::before{background:linear-gradient(90deg,#ff2d78,#ff8c00)}
+  .pop-pkg.p3{border-color:rgba(255,45,120,0.3);background:rgba(255,45,120,0.04)}
+  .pop-badge{position:absolute;top:1rem;right:1rem;font-size:0.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(255,45,120,0.15);color:#ff2d78;border:1px solid rgba(255,45,120,0.3)}
+  .pop-plabel{font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent2);margin-bottom:4px}
+  .pop-pname{font-size:1rem;font-weight:700;color:#fff;margin-bottom:6px}
+  .pop-price-row{display:flex;align-items:baseline;gap:5px;margin-bottom:6px}
+  .pop-old{font-size:0.78rem;color:var(--muted);text-decoration:line-through}
+  .pop-price{font-size:1.5rem;font-weight:900;color:#fff}
+  .pop-price sup{font-size:0.7rem;font-weight:700;vertical-align:super}
+  .pop-period{font-size:0.72rem;color:var(--muted)}
+  .pop-feats{list-style:none;margin-top:4px}
+  .pop-feats li{font-size:0.8rem;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:6px;margin-bottom:5px}
+  .pop-feats li::before{content:'✓';color:var(--accent1);font-size:0.85rem;flex-shrink:0}
+  .pop-pkg.p3 .pop-feats li::before{color:#ff2d78}
+
+  /* SERVICES */
+  #services{position:relative;z-index:10;padding:6rem 2rem 8rem}
+  .monitor-section-header{text-align:center;margin-bottom:3.5rem}
+  .monitor-section-header h2{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:900;color:#fff;letter-spacing:-1px;text-transform:uppercase;line-height:1.05}
+  .monitor-section-header h2 em{font-style:normal;color:var(--accent2)}
+  .monitor-section-header p{color:var(--muted);font-size:0.88rem;max-width:480px;margin:0.8rem auto 0;line-height:1.7}
+  .monitor-screen-only{max-width:1080px;margin:0 auto;border-radius:10px;overflow:hidden;border:1.5px solid rgba(124,58,255,0.25);box-shadow:0 0 60px rgba(124,58,255,0.1),0 0 120px rgba(0,212,255,0.05);background:#06081c;display:flex;flex-direction:column;min-height:420px}
+  .os-bar{height:32px;background:#0c0e26;display:flex;align-items:center;padding:0 14px;gap:7px;border-bottom:1px solid rgba(124,58,255,0.18);flex-shrink:0}
+  .os-dot{width:9px;height:9px;border-radius:50%}
+  .os-dot.r{background:#ff5f56}.os-dot.y{background:#ffbd2e}.os-dot.g{background:#27c93f}
+  .os-url{flex:1;text-align:center}
+  .os-urlbar{background:rgba(255,255,255,0.07);border-radius:3px;padding:3px 14px;font-size:10px;color:rgba(255,255,255,0.3);font-family:monospace;display:inline-block}
+  .screen-inner{flex:1;overflow-y:auto;padding:24px;scrollbar-width:thin;scrollbar-color:var(--accent1) transparent}
+  .screen-services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .screen-card{background:rgba(255,255,255,0.035);border:1px solid rgba(124,58,255,0.18);border-radius:8px;padding:18px 16px;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden}
+  .screen-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--c1,#7c3aff),var(--c2,#00d4ff));transform:scaleX(0);transform-origin:left;transition:transform 0.3s}
+  .screen-card:hover{background:rgba(124,58,255,0.07);border-color:rgba(124,58,255,0.38);transform:translateY(-2px)}
+  .screen-card:hover::after{transform:scaleX(1)}
+  .sc-icon{font-size:1.4rem;margin-bottom:9px;display:block}
+  .sc-title{font-size:0.74rem;font-weight:700;color:#fff;letter-spacing:0.5px;margin-bottom:5px;text-transform:uppercase}
+  .sc-desc{font-size:0.67rem;color:var(--muted);line-height:1.58}
+  .sc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+  .sc-tag{font-size:0.58rem;padding:2px 7px;border-radius:20px;background:rgba(124,58,255,0.1);color:var(--accent1);border:1px solid rgba(124,58,255,0.22);font-weight:700;letter-spacing:0.3px;text-transform:uppercase}
+
+  .stats-section{position:relative;z-index:10;padding:5rem 4rem;border-top:1px solid rgba(124,58,255,0.1);border-bottom:1px solid rgba(0,212,255,0.07)}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;max-width:860px;margin:0 auto;text-align:center}
+  .stat-number{font-size:3rem;font-weight:900;background:linear-gradient(135deg,#fff,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+  .stat-label{color:var(--muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:2.5px;margin-top:0.35rem}
+
+  #work{position:relative;z-index:10;padding:8rem 4rem}
+  .work-header{text-align:center;margin-bottom:4rem}
+  .work-header h2{font-size:clamp(2rem,4vw,3rem);font-weight:900;color:#fff;letter-spacing:-1px;text-transform:uppercase}
+  .work-header h2 em{font-style:normal;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,0.32)}
+  .portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1200px;margin:0 auto}
+  .portfolio-card{border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,0.05);background:var(--card);position:relative;cursor:pointer;transition:transform 0.4s,box-shadow 0.4s;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center}
+  .portfolio-card:hover{transform:scale(1.03) translateY(-6px);box-shadow:0 30px 60px rgba(0,0,0,0.5),0 0 30px var(--pc,rgba(124,58,255,0.2))}
+  .portfolio-visual{width:100%;height:100%;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3.5rem}
+  .portfolio-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,0.96));display:flex;flex-direction:column;justify-content:flex-end;padding:1.5rem;opacity:0;transition:opacity 0.3s}
+  .portfolio-card:hover .portfolio-overlay{opacity:1}
+  .portfolio-overlay h4{font-size:0.88rem;font-weight:700;margin-bottom:0.25rem;text-transform:uppercase;letter-spacing:1px}
+  .portfolio-overlay p{font-size:0.73rem;color:var(--muted)}
+  .bg-grad-1{background:linear-gradient(135deg,#12004a,#030330,#001840)}
+  .bg-grad-2{background:linear-gradient(135deg,#3a0010,#180030,#001030)}
+  .bg-grad-3{background:linear-gradient(135deg,#001830,#00083a,#001200)}
+  .bg-grad-4{background:linear-gradient(135deg,#380018,#360000,#0c0038)}
+  .bg-grad-5{background:linear-gradient(135deg,#001638,#000e38,#000036)}
+  .bg-grad-6{background:linear-gradient(135deg,#080038,#1c0038,#380018)}
+
+  #contact{position:relative;z-index:10;padding:10rem 2rem;text-align:center;overflow:hidden;width:100%;min-height:60vh;display:flex;align-items:center;justify-content:center}
+  .cta-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(124,58,255,0.07) 0%,transparent 70%);pointer-events:none}
+  #contact h2{font-size:clamp(2.8rem,6vw,5rem);font-weight:900;color:#fff;letter-spacing:-2px;text-transform:uppercase;line-height:1.05;position:relative}
+  #contact h2 em{font-style:normal;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,0.32)}
+  #contact p{color:var(--muted);font-size:0.92rem;max-width:480px;margin:1.5rem auto 2.5rem;line-height:1.75;position:relative}
+  .cta-btns{display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;position:relative}
+  footer{position:relative;z-index:10;border-top:1px solid rgba(124,58,255,0.12);padding:3rem 5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:rgba(5,5,8,0.95)}
+  footer p{color:var(--muted);font-size:0.78rem}
+  .footer-links{display:flex;gap:2rem}
+  .footer-links a{color:var(--muted);text-decoration:none;font-size:0.78rem;transition:color 0.3s}
+  .footer-links a:hover{color:#fff}
+  @keyframes arrowBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+  @keyframes termBlink{0%,49%{opacity:1}50%,100%{opacity:0.25}}
+  #btn-lanjutkan{animation:termBlink 1.2s ease-in-out infinite}
+  #btn-lanjutkan:hover{opacity:1!important;animation:none;text-shadow:0 0 10px #00ff88;}
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeInDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+  .reveal{opacity:0;transform:translateY(32px);transition:opacity 0.7s ease,transform 0.7s ease}
+  .reveal.visible{opacity:1;transform:translateY(0)}
+  ::-webkit-scrollbar{width:5px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--accent1),var(--accent2));border-radius:3px}
+  /* ── TABLET (≤ 900px) ── */
+  @media(max-width:900px){
+    nav{padding:1rem 2rem}
+    nav.scrolled{padding:0.8rem 2rem}
+    .deck-wrap{height:500px;padding-right:32px;padding-bottom:14px}
+    .deck-card.front{right:32px}
+    .deck-card.back{left:32px}
+    .stats-grid{grid-template-columns:repeat(2,1fr);gap:1.5rem}
+    .portfolio-grid{grid-template-columns:1fr 1fr}
+    #work{padding:5rem 2rem}
+    footer{padding:2.5rem 2rem}
+  }
+
+  /* ── MOBILE (≤ 600px) ── */
+  @media(max-width:600px){
+    /* NAV */
+    nav{padding:0.9rem 1.2rem}
+    nav.scrolled{padding:0.7rem 1.2rem}
+    nav ul{display:none}
+    .logo{font-size:1.1rem;letter-spacing:2px}
+
+    /* HERO — laptop SVG jadi single-column stack di HP */
+    .hero{height:auto;min-height:100svh;padding:80px 0 40px}
+    .laptop-scene{width:100%;margin-top:0}
+    /* SVG laptop: layar dibuat portrait-friendly dengan viewBox lebih compact */
+    .laptop-float{animation:none} /* matikan float di HP supaya tidak memakan ruang */
+
+    /* Loading panel di HP: sembunyikan panel kanan, typing full width */
+    #loading-panel{display:none !important}
+    /* typing area full lebar */
+    .laptop-scene foreignObject > div > div:first-child{
+      border-right:none !important;
+      padding-right:0 !important;
+    }
+
+    /* SECTION 2 overlay */
+    #alur-harga{padding:5rem 1rem 3rem}
+
+    /* DECK — tidak pakai efek perspektif, stack vertikal */
+    .deck-wrap{
+      height:auto;
+      padding-right:0;
+      padding-bottom:0;
+      display:flex;
+      flex-direction:column;
+      gap:1rem;
+      max-width:100%;
+    }
+    .deck-card{
+      position:relative !important;
+      top:auto !important;left:auto !important;right:auto !important;bottom:auto !important;
+      transform:none !important;
+      opacity:1 !important;
+      width:100%;
+      border-radius:8px;
+    }
+    .deck-card.back{display:none} /* HP: tampilkan satu kartu saja, swap dengan tombol */
+    .deck-card.front{display:block}
+    .deck-card.back.show-mobile{display:block}
+
+    /* Screen frame dalam deck */
+    .screen-frame{min-height:auto}
+    .sf-split{grid-template-columns:1fr}
+    .sf-pane-left{border-right:none;border-bottom:1px solid rgba(124,58,255,0.15)}
+    .sf-pane{padding:18px 16px}
+
+    /* CARD 2: template marquee */
+    .monitor-screen-only{min-height:340px}
+    .screen-inner{height:340px !important}
+    .tmpl-marquee-wrap{height:340px}
+
+    /* STATS */
+    .stats-section{padding:3rem 1.5rem}
+    .stats-grid{grid-template-columns:repeat(2,1fr);gap:1.2rem}
+    .stat-number{font-size:2.2rem}
+
+    /* WORK/PORTFOLIO */
+    #work{padding:4rem 1rem}
+    .portfolio-grid{grid-template-columns:1fr}
+
+    /* CTA BUTTONS */
+    .cta-btns{flex-direction:column;align-items:center;gap:0.8rem}
+    .btn-primary,.btn-outline{width:100%;max-width:320px;text-align:center;padding:0.9rem 1.5rem}
+
+    /* KONTAK section */
+    #contact{padding:6rem 1.5rem}
+    #contact h2{font-size:clamp(2rem,10vw,3rem);letter-spacing:-1px}
+
+    /* FOOTER */
+    footer{flex-direction:column;text-align:center;padding:2rem 1.2rem;gap:1rem}
+    .footer-links{gap:1.2rem;flex-wrap:wrap;justify-content:center}
+
+    /* POPUP */
+    .popup-box{padding:1.5rem 1.2rem;max-height:90vh;border-radius:12px}
+    .popup-h2{font-size:1.2rem}
+
+    /* DECK HINT & NAV */
+    .deck-hint{font-size:0.65rem}
+    .deck-nav{margin-top:0.8rem;gap:0.7rem}
+    .deck-swap-btn{font-size:0.65rem;padding:0.4rem 1rem}
+
+    /* SECTION 2 CTA */
+    #alur-harga > div:last-child h2{font-size:clamp(1.8rem,8vw,2.8rem) !important;letter-spacing:-1px !important}
+    #alur-harga > div:last-child p{font-size:0.85rem !important;margin:1rem auto 1.8rem !important}
+
+    /* AH HEADER */
+    .ah-header{margin-bottom:2rem}
+    .ah-header h2{font-size:clamp(1.6rem,7vw,2.4rem)}
+  }
+
+  /* ── VERY SMALL (≤ 380px) ── */
+  @media(max-width:380px){
+    nav{padding:0.8rem 1rem}
+    .logo{font-size:1rem;letter-spacing:1.5px}
+    .stats-grid{grid-template-columns:1fr 1fr;gap:1rem}
+    .stat-number{font-size:1.8rem}
+    .popup-box{padding:1.2rem 1rem}
+    .sf-pane{padding:14px 12px}
+    .sf-stitle{font-size:10px}
+    .sf-sdesc{font-size:9px}
+    .sf-pkg{padding:10px}
+  }
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+<canvas id="bg-canvas"></canvas>
+
+<nav id="main-nav">
+  <a href="#" class="logo">WEBLAB</a>
+  <ul></ul>
+
+</nav>
+
+<section class="hero">
+  <div class="hero-text-top">
+
+  </div>
+  <div class="laptop-scene">
+    
+<svg class="laptop-float" viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+<rect x="40" y="40" width="1120" height="620" rx="12" fill="#06081c" stroke="rgba(124,58,255,0.4)"/>
+<rect x="40" y="40" width="1120" height="32" fill="rgba(0,0,0,0.5)"/>
+<circle cx="65" cy="56" r="5" fill="#ff5f56"/>
+<circle cx="85" cy="56" r="5" fill="#ffbd2e"/>
+<circle cx="105" cy="56" r="5" fill="#27c93f"/>
+
+
+<rect x="70" y="100" width="1060" height="520" fill="#050818"/>
+<foreignObject x="90" y="120" width="1020" height="480">
+<div xmlns="http://www.w3.org/1999/xhtml" style="font-family:monospace;color:#00ff88;font-size:18px;line-height:1.8;height:100%;display:flex;flex-direction:row;overflow:hidden;gap:0">
+
+  <!-- KIRI: typing code -->
+  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid rgba(0,255,136,0.1);padding-right:20px">
+    <pre id="typing-code" style="flex:1;margin:0;white-space:pre-wrap;word-break:break-word;overflow:hidden"></pre>
+    <div id="btn-lanjutkan-wrap" style="display:none;padding:0.6rem 0 0.3rem">
+      <span id="btn-lanjutkan" onclick="openSection2()" style="font-family:monospace;color:#00ff88;font-size:18px;cursor:pointer;display:inline-block;border-bottom:1px solid #00ff88;padding-bottom:2px;user-select:none">// ▶ klik untuk lanjutkan</span>
+    </div>
+  </div>
+
+  <!-- KANAN: loading animation -->
+  <div id="loading-panel" style="width:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:20px;flex-shrink:0">
+    <style>
+      /* Spinner lingkaran */
+      .ld-spinner{position:relative;width:120px;height:120px}
+      .ld-spinner-ring{width:100%;height:100%;border-radius:50%;position:relative}
+      .ld-tick{position:absolute;width:4px;height:10px;background:#00d4ff;border-radius:2px;transform-origin:50% 60px;opacity:0.15;box-shadow:0 0 4px #00d4ff}
+      .ld-tick.active-tick{opacity:1;box-shadow:0 0 8px #00d4ff,0 0 16px rgba(0,212,255,0.4)}
+      /* Bar loading */
+      .ld-bar-wrap{width:200px}
+      .ld-bar-track{width:100%;height:18px;border:1.5px solid rgba(0,212,255,0.4);border-radius:3px;padding:2px;display:flex;gap:3px;box-shadow:0 0 10px rgba(0,212,255,0.1)}
+      .ld-bar-seg{flex:1;border-radius:2px;background:rgba(0,212,255,0.12);transition:background 0.2s,box-shadow 0.2s}
+      .ld-bar-seg.lit{background:#00d4ff;box-shadow:0 0 6px rgba(0,212,255,0.7)}
+      .ld-status{font-size:10px;color:rgba(0,212,255,0.6);letter-spacing:2px;text-transform:uppercase;font-family:monospace;text-align:center;margin-top:4px}
+      .ld-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(0,212,255,0.35);font-family:monospace}
+    </style>
+
+    <div class="ld-label">PROCESSING</div>
+
+    <!-- Lingkaran tick -->
+    <div class="ld-spinner">
+      <div class="ld-spinner-ring" id="ldRing"></div>
+    </div>
+
+    <!-- Bar -->
+    <div class="ld-bar-wrap">
+      <div class="ld-bar-track" id="ldBar"></div>
+      <div class="ld-status" id="ldStatus">LOADING... 0%</div>
+    </div>
+
+    <script>
+    (function(){
+      // Build ticks
+      var ring = document.getElementById('ldRing');
+      var totalTicks = 36;
+      for(var i=0;i<totalTicks;i++){
+        var tick = document.createElement('div');
+        tick.className = 'ld-tick';
+        var angle = (i/totalTicks)*360;
+        tick.style.transform = 'rotate('+angle+'deg) translateX(-50%)';
+        tick.style.left = '50%';
+        tick.style.top = '0';
+        ring.appendChild(tick);
+      }
+
+      // Build bar segments
+      var bar = document.getElementById('ldBar');
+      var totalSegs = 12;
+      for(var j=0;j<totalSegs;j++){
+        var seg = document.createElement('div');
+        seg.className = 'ld-bar-seg';
+        bar.appendChild(seg);
+      }
+
+      var ticks = ring.querySelectorAll('.ld-tick');
+      var segs = bar.querySelectorAll('.ld-bar-seg');
+      var head = 0;
+      var barProgress = 0;
+      var pct = 0;
+      var active = true;
+      var statusEl = document.getElementById('ldStatus');
+
+      // Spinner animation
+      function spinStep(){
+        if(!active) return;
+        ticks.forEach(function(t,idx){
+          var dist = (head - idx + totalTicks) % totalTicks;
+          if(dist < 6){
+            t.classList.add('active-tick');
+            t.style.opacity = (1 - dist/6).toFixed(2);
+          } else {
+            t.classList.remove('active-tick');
+            t.style.opacity = '0.1';
+          }
+        });
+        head = (head + 1) % totalTicks;
+      }
+
+      // Bar animation — sinkron dengan typing progress
+      function updateBar(progress){
+        // progress 0–1
+        var lit = Math.round(progress * totalSegs);
+        segs.forEach(function(s,idx){
+          if(idx < lit){ s.classList.add('lit'); }
+          else { s.classList.remove('lit'); }
+        });
+        var p = Math.round(progress * 100);
+        statusEl.textContent = 'LOADING... ' + p + '%';
+      }
+
+      // Expose to typeCode
+      window.ldSetProgress = function(p){ updateBar(p); };
+      window.ldStop = function(){
+        active = false;
+        ticks.forEach(function(t){ t.style.opacity='0.08'; t.classList.remove('active-tick'); });
+        updateBar(1);
+        statusEl.textContent = 'COMPLETE ✓';
+        statusEl.style.color = 'rgba(0,255,136,0.7)';
+      };
+
+      setInterval(spinStep, 50);
+    })();
+    </script>
+  </div>
+
+</div>
+</foreignObject>
+
+</svg>
+
+  </div>
+</section>
+
+<!-- SECTION 2: DECK STACK — tersembunyi, muncul sebagai overlay -->
+<section id="alur-harga" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(5,5,8,0.97);backdrop-filter:blur(16px);overflow-y:auto;padding:4rem 2rem 5rem">
+
+  <!-- Tombol X untuk tutup -->
+  <button onclick="closeSection2()" style="position:fixed;top:1.4rem;right:1.6rem;z-index:510;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.18);color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;font-family:Arial" onmouseover="this.style.background='rgba(255,255,255,0.16)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">&#10005;</button>
+
+  <div class="deck-hint">&#8592;&nbsp; geser layar untuk berganti &nbsp;&#8594;</div>
+  <div class="deck-wrap reveal" id="deckWrap">
+
+    <!-- CARD 1 (FRONT): Alur Kerja & Harga -->
+    <div class="deck-card front" id="card1" onclick="swapDeck()">
+      <div class="screen-frame" style="height:100%">
+        <div class="sf-rainbow"></div>
+        <div class="sf-topbar">
+          <div class="sf-dot r"></div><div class="sf-dot y"></div><div class="sf-dot g"></div>
+          <div class="sf-url">weblab.id — alur kerja &amp; paket harga</div>
+        </div>
+        <div class="sf-split">
+          <div class="sf-pane sf-pane-left" onclick="event.stopPropagation();openPopup('alurkerja')">
+            <div class="sf-pane-label">Alur Kerja</div>
+            <div class="sf-step"><div class="sf-step-vline"></div><div class="sf-num">1</div><div><div class="sf-stitle">Konsultasi</div><div class="sf-sdesc">Kami pelajari kebutuhan bisnis, target pasar, dan tujuan Anda untuk merancang solusi yang tepat sasaran.</div></div></div>
+            <div class="sf-step"><div class="sf-step-vline"></div><div class="sf-num">2</div><div><div class="sf-stitle">Desain</div><div class="sf-sdesc">Tim kami buat tampilan website modern — Anda lihat dan setujui dulu sebelum dibangun.</div></div></div>
+            <div class="sf-step"><div class="sf-step-vline"></div><div class="sf-num">3</div><div><div class="sf-stitle">Development</div><div class="sf-sdesc">Website dibangun dengan kode berkualitas, dioptimasi kecepatan, dan diuji di semua perangkat.</div></div></div>
+            <div class="sf-step"><div class="sf-num">4</div><div><div class="sf-stitle">Launch &amp; Support</div><div class="sf-sdesc">Website live! Kami dampingi peluncuran dan beri dukungan teknis jangka panjang.</div></div></div>
+            <div class="sf-click-hint">&#8599; Klik untuk detail lengkap</div>
+          </div>
+          <div class="sf-pane" onclick="event.stopPropagation();openPopup('paketharga')">
+            <div class="sf-pane-label">Harga Kami</div>
+            <div class="sf-pkg p1">
+              <div class="sf-plabel">UMKM</div>
+              <div class="sf-pname">Landing Page UMKM</div>
+              <div class="sf-price-row"><span class="sf-old">Rp 1.500.000</span></div>
+              <div class="sf-price-row"><span class="sf-price"><sup>Rp </sup>449.999</span><span class="sf-period">/ tahun pertama</span></div>
+              <ul class="sf-feats"><li>Domain .com + Shared Hosting</li><li>1 halaman, hingga 4 section</li><li>Copywriting Bahasa Indonesia</li><li>Tombol WhatsApp langsung</li><li>Desain responsif HP &amp; desktop</li><li>1x Revisi</li></ul>
+            </div>
+            <div class="sf-click-hint">&#8599; Klik untuk detail lengkap</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 2 (BACK): Layanan Kami -->
+    <div class="deck-card back" id="card2" onclick="swapDeck()">
+      <div class="monitor-screen-only" style="height:100%;min-height:unset">
+        <div class="os-bar">
+          <div class="os-dot r"></div><div class="os-dot y"></div><div class="os-dot g"></div>
+          <div class="os-url"><span class="os-urlbar">weblab.id/layanan</span></div>
+        </div>
+        <div class="screen-inner" style="padding:0;overflow:hidden;position:relative;height:100%">
+          <!-- Marquee scroll: template website naik dari bawah ke atas -->
+          <style>
+            .tmpl-marquee-wrap{width:100%;height:100%;overflow:hidden;position:relative}
+            .tmpl-marquee-wrap::before,.tmpl-marquee-wrap::after{content:'';position:absolute;left:0;right:0;z-index:2;pointer-events:none}
+            .tmpl-marquee-wrap::before{top:0;height:40px;background:linear-gradient(180deg,#06081c,transparent)}
+            .tmpl-marquee-wrap::after{bottom:0;height:60px;background:linear-gradient(0deg,#06081c,transparent)}
+            .tmpl-track{display:flex;flex-direction:column;gap:16px;padding:16px;animation:scrollUp 38s linear infinite}
+            .tmpl-track:hover{animation-play-state:paused}
+            @keyframes scrollUp{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
+            .tmpl-card{border-radius:8px;overflow:hidden;border:1px solid rgba(124,58,255,0.22);background:#09091f;flex-shrink:0;transition:border-color 0.3s,box-shadow 0.3s}
+            .tmpl-card:hover{border-color:rgba(0,212,255,0.5);box-shadow:0 0 20px rgba(0,212,255,0.1)}
+            .tmpl-bar{height:22px;display:flex;align-items:center;padding:0 8px;gap:4px;background:#0c0e26;border-bottom:1px solid rgba(124,58,255,0.15)}
+            .tmpl-dot{width:7px;height:7px;border-radius:50%}
+            .tmpl-url{flex:1;text-align:center;font-size:8px;font-family:monospace;color:rgba(255,255,255,0.25)}
+            .tmpl-label{font-size:7px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:2px 6px;border-radius:2px;display:inline-block;margin-bottom:6px}
+            .tmpl-body{padding:12px 14px}
+            /* Template 1: Restoran */
+            .tmpl-resto .tmpl-hero{background:linear-gradient(135deg,#1a0800,#2d0e00);padding:18px 14px;text-align:center;border-bottom:1px solid rgba(255,140,0,0.15)}
+            .tmpl-resto .tmpl-hero h3{font-size:13px;font-weight:900;color:#fff;letter-spacing:1px;margin-bottom:4px}
+            .tmpl-resto .tmpl-hero p{font-size:9px;color:rgba(255,140,0,0.7)}
+            .tmpl-resto .tmpl-cta{display:inline-block;margin-top:8px;padding:4px 12px;background:#ff8c00;color:#000;font-size:8px;font-weight:700;border-radius:2px;letter-spacing:1px}
+            .tmpl-resto .tmpl-menu{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:10px 0}
+            .tmpl-resto .tmpl-item{background:rgba(255,140,0,0.06);border:1px solid rgba(255,140,0,0.12);border-radius:4px;padding:7px;text-align:center}
+            .tmpl-resto .tmpl-ikon{font-size:16px;margin-bottom:3px}
+            .tmpl-resto .tmpl-iname{font-size:8px;color:#fff;font-weight:700}
+            .tmpl-resto .tmpl-iprice{font-size:7px;color:#ff8c00}
+            /* Template 2: Agency / Jasa */
+            .tmpl-agency .tmpl-hero{background:linear-gradient(135deg,#06001a,#120038);padding:18px 14px;border-bottom:1px solid rgba(124,58,255,0.15);display:flex;gap:10px;align-items:center}
+            .tmpl-agency .tmpl-hero-text h3{font-size:12px;font-weight:900;color:#fff;margin-bottom:3px;text-transform:uppercase}
+            .tmpl-agency .tmpl-hero-text p{font-size:8px;color:rgba(255,255,255,0.4);line-height:1.5}
+            .tmpl-agency .tmpl-badge{font-size:7px;padding:2px 8px;border:1px solid rgba(0,212,255,0.4);border-radius:20px;color:#00d4ff;display:inline-block;margin-top:5px}
+            .tmpl-agency .tmpl-graphic{width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#7c3aff,#00d4ff);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px}
+            .tmpl-agency .tmpl-services-row{display:flex;gap:6px;padding:10px 0}
+            .tmpl-agency .tmpl-svc{flex:1;background:rgba(124,58,255,0.07);border:1px solid rgba(124,58,255,0.18);border-radius:4px;padding:6px 5px;text-align:center}
+            .tmpl-agency .tmpl-svc-ico{font-size:12px;margin-bottom:2px}
+            .tmpl-agency .tmpl-svc-name{font-size:7px;color:#fff;font-weight:700;text-transform:uppercase}
+            /* Template 3: Toko Online */
+            .tmpl-toko .tmpl-hero{background:linear-gradient(135deg,#001a12,#002b1a);padding:14px;border-bottom:1px solid rgba(0,212,100,0.15);display:flex;align-items:center;gap:10px}
+            .tmpl-toko .tmpl-logo-box{width:36px;height:36px;border-radius:6px;background:#00c864;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+            .tmpl-toko .tmpl-hero h3{font-size:11px;font-weight:900;color:#fff}
+            .tmpl-toko .tmpl-hero p{font-size:8px;color:rgba(0,200,100,0.6);margin-top:2px}
+            .tmpl-toko .tmpl-products{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:10px 0}
+            .tmpl-toko .tmpl-prod{background:rgba(0,100,50,0.07);border:1px solid rgba(0,200,100,0.12);border-radius:4px;padding:6px;text-align:center}
+            .tmpl-toko .tmpl-prod-img{font-size:18px;margin-bottom:3px}
+            .tmpl-toko .tmpl-prod-name{font-size:7px;color:#fff;font-weight:700}
+            .tmpl-toko .tmpl-prod-price{font-size:7px;color:#00c864;margin-top:2px}
+            .tmpl-toko .tmpl-prod-btn{margin-top:4px;font-size:6px;padding:2px 6px;background:#00c864;color:#000;border-radius:2px;font-weight:700;display:inline-block}
+            /* Template 4: Klinik / Kesehatan */
+            .tmpl-klinik .tmpl-hero{background:linear-gradient(135deg,#00081a,#001030);padding:16px 14px;border-bottom:1px solid rgba(0,150,255,0.15);text-align:center}
+            .tmpl-klinik .tmpl-hero h3{font-size:12px;font-weight:900;color:#fff;margin-bottom:3px}
+            .tmpl-klinik .tmpl-hero p{font-size:8px;color:rgba(100,180,255,0.6)}
+            .tmpl-klinik .tmpl-services2{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px 0}
+            .tmpl-klinik .tmpl-svc2{background:rgba(0,150,255,0.05);border:1px solid rgba(0,150,255,0.15);border-radius:4px;padding:8px;display:flex;gap:6px;align-items:flex-start}
+            .tmpl-klinik .tmpl-svc2-ico{font-size:14px;flex-shrink:0}
+            .tmpl-klinik .tmpl-svc2-name{font-size:8px;color:#fff;font-weight:700}
+            .tmpl-klinik .tmpl-svc2-desc{font-size:7px;color:rgba(255,255,255,0.35);margin-top:2px;line-height:1.4}
+            /* Template 5: Hotel / Penginapan */
+            .tmpl-hotel .tmpl-hero{background:linear-gradient(135deg,#1a1000,#2a1800);padding:16px 14px;border-bottom:1px solid rgba(255,200,0,0.12);text-align:center}
+            .tmpl-hotel .tmpl-hero h3{font-size:12px;font-weight:900;color:#fff;letter-spacing:2px;margin-bottom:3px;text-transform:uppercase}
+            .tmpl-hotel .tmpl-hero p{font-size:8px;color:rgba(255,200,0,0.55)}
+            .tmpl-hotel .tmpl-rooms{display:flex;gap:6px;padding:10px 0}
+            .tmpl-hotel .tmpl-room{flex:1;background:rgba(255,200,0,0.04);border:1px solid rgba(255,200,0,0.1);border-radius:4px;padding:7px;text-align:center}
+            .tmpl-hotel .tmpl-room-ico{font-size:16px;margin-bottom:3px}
+            .tmpl-hotel .tmpl-room-name{font-size:7px;color:#fff;font-weight:700}
+            .tmpl-hotel .tmpl-room-price{font-size:7px;color:rgba(255,200,0,0.7);margin-top:2px}
+            .tmpl-hotel .tmpl-room-btn{margin-top:4px;font-size:6px;padding:2px 6px;border:1px solid rgba(255,200,0,0.4);color:#ffc800;border-radius:2px;display:inline-block}
+            /* Template 6: Properti */
+            .tmpl-prop .tmpl-hero{background:linear-gradient(135deg,#180028,#0c001e);padding:16px 14px;border-bottom:1px solid rgba(180,0,255,0.15);display:flex;gap:10px;align-items:center}
+            .tmpl-prop .tmpl-hero-ico{font-size:24px;flex-shrink:0}
+            .tmpl-prop .tmpl-hero h3{font-size:11px;font-weight:900;color:#fff;text-transform:uppercase}
+            .tmpl-prop .tmpl-hero p{font-size:8px;color:rgba(200,100,255,0.6);margin-top:2px}
+            .tmpl-prop .tmpl-listings{display:flex;flex-direction:column;gap:6px;padding:10px 0}
+            .tmpl-prop .tmpl-listing{background:rgba(150,0,255,0.05);border:1px solid rgba(150,0,255,0.15);border-radius:4px;padding:7px;display:flex;justify-content:space-between;align-items:center}
+            .tmpl-prop .tmpl-listing-info{font-size:8px;color:#fff;font-weight:700}
+            .tmpl-prop .tmpl-listing-sub{font-size:7px;color:rgba(255,255,255,0.35);margin-top:1px}
+            .tmpl-prop .tmpl-listing-price{font-size:8px;color:#cc66ff;font-weight:900;text-align:right}
+          </style>
+
+          <div class="tmpl-marquee-wrap">
+            <div class="tmpl-track" id="tmplTrack">
+
+              <!-- TEMPLATE 1: Restoran -->
+              <div class="tmpl-card tmpl-resto">
+                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">warungbunda.id</div></div>
+                <div class="tmpl-body">
+                  <span class="tmpl-label" style="background:rgba(255,140,0,0.1);color:#ff8c00;border:1px solid rgba(255,140,0,0.25)">TEMPLATE — RESTORAN / KULINER</span>
+                  <div class="tmpl-hero">
+                    <h3>🍜 Warung Bunda</h3>
+                    <p>Masakan rumahan yang bikin kangen</p>
+                    <span class="tmpl-cta">Pesan Sekarang</span>
+                  </div>
+                  <div class="tmpl-menu">
+                    <div class="tmpl-item"><div class="tmpl-ikon">🍛</div><div class="tmpl-iname">Nasi Goreng</div><div class="tmpl-iprice">Rp 18.000</div></div>
+                    <div class="tmpl-item"><div class="tmpl-ikon">🥩</div><div class="tmpl-iname">Soto Ayam</div><div class="tmpl-iprice">Rp 22.000</div></div>
+                    <div class="tmpl-item"><div class="tmpl-ikon">🍢</div><div class="tmpl-iname">Sate Kombo</div><div class="tmpl-iprice">Rp 35.000</div></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TEMPLATE 2: Agency -->
+              <div class="tmpl-card tmpl-agency">
+                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">nexadigital.id</div></div>
+                <div class="tmpl-body">
+                  <span class="tmpl-label" style="background:rgba(124,58,255,0.1);color:#a374ff;border:1px solid rgba(124,58,255,0.25)">TEMPLATE — AGENCY / JASA DIGITAL</span>
+                  <div class="tmpl-hero">
+                    <div class="tmpl-graphic">🚀</div>
+                    <div class="tmpl-hero-text">
+                      <h3>Nexa Digital</h3>
+                      <p>Kami bantu bisnis Anda tumbuh lewat strategi digital yang tepat sasaran</p>
+                      <span class="tmpl-badge">Konsultasi Gratis →</span>
+                    </div>
+                  </div>
+                  <div class="tmpl-services-row">
+                    <div class="tmpl-svc"><div class="tmpl-svc-ico">🎨</div><div class="tmpl-svc-name">Desain</div></div>
+                    <div class="tmpl-svc"><div class="tmpl-svc-ico">📈</div><div class="tmpl-svc-name">SEO</div></div>
+                    <div class="tmpl-svc"><div class="tmpl-svc-ico">📱</div><div class="tmpl-svc-name">Ads</div></div>
+                    <div class="tmpl-svc"><div class="tmpl-svc-ico">💻</div><div class="tmpl-svc-name">Web Dev</div></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TEMPLATE 3: Toko Online -->
+              <div class="tmpl-card tmpl-toko">
+                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">tokosegar.id</div></div>
+                <div class="tmpl-body">
+                  <span class="tmpl-label" style="background:rgba(0,200,100,0.08);color:#00c864;border:1px solid rgba(0,200,100,0.2)">TEMPLATE — TOKO ONLINE / E-COMMERCE</span>
+                  <div class="tmpl-hero">
+                    <div class="tmpl-logo-box">🛒</div>
+                    <div>
+                      <h3>TokoSegar</h3>
+                      <p>Produk segar langsung dari petani</p>
+                    </div>
+                  </div>
+                  <div class="tmpl-products">
+                    <div class="tmpl-prod"><div class="tmpl-prod-img">🥦</div><div class="tmpl-prod-name">Brokoli Segar</div><div class="tmpl-prod-price">Rp 12.000/kg</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
+                    <div class="tmpl-prod"><div class="tmpl-prod-img">🍎</div><div class="tmpl-prod-name">Apel Malang</div><div class="tmpl-prod-price">Rp 25.000/kg</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
+                    <div class="tmpl-prod"><div class="tmpl-prod-img">🌽</div><div class="tmpl-prod-name">Jagung Manis</div><div class="tmpl-prod-price">Rp 8.000/bh</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TEMPLATE 4: Klinik -->
+              <div class="tmpl-card tmpl-klinik">
+                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">klinikkasih.id</div></div>
+                <div class="tmpl-body">
+                  <span class="tmpl-label" style="background:rgba(0,150,255,0.08);color:#4db8ff;border:1px solid rgba(0,150,255,0.2)">TEMPLATE — KLINIK / KESEHATAN</span>
+                  <div class="tmpl-hero">
+                    <h3>🏥 Klinik Kasih Sehat</h3>
+                    <p>Pelayanan kesehatan terpercaya sejak 2010</p>
+                  </div>
+                  <div class="tmpl-services2">
+                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🩺</div><div><div class="tmpl-svc2-name">Dokter Umum</div><div class="tmpl-svc2-desc">Senin–Sabtu 08.00–20.00</div></div></div>
+                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🦷</div><div><div class="tmpl-svc2-name">Dokter Gigi</div><div class="tmpl-svc2-desc">Selasa, Kamis, Sabtu</div></div></div>
+                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">💉</div><div><div class="tmpl-svc2-name">Imunisasi</div><div class="tmpl-svc2-desc">Setiap hari, daftar online</div></div></div>
+                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🔬</div><div><div class="tmpl-svc2-name">Lab Darah</div><div class="tmpl-svc2-desc">Hasil cepat 2–4 jam</div></div></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TEMPLATE 5: Hotel -->
+              <div class="tmpl-card tmpl-hotel">
+                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">villamutiara.id</div></div>
+                <div class="tmpl-body">
+                  <span class="tmpl-label" style="background:rgba(255,200,0,0.07);color:#ffc800;border:1px solid rgba(255,200,0,0.2)">TEMPLATE — HOTEL / PENGINAPAN</span>
+                  <div class="tmpl-hero">
+                    <h3>Villa Mutiara</h3>
+                    <p>Ketenangan di atas bukit dengan pemandangan tak terlupakan</p>
+                  </div>
+                  <div class="tmpl-rooms">
+                    <div class="tmpl-room"><div class="tmpl-room-ico">🛏️</div><div class="tmpl-room-name">Deluxe Room</div><div class="tmpl-room-price">Rp 450.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
+                    <div class="tmpl-room"><div class="tmpl-room-ico">🌅</div><div class="tmpl-room-name">Suite View</div><div class="tmpl-room-price">Rp 750.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
+                    <div class="tmpl-room"><div class="tmpl-room-ico">🏡</div><div class="tmpl-room-name">Villa Private</div><div class="tmpl-room-price">Rp 1.200.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TEMPLATE 6: Properti -->
+              <div class="tmpl-card tmpl-prop">
+                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">rumahpro.id</div></div>
+                <div class="tmpl-body">
+                  <span class="tmpl-label" style="background:rgba(150,0,255,0.08);color:#cc66ff;border:1px solid rgba(150,0,255,0.2)">TEMPLATE — PROPERTI / REAL ESTATE</span>
+                  <div class="tmpl-hero">
+                    <div class="tmpl-hero-ico">🏠</div>
+                    <div>
+                      <h3>RumahPro Realty</h3>
+                      <p>Temukan properti impian Anda bersama kami</p>
+                    </div>
+                  </div>
+                  <div class="tmpl-listings">
+                    <div class="tmpl-listing"><div><div class="tmpl-listing-info">Rumah 3KT — Bekasi Timur</div><div class="tmpl-listing-sub">LB 90m² · LT 120m² · SHM</div></div><div class="tmpl-listing-price">Rp 650 Jt</div></div>
+                    <div class="tmpl-listing"><div><div class="tmpl-listing-info">Kos Eksklusif — Depok</div><div class="tmpl-listing-sub">12 kamar · Full AC · WiFi</div></div><div class="tmpl-listing-price">Rp 1,2 M</div></div>
+                    <div class="tmpl-listing"><div><div class="tmpl-listing-info">Ruko 2 Lantai — Bogor</div><div class="tmpl-listing-sub">LB 120m² · Pinggir jalan</div></div><div class="tmpl-listing-price">Rp 900 Jt</div></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- DUPLIKAT untuk seamless loop -->
+              <div class="tmpl-card tmpl-resto">
+                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">warungbunda.id</div></div>
+                <div class="tmpl-body">
+                  <span class="tmpl-label" style="background:rgba(255,140,0,0.1);color:#ff8c00;border:1px solid rgba(255,140,0,0.25)">TEMPLATE — RESTORAN / KULINER</span>
+                  <div class="tmpl-hero"><h3>🍜 Warung Bunda</h3><p>Masakan rumahan yang bikin kangen</p><span class="tmpl-cta">Pesan Sekarang</span></div>
+                  <div class="tmpl-menu">
+                    <div class="tmpl-item"><div class="tmpl-ikon">🍛</div><div class="tmpl-iname">Nasi Goreng</div><div class="tmpl-iprice">Rp 18.000</div></div>
+                    <div class="tmpl-item"><div class="tmpl-ikon">🥩</div><div class="tmpl-iname">Soto Ayam</div><div class="tmpl-iprice">Rp 22.000</div></div>
+                    <div class="tmpl-item"><div class="tmpl-ikon">🍢</div><div class="tmpl-iname">Sate Kombo</div><div class="tmpl-iprice">Rp 35.000</div></div>
+                  </div>
+                </div>
+              </div>
+              <div class="tmpl-card tmpl-agency">
+                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">nexadigital.id</div></div>
+                <div class="tmpl-body">
+                  <span class="tmpl-label" style="background:rgba(124,58,255,0.1);color:#a374ff;border:1px solid rgba(124,58,255,0.25)">TEMPLATE — AGENCY / JASA DIGITAL</span>
+                  <div class="tmpl-hero"><div class="tmpl-graphic">🚀</div><div class="tmpl-hero-text"><h3>Nexa Digital</h3><p>Kami bantu bisnis Anda tumbuh lewat strategi digital yang tepat sasaran</p><span class="tmpl-badge">Konsultasi Gratis →</span></div></div>
+                  <div class="tmpl-services-row">
+                    <div class="tmpl-svc"><div class="tmpl-svc-ico">🎨</div><div class="tmpl-svc-name">Desain</div></div>
+                    <div class="tmpl-svc"><div class="tmpl-svc-ico">📈</div><div class="tmpl-svc-name">SEO</div></div>
+                    <div class="tmpl-svc"><div class="tmpl-svc-ico">📱</div><div class="tmpl-svc-name">Ads</div></div>
+                    <div class="tmpl-svc"><div class="tmpl-svc-ico">💻</div><div class="tmpl-svc-name">Web Dev</div></div>
+                  </div>
+                </div>
+              </div>
+              <div class="tmpl-card tmpl-toko">
+                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">tokosegar.id</div></div>
+                <div class="tmpl-body">
+                  <span class="tmpl-label" style="background:rgba(0,200,100,0.08);color:#00c864;border:1px solid rgba(0,200,100,0.2)">TEMPLATE — TOKO ONLINE / E-COMMERCE</span>
+                  <div class="tmpl-hero"><div class="tmpl-logo-box">🛒</div><div><h3>TokoSegar</h3><p>Produk segar langsung dari petani</p></div></div>
+                  <div class="tmpl-products">
+                    <div class="tmpl-prod"><div class="tmpl-prod-img">🥦</div><div class="tmpl-prod-name">Brokoli Segar</div><div class="tmpl-prod-price">Rp 12.000/kg</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
+                    <div class="tmpl-prod"><div class="tmpl-prod-img">🍎</div><div class="tmpl-prod-name">Apel Malang</div><div class="tmpl-prod-price">Rp 25.000/kg</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
+                    <div class="tmpl-prod"><div class="tmpl-prod-img">🌽</div><div class="tmpl-prod-name">Jagung Manis</div><div class="tmpl-prod-price">Rp 8.000/bh</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="tmpl-card tmpl-klinik">
+                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">klinikkasih.id</div></div>
+                <div class="tmpl-body">
+                  <span class="tmpl-label" style="background:rgba(0,150,255,0.08);color:#4db8ff;border:1px solid rgba(0,150,255,0.2)">TEMPLATE — KLINIK / KESEHATAN</span>
+                  <div class="tmpl-hero"><h3>🏥 Klinik Kasih Sehat</h3><p>Pelayanan kesehatan terpercaya sejak 2010</p></div>
+                  <div class="tmpl-services2">
+                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🩺</div><div><div class="tmpl-svc2-name">Dokter Umum</div><div class="tmpl-svc2-desc">Senin–Sabtu 08.00–20.00</div></div></div>
+                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🦷</div><div><div class="tmpl-svc2-name">Dokter Gigi</div><div class="tmpl-svc2-desc">Selasa, Kamis, Sabtu</div></div></div>
+                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">💉</div><div><div class="tmpl-svc2-name">Imunisasi</div><div class="tmpl-svc2-desc">Setiap hari, daftar online</div></div></div>
+                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🔬</div><div><div class="tmpl-svc2-name">Lab Darah</div><div class="tmpl-svc2-desc">Hasil cepat 2–4 jam</div></div></div>
+                  </div>
+                </div>
+              </div>
+              <div class="tmpl-card tmpl-hotel">
+                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">villamutiara.id</div></div>
+                <div class="tmpl-body">
+                  <span class="tmpl-label" style="background:rgba(255,200,0,0.07);color:#ffc800;border:1px solid rgba(255,200,0,0.2)">TEMPLATE — HOTEL / PENGINAPAN</span>
+                  <div class="tmpl-hero"><h3>Villa Mutiara</h3><p>Ketenangan di atas bukit dengan pemandangan tak terlupakan</p></div>
+                  <div class="tmpl-rooms">
+                    <div class="tmpl-room"><div class="tmpl-room-ico">🛏️</div><div class="tmpl-room-name">Deluxe Room</div><div class="tmpl-room-price">Rp 450.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
+                    <div class="tmpl-room"><div class="tmpl-room-ico">🌅</div><div class="tmpl-room-name">Suite View</div><div class="tmpl-room-price">Rp 750.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
+                    <div class="tmpl-room"><div class="tmpl-room-ico">🏡</div><div class="tmpl-room-name">Villa Private</div><div class="tmpl-room-price">Rp 1.200.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="tmpl-card tmpl-prop">
+                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">rumahpro.id</div></div>
+                <div class="tmpl-body">
+                  <span class="tmpl-label" style="background:rgba(150,0,255,0.08);color:#cc66ff;border:1px solid rgba(150,0,255,0.2)">TEMPLATE — PROPERTI / REAL ESTATE</span>
+                  <div class="tmpl-hero"><div class="tmpl-hero-ico">🏠</div><div><h3>RumahPro Realty</h3><p>Temukan properti impian Anda bersama kami</p></div></div>
+                  <div class="tmpl-listings">
+                    <div class="tmpl-listing"><div><div class="tmpl-listing-info">Rumah 3KT — Bekasi Timur</div><div class="tmpl-listing-sub">LB 90m² · LT 120m² · SHM</div></div><div class="tmpl-listing-price">Rp 650 Jt</div></div>
+                    <div class="tmpl-listing"><div><div class="tmpl-listing-info">Kos Eksklusif — Depok</div><div class="tmpl-listing-sub">12 kamar · Full AC · WiFi</div></div><div class="tmpl-listing-price">Rp 1,2 M</div></div>
+                    <div class="tmpl-listing"><div><div class="tmpl-listing-info">Ruko 2 Lantai — Bogor</div><div class="tmpl-listing-sub">LB 120m² · Pinggir jalan</div></div><div class="tmpl-listing-price">Rp 900 Jt</div></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="deck-nav">
+    <div class="deck-dot active" id="dot1" onclick="setFront(0)"></div>
+    <div class="deck-dot" id="dot2" onclick="setFront(1)"></div>
+    <button class="deck-swap-btn" onclick="swapDeck()">&#8646; Geser Layar</button>
+  </div>
+
+  <!-- KONTAK: gabung di section 3 -->
+  <div style="width:100%;margin-top:5rem;text-align:center;position:relative;z-index:10">
+    <div class="cta-bg"></div>
+    <h2 style="font-size:clamp(2.8rem,6vw,5rem);font-weight:900;color:#fff;letter-spacing:-2px;text-transform:uppercase;line-height:1.05;position:relative">SIAP MULAI<br><em style="font-style:normal;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,0.32)">PROYEK</em> ANDA?</h2>
+    <p style="color:var(--muted);font-size:0.92rem;max-width:480px;margin:1.5rem auto 2.5rem;line-height:1.75;position:relative">Konsultasi gratis, tidak ada biaya tersembunyi. Ceritakan bisnis Anda — kami bantu wujudkan website yang langsung bisa terima pelanggan.</p>
+    <div class="cta-btns">
+      <a href="https://wa.me/6285117031202?text=Hallo%2C%20mau%20pesan%20jasa%20desain%20website" class="btn-primary">&#128172; Chat WhatsApp Gratis</a>
+
+    </div>
+  </div>
+</section>
+
+<!-- POPUP: ALUR KERJA -->
+<div class="popup-overlay" id="popup-alurkerja">
+  <div class="popup-box">
+    <button class="popup-close" onclick="closePopup('alurkerja')">&#10005;</button>
+    <div class="popup-eyebrow">Cara Kerja WebLab</div>
+    <div class="popup-h2">Alur Kerja Kami</div>
+    <div class="pop-step"><div class="pop-step-vline"></div><div class="pop-num">1</div><div><div class="pop-stitle">Konsultasi Gratis</div><div class="pop-sdesc">Kami mulai dengan ngobrol santai via WhatsApp atau tatap muka. Ceritakan bisnis Anda — produk, target pembeli, dan apa yang ingin dicapai. Gratis, tanpa komitmen apapun.</div></div></div>
+    <div class="pop-step"><div class="pop-step-vline"></div><div class="pop-num">2</div><div><div class="pop-stitle">Desain &amp; Mockup</div><div class="pop-sdesc">Tim desainer kami merancang tampilan website yang sesuai brand Anda. Anda akan melihat preview desain sebelum pengembangan dimulai. Revisi desain gratis hingga Anda puas.</div></div></div>
+    <div class="pop-step"><div class="pop-step-vline"></div><div class="pop-num">3</div><div><div class="pop-stitle">Development</div><div class="pop-sdesc">Setelah desain disetujui, kami langsung bangun websitenya. Dicek tampilan dan fungsinya di HP, tablet, dan desktop — biar hasilnya rapi di semua layar.</div></div></div>
+    <div class="pop-step"><div class="pop-step-vline"></div><div class="pop-num">4</div><div><div class="pop-stitle">Review &amp; Revisi</div><div class="pop-sdesc">Anda mendapat akses preview website sebelum tayang. Sampaikan masukan, dan tim kami lakukan penyesuaian sesuai paket yang dipilih. Kepuasan Anda prioritas kami.</div></div></div>
+    <div class="pop-step"><div class="pop-num">5</div><div><div class="pop-stitle">Launch &amp; Dukungan Jangka Panjang</div><div class="pop-sdesc">Website live! Kami dampingi pas pertama tayang biar semuanya berjalan lancar. Kalau ada kendala teknis setelahnya, tinggal hubungi kami — kami siap bantu.</div></div></div>
+  </div>
+</div>
+
+<!-- POPUP: PAKET HARGA -->
+<div class="popup-overlay" id="popup-paketharga">
+  <div class="popup-box">
+    <button class="popup-close" onclick="closePopup('paketharga')">&#10005;</button>
+    <div class="popup-eyebrow">Layanan WebLab</div>
+    <div class="popup-h2">Layanan Kami</div>
+    <div class="pop-pkg p1">
+      <div class="pop-plabel">UMKM</div>
+      <div class="pop-pname">Landing Page UMKM</div>
+      <div class="pop-price-row"><span class="pop-old">Rp 1.500.000</span></div>
+      <div class="pop-price-row"><span class="pop-price"><sup>Rp </sup>449.999</span><span class="pop-period">/ tahun pertama</span></div>
+      <ul class="pop-feats"><li>Domain .com + Shared Hosting 1 tahun</li><li>1 halaman, hingga 4 section</li><li>Copywriting Bahasa Indonesia</li><li>Tombol WhatsApp langsung (CTA)</li><li>Desain responsif HP &amp; desktop</li><li>Optimasi kecepatan dasar</li><li>Revisi 1x minor</li><li>Selesai maksimal 7 hari kerja</li></ul>
+    </div>
+    </div>
+</div>
+
+
+<footer>
+  <a href="#" class="logo">WEBLAB</a>
+  <p>&#169; 2025 WebLab. Hak Cipta Dilindungi.</p>
+  <div class="footer-links"><a href="#">Privasi</a><a href="#">Ketentuan</a><a href="#">Instagram</a><a href="#">LinkedIn</a></div>
+</footer>
+
+<script>
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
+(function loop(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop)})();
+document.querySelectorAll('a,button,.screen-card,.portfolio-card,.sf-pane').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.width='20px';cursor.style.height='20px';ring.style.width='50px';ring.style.height='50px'});
+  el.addEventListener('mouseleave',()=>{cursor.style.width='12px';cursor.style.height='12px';ring.style.width='36px';ring.style.height='36px'});
+});
+const canvas=document.getElementById('bg-canvas'),ctx=canvas.getContext('2d');
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+resize();window.addEventListener('resize',resize);
+class Star{constructor(){this.x=Math.random()*canvas.width;this.y=Math.random()*canvas.height;this.s=Math.random()*1.3;this.a=Math.random()*0.4;this.sp=0.002+Math.random()*0.004;this.ph=Math.random()*Math.PI*2}update(){this.ph+=this.sp}draw(){ctx.save();ctx.globalAlpha=this.a*(0.5+0.5*Math.sin(this.ph));ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(this.x,this.y,this.s,0,Math.PI*2);ctx.fill();ctx.restore()}}
+const stars=Array.from({length:120},()=>new Star());
+let t=0;
+(function anim(){ctx.clearRect(0,0,canvas.width,canvas.height);const t2=t*0.003;[{x:0.25,y:0.35,c:'rgba(124,58,255,0.05)',r:260},{x:0.75,y:0.65,c:'rgba(0,212,255,0.04)',r:300}].forEach(n=>{const gx=canvas.width*n.x+Math.sin(t2)*80,gy=canvas.height*n.y+Math.cos(t2*0.7)*60;const g=ctx.createRadialGradient(gx,gy,0,gx,gy,n.r);g.addColorStop(0,n.c);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fillRect(0,0,canvas.width,canvas.height)});stars.forEach(s=>{s.update();s.draw()});t++;requestAnimationFrame(anim)})();
+window.addEventListener('scroll',()=>{document.getElementById('main-nav').classList.toggle('scrolled',window.scrollY>60)});
+const reveals=document.querySelectorAll('.reveal');
+new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:0.1}).observe=function(el){reveals.forEach(r=>new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:0.1}).observe(r))};
+reveals.forEach(el=>new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:0.1}).observe(el));
+function counter(el,target,suf,dur){let s=0;(function st(){s+=Math.ceil(target/(dur/16));if(s>=target){el.textContent=target+suf;return}el.textContent=s+suf;requestAnimationFrame(st)})()}
+new IntersectionObserver(entries=>{if(entries[0].isIntersecting){counter(document.getElementById('stat4'),100,'%',1000)}},{threshold:0.5}).observe(document.querySelector('.stats-section'));
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'})}})});
+function openPopup(id){document.getElementById('popup-'+id).classList.add('open');document.body.style.overflow='hidden'}
+function closePopup(id){document.getElementById('popup-'+id).classList.remove('open');document.body.style.overflow=''}
+document.querySelectorAll('.popup-overlay').forEach(o=>o.addEventListener('click',function(e){if(e.target===this){this.classList.remove('open');document.body.style.overflow=''}}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.popup-overlay.open').forEach(o=>{o.classList.remove('open');document.body.style.overflow=''})});
+</script>
+
+<script>
+const codeText=`<!DOCTYPE html>
+<html>
+<head>
+  <title>Website UMKM</title>
+</head>
+<body>
+  <h1>Selamat Datang</h1>
+  <p>Website Profesional untuk Bisnis Anda</p>
+  <a href="#">Hubungi Kami</a>
+</body>
+</html>
+
+// ✓ Website bisnis profesional
+// ✓ Harga terjangkau
+// ✓ Selesai maksimal 7 hari kerja`;
+
+let i=0;
+let typingDone=false;
+function typeCode(){
+ const el=document.getElementById('typing-code');
+ if(!el) return;
+ if(i<codeText.length){
+   el.textContent += codeText.charAt(i);
+   i++;
+   // update loading progress sinkron dengan typing
+   if(window.ldSetProgress) window.ldSetProgress(i/codeText.length);
+   setTimeout(typeCode,40);
+ }else{
+   if(!typingDone){
+     typingDone=true;
+     // loading selesai
+     if(window.ldStop) window.ldStop();
+     var btnWrap=document.getElementById('btn-lanjutkan-wrap');
+     if(btnWrap){btnWrap.style.display='block';}
+   }
+   setTimeout(()=>{
+      el.textContent='';
+      i=0;
+      typingDone=false;
+      typeCode();
+   },3000);
+ }
+}
+window.addEventListener('load', typeCode);
+
+// Sesuaikan font size typing sesuai lebar layar
+(function(){
+  function adjustTypingFont(){
+    var el = document.getElementById('typing-code');
+    if(!el) return;
+    var w = window.innerWidth;
+    var fs = w < 380 ? '9px' : w < 480 ? '11px' : w < 600 ? '13px' : w < 768 ? '14px' : '18px';
+    el.style.fontSize = fs;
+    // parent div juga
+    var parent = el.parentElement && el.parentElement.parentElement;
+    if(parent) parent.style.fontSize = fs;
+  }
+  adjustTypingFont();
+  window.addEventListener('resize', adjustTypingFont);
+})();
+
+function openSection2(){
+  var s2=document.getElementById('alur-harga');
+  s2.style.display='block';
+  document.body.style.overflow='hidden';
+  setTimeout(()=>{s2.style.opacity='1';},10);
+}
+
+function closeSection2(){
+  var s2=document.getElementById('alur-harga');
+  s2.style.display='none';
+  document.body.style.overflow='';
+}
+
+// DECK SWAP
+var deckFront = 0;
+
+function swapDeck() {
+  setFront(deckFront === 0 ? 1 : 0);
+}
+
+function setFront(idx) {
+  var prev = deckFront;
+  if (prev === idx) return;
+  deckFront = idx;
+  var allCards = [document.getElementById('card1'), document.getElementById('card2')];
+  var allDots  = [document.getElementById('dot1'),  document.getElementById('dot2')];
+  var isMobile = window.innerWidth <= 600;
+  if(isMobile){
+    // di mobile: sembunyikan kartu lama, tampilkan kartu baru
+    allCards[prev].style.display = 'none';
+    allCards[idx].style.display  = 'block';
+    allCards[idx].className = 'deck-card front';
+  } else {
+    allCards[prev].className = 'deck-card back';
+    allCards[idx].className  = 'deck-card front';
+  }
+  allDots[prev].classList.remove('active');
+  allDots[idx].classList.add('active');
+}
+
+// Inisialisasi mobile: pastikan hanya card1 yg tampil
+window.addEventListener('load', function() {
+  if(window.innerWidth <= 600){
+    var c2 = document.getElementById('card2');
+    if(c2) c2.style.display = 'none';
+  }
+  var wrap = document.getElementById('deckWrap');
+  if (!wrap) return;
+  var sx = 0;
+  wrap.addEventListener('touchstart', function(e){ sx = e.touches[0].clientX; }, {passive:true});
+  wrap.addEventListener('touchend', function(e){
+    var dx = e.changedTouches[0].clientX - sx;
+    if (Math.abs(dx) > 40) swapDeck();
+  }, {passive:true});
+});
+</script>
+</body>
+</html>
