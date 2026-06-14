@@ -147,6 +147,39 @@ main{max-width:900px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
 /* ── DIVIDER ── */
 .div{height:1px;background:var(--border);margin:1.2rem 0}
 
+/* ── BEBAN CALC PANEL ── */
+.beban-calc-wrap{background:rgba(232,184,75,0.04);border:1px dashed rgba(232,184,75,0.3);border-radius:11px;padding:1rem 1.2rem;margin-bottom:.85rem}
+.beban-calc-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;margin-bottom:0;transition:all .2s}
+.beban-calc-toggle:hover .bct-label{color:var(--text)}
+.bct-icon{width:22px;height:22px;border-radius:6px;background:rgba(232,184,75,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bct-icon svg{width:12px;height:12px;stroke:var(--accent);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.bct-label{font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent)}
+.bct-hint{font-size:.68rem;color:var(--muted2);margin-left:auto}
+.bct-chevron{width:14px;height:14px;stroke:var(--muted2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s;flex-shrink:0}
+.beban-calc-wrap.open .bct-chevron{transform:rotate(180deg)}
+.beban-calc-body{display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(42,48,64,0.7)}
+.beban-calc-wrap.open .beban-calc-body{display:block}
+.beban-calc-desc{font-size:.73rem;color:var(--muted);margin-bottom:.85rem;line-height:1.5}
+.beban-calc-desc span{color:var(--accent);font-weight:600}
+.bc-section{font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin:.75rem 0 .4rem}
+.bc-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.5rem}
+.bc-row.g3{grid-template-columns:1fr 1fr 1fr}
+.auto-btn{width:100%;height:42px;background:rgba(232,184,75,0.12);border:1px solid rgba(232,184,75,0.35);color:var(--accent);border-radius:9px;font-family:'Barlow',sans-serif;font-size:.8rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:.85rem}
+.auto-btn:hover{background:rgba(232,184,75,0.2);border-color:var(--accent)}
+.auto-btn svg{width:15px;height:15px;stroke:var(--accent);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.bc-preview{display:none;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:.75rem 1rem;margin-top:.75rem;font-size:.8rem}
+.bc-preview.show{display:block}
+.bc-prev-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0}
+.bc-prev-row .lbl{color:var(--muted);font-size:.72rem}
+.bc-prev-row .val{font-weight:700;color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:.9rem}
+.bc-prev-row .val.accent{color:var(--accent)}
+.beban-type-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.75rem}
+.btype-btn{padding:.45rem .8rem;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Barlow',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;text-align:center}
+.btype-btn.active{background:rgba(232,184,75,0.12);border-color:rgba(232,184,75,0.4);color:var(--accent)}
+.btype-btn:not(.active):hover{border-color:var(--muted2);color:var(--text)}
+.bc-formula-note{font-size:.67rem;color:var(--muted2);background:var(--bg3);border-radius:6px;padding:.5rem .75rem;margin-top:.5rem;line-height:1.5}
+.bc-formula-note code{color:var(--accent);font-size:.65rem}
+
 /* ── FOOTER ── */
 footer{background:var(--bg2);border-top:1px solid var(--border);padding:1.8rem 3rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:.72rem;color:var(--muted)}
 footer .fl{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;color:var(--text)}
@@ -274,6 +307,100 @@ body.sni-split .page-wrap{margin-left:50vw;width:50vw;height:100vh;overflow-y:au
         <span class="blk-label">Beban Rencana</span>
       </div>
       <div class="blk-body">
+
+        <!-- ── BEBAN CALCULATOR ── -->
+        <div class="beban-calc-wrap" id="bebanCalcWrap">
+          <div class="beban-calc-toggle" onclick="toggleBebanCalc()">
+            <div class="bct-icon">
+              <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+            </div>
+            <span class="bct-label">Kalkulator Beban Otomatis</span>
+            <span class="bct-hint">input beban → Mu+, Mu−, Vu otomatis</span>
+            <svg class="bct-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+
+          <div class="beban-calc-body">
+            <p class="beban-calc-desc">Masukkan data beban & bentang, nilai <span>Mu+, Mu−, dan Vu</span> akan langsung terisi ke field beban rencana.</p>
+
+            <!-- Tipe pembebanan -->
+            <div class="bc-section">Tipe Pembebanan</div>
+            <div class="beban-type-row">
+              <button class="btype-btn active" id="btype-simple" onclick="setBtype('simple')">Balok Sederhana (Simply Supported)</button>
+              <button class="btype-btn" id="btype-continuous" onclick="setBtype('continuous')">Balok Menerus (Continuous Beam)</button>
+            </div>
+            <div class="bc-formula-note" id="bc-formula-note">
+              <strong>Simply Supported:</strong> Mu+ = qu·L²/8 &nbsp;|&nbsp; Mu− = 0 &nbsp;|&nbsp; Vu = qu·L/2
+            </div>
+
+            <!-- Input -->
+            <div class="bc-section">Geometri & Beban</div>
+            <div class="bc-row">
+              <div class="field">
+                <label>Bentang (L)</label>
+                <div class="input-wrap"><input id="bc_L" type="number" value="4" oninput="previewBeban()"><span class="unit-tag">m</span></div>
+              </div>
+              <div class="field">
+                <label>Berat balok (γ × b × h)</label>
+                <div class="input-wrap"><input id="bc_qsw" type="number" value="1.68" placeholder="otomatis" oninput="previewBeban()"><span class="unit-tag">kN/m</span></div>
+              </div>
+            </div>
+
+            <div class="bc-section">Beban Mati Tambahan (qDL)</div>
+            <div class="bc-row g3">
+              <div class="field">
+                <label>Finishing</label>
+                <div class="input-wrap"><input id="bc_fin" type="number" value="2" oninput="previewBeban()"><span class="unit-tag">kN/m</span></div>
+              </div>
+              <div class="field">
+                <label>Dinding/Partisi</label>
+                <div class="input-wrap"><input id="bc_din" type="number" value="0" oninput="previewBeban()"><span class="unit-tag">kN/m</span></div>
+              </div>
+              <div class="field">
+                <label>Lain-lain</label>
+                <div class="input-wrap"><input id="bc_dl3" type="number" value="0" oninput="previewBeban()"><span class="unit-tag">kN/m</span></div>
+              </div>
+            </div>
+
+            <div class="bc-section">Beban Hidup (qLL)</div>
+            <div class="bc-row">
+              <div class="field">
+                <label>Beban hidup merata</label>
+                <div class="input-wrap"><input id="bc_ql" type="number" value="3" oninput="previewBeban()"><span class="unit-tag">kN/m</span></div>
+              </div>
+              <div class="field">
+                <label>Beban terpusat (P)</label>
+                <div class="input-wrap"><input id="bc_P" type="number" value="0" oninput="previewBeban()"><span class="unit-tag">kN</span></div>
+              </div>
+            </div>
+
+            <!-- Preview -->
+            <div class="bc-preview show" id="bc-preview">
+              <div class="bc-prev-row">
+                <span class="lbl">qu terfaktor (1.2qD + 1.6qL)</span>
+                <span class="val" id="bp-qu">—</span>
+              </div>
+              <div class="bc-prev-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:6px">
+                <span class="lbl">Mu+ (momen positif lapangan)</span>
+                <span class="val accent" id="bp-mup">—</span>
+              </div>
+              <div class="bc-prev-row">
+                <span class="lbl">Mu− (momen negatif tumpuan)</span>
+                <span class="val accent" id="bp-mun">—</span>
+              </div>
+              <div class="bc-prev-row">
+                <span class="lbl">Vu (gaya geser tumpuan)</span>
+                <span class="val accent" id="bp-vu">—</span>
+              </div>
+            </div>
+
+            <button class="auto-btn" onclick="applyBeban()">
+              <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              Terapkan ke Beban Rencana
+            </button>
+          </div>
+        </div>
+        <!-- ── END BEBAN CALCULATOR ── -->
+
         <div class="g3">
           <div class="field"><label>Mu+ momen positif</label><div class="input-wrap"><input id="b_mup" type="number" value="20"><span class="unit-tag">kNm</span></div></div>
           <div class="field"><label>Mu− momen negatif</label><div class="input-wrap"><input id="b_mun" type="number" value="43"><span class="unit-tag">kNm</span></div></div>
@@ -397,6 +524,90 @@ function row(label, val, unit='') {
 
 function tbl(rows) {
   return `<table class="res-tbl"><thead><tr><th>Parameter</th><th style="text-align:right">Nilai</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+/* ══════════════ BEBAN CALC ══════════════ */
+var _btype = 'simple';
+
+function toggleBebanCalc() {
+  var w = document.getElementById('bebanCalcWrap');
+  w.classList.toggle('open');
+  if (w.classList.contains('open')) {
+    // auto-isi berat sendiri dari dimensi balok
+    var b = parseFloat(document.getElementById('b_b').value) || 0;
+    var h = parseFloat(document.getElementById('b_h').value) || 0;
+    if (b > 0 && h > 0) {
+      var qsw = 24 * (b / 1000) * (h / 1000); // kN/m
+      document.getElementById('bc_qsw').value = qsw.toFixed(3);
+    }
+    previewBeban();
+  }
+}
+
+function setBtype(t) {
+  _btype = t;
+  document.getElementById('btype-simple').classList.toggle('active', t === 'simple');
+  document.getElementById('btype-continuous').classList.toggle('active', t === 'continuous');
+  var note = document.getElementById('bc-formula-note');
+  if (t === 'simple') {
+    note.innerHTML = '<strong>Simply Supported:</strong> Mu+ = qu·L²/8 &nbsp;|&nbsp; Mu− = 0 &nbsp;|&nbsp; Vu = qu·L/2 + Pu/2';
+  } else {
+    note.innerHTML = '<strong>Menerus (perkiraan):</strong> Mu+ ≈ qu·L²/14 &nbsp;|&nbsp; Mu− ≈ qu·L²/10 &nbsp;|&nbsp; Vu ≈ 1.15·qu·L/2';
+  }
+  previewBeban();
+}
+
+function previewBeban() {
+  var L    = parseFloat(document.getElementById('bc_L').value)   || 0;
+  var qsw  = parseFloat(document.getElementById('bc_qsw').value) || 0;
+  var fin  = parseFloat(document.getElementById('bc_fin').value) || 0;
+  var din  = parseFloat(document.getElementById('bc_din').value) || 0;
+  var dl3  = parseFloat(document.getElementById('bc_dl3').value) || 0;
+  var ql   = parseFloat(document.getElementById('bc_ql').value)  || 0;
+  var Pu   = parseFloat(document.getElementById('bc_P').value)   || 0;
+
+  var qD = qsw + fin + din + dl3;
+  var qL = ql;
+  var qu = 1.2 * qD + 1.6 * qL;
+  var Pu_f = 1.6 * Pu; // beban terpusat terfaktor
+
+  var mup, mun, vu;
+  if (_btype === 'simple') {
+    mup = qu * L * L / 8 + Pu_f * L / 4;
+    mun = 0;
+    vu  = qu * L / 2 + Pu_f / 2;
+  } else {
+    // SNI pendekatan menerus
+    mup = qu * L * L / 14 + Pu_f * L / 8;
+    mun = qu * L * L / 10 + Pu_f * L / 6;
+    vu  = 1.15 * qu * L / 2 + Pu_f / 2;
+  }
+
+  document.getElementById('bp-qu').textContent  = qu.toFixed(3)  + ' kN/m';
+  document.getElementById('bp-mup').textContent = mup.toFixed(2) + ' kNm';
+  document.getElementById('bp-mun').textContent = mun.toFixed(2) + ' kNm';
+  document.getElementById('bp-vu').textContent  = vu.toFixed(2)  + ' kN';
+  document.getElementById('bc-preview').classList.add('show');
+
+  return { mup, mun, vu };
+}
+
+function applyBeban() {
+  var r = previewBeban();
+  document.getElementById('b_mup').value = r.mup.toFixed(2);
+  document.getElementById('b_mun').value = r.mun.toFixed(2);
+  document.getElementById('b_vu').value  = r.vu.toFixed(2);
+
+  // Flash feedback
+  ['b_mup','b_mun','b_vu'].forEach(function(id) {
+    var el = document.getElementById(id);
+    el.style.borderColor = 'var(--accent)';
+    el.style.background  = 'rgba(232,184,75,0.08)';
+    setTimeout(function(){ el.style.borderColor=''; el.style.background=''; }, 1200);
+  });
+
+  // tutup panel
+  document.getElementById('bebanCalcWrap').classList.remove('open');
 }
 
 /* ══════════════ BALOK ══════════════ */
