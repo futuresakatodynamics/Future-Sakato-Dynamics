@@ -56,18 +56,14 @@
   .ah-header h2 em{font-style:normal;color:var(--accent2)}
   .ah-header p{color:var(--muted);font-size:0.88rem;max-width:480px;margin:0.8rem auto 0;line-height:1.7}
 
-  .screen-frame-wrap{max-width:1100px;margin:0 auto}
   #alur-harga{position:relative;z-index:10;padding:7rem 2rem 8rem;background:linear-gradient(180deg,transparent,rgba(124,58,255,0.03),transparent)}
 
   /* DECK STACK */
   .deck-wrap{max-width:800px;margin:0 auto;position:relative;height:600px;padding-right:48px;padding-bottom:18px;cursor:pointer}
   .deck-hint{text-align:center;margin-bottom:1.4rem;color:var(--accent2);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;opacity:0.7;display:flex;align-items:center;justify-content:center;gap:0.5rem}
   .deck-hint::before,.deck-hint::after{content:'';flex:1;height:1px;background:rgba(0,212,255,0.2)}
-  /* kartu: tidak pakai inset — pakai top/left/right/bottom manual */
   .deck-card{position:absolute;border-radius:10px;overflow:hidden;transition:transform 0.5s cubic-bezier(0.34,1.1,0.64,1),top 0.5s,left 0.5s,right 0.5s,box-shadow 0.4s,opacity 0.4s}
-  /* FRONT: rata kiri-atas, full lebar minus offset kanan */
   .deck-card.front{top:0;left:0;right:48px;bottom:18px;z-index:2;transform:perspective(1200px) rotateY(-5deg);box-shadow:0 20px 70px rgba(0,0,0,0.6),0 0 50px rgba(124,58,255,0.2);opacity:1;pointer-events:auto}
-  /* BACK: geser kanan+bawah supaya ngintip */
   .deck-card.back{top:18px;left:48px;right:0;bottom:0;z-index:1;transform:perspective(1200px) rotateY(5deg);box-shadow:0 8px 30px rgba(0,0,0,0.4);opacity:0.65;pointer-events:auto}
   .deck-card.back:hover{opacity:0.85;top:14px;left:42px}
   .deck-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1rem}
@@ -109,7 +105,7 @@
   .sf-period{font-size:8px;color:var(--muted)}
   .sf-feats{list-style:none;margin-top:5px}
   .sf-feats li{font-size:9px;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:5px;margin-bottom:3px}
-  .sf-feats li::before{content:'checkmark';color:var(--accent1);font-size:10px;flex-shrink:0}
+  .sf-feats li::before{content:'✓';color:var(--accent1);font-size:10px;flex-shrink:0}
   .sf-pkg.p3 .sf-feats li::before{color:#ff2d78}
 
   /* POPUP */
@@ -146,197 +142,175 @@
   .pop-feats li::before{content:'✓';color:var(--accent1);font-size:0.85rem;flex-shrink:0}
   .pop-pkg.p3 .pop-feats li::before{color:#ff2d78}
 
-  /* SERVICES */
-  #services{position:relative;z-index:10;padding:6rem 2rem 8rem}
-  .monitor-section-header{text-align:center;margin-bottom:3.5rem}
-  .monitor-section-header h2{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:900;color:#fff;letter-spacing:-1px;text-transform:uppercase;line-height:1.05}
-  .monitor-section-header h2 em{font-style:normal;color:var(--accent2)}
-  .monitor-section-header p{color:var(--muted);font-size:0.88rem;max-width:480px;margin:0.8rem auto 0;line-height:1.7}
-  .monitor-screen-only{max-width:1080px;margin:0 auto;border-radius:10px;overflow:hidden;border:1.5px solid rgba(124,58,255,0.25);box-shadow:0 0 60px rgba(124,58,255,0.1),0 0 120px rgba(0,212,255,0.05);background:#06081c;display:flex;flex-direction:column;min-height:420px}
+  /* CARD 2: Monitor layanan dengan marquee template */
+  .monitor-screen-only{border-radius:10px;overflow:hidden;border:1.5px solid rgba(124,58,255,0.25);box-shadow:0 0 60px rgba(124,58,255,0.1),0 0 120px rgba(0,212,255,0.05);background:#06081c;display:flex;flex-direction:column;height:100%}
   .os-bar{height:32px;background:#0c0e26;display:flex;align-items:center;padding:0 14px;gap:7px;border-bottom:1px solid rgba(124,58,255,0.18);flex-shrink:0}
   .os-dot{width:9px;height:9px;border-radius:50%}
   .os-dot.r{background:#ff5f56}.os-dot.y{background:#ffbd2e}.os-dot.g{background:#27c93f}
   .os-url{flex:1;text-align:center}
   .os-urlbar{background:rgba(255,255,255,0.07);border-radius:3px;padding:3px 14px;font-size:10px;color:rgba(255,255,255,0.3);font-family:monospace;display:inline-block}
-  .screen-inner{flex:1;overflow-y:auto;padding:24px;scrollbar-width:thin;scrollbar-color:var(--accent1) transparent}
-  .screen-services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  .screen-card{background:rgba(255,255,255,0.035);border:1px solid rgba(124,58,255,0.18);border-radius:8px;padding:18px 16px;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden}
-  .screen-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--c1,#7c3aff),var(--c2,#00d4ff));transform:scaleX(0);transform-origin:left;transition:transform 0.3s}
-  .screen-card:hover{background:rgba(124,58,255,0.07);border-color:rgba(124,58,255,0.38);transform:translateY(-2px)}
-  .screen-card:hover::after{transform:scaleX(1)}
-  .sc-icon{font-size:1.4rem;margin-bottom:9px;display:block}
-  .sc-title{font-size:0.74rem;font-weight:700;color:#fff;letter-spacing:0.5px;margin-bottom:5px;text-transform:uppercase}
-  .sc-desc{font-size:0.67rem;color:var(--muted);line-height:1.58}
-  .sc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
-  .sc-tag{font-size:0.58rem;padding:2px 7px;border-radius:20px;background:rgba(124,58,255,0.1);color:var(--accent1);border:1px solid rgba(124,58,255,0.22);font-weight:700;letter-spacing:0.3px;text-transform:uppercase}
 
-  .stats-section{position:relative;z-index:10;padding:5rem 4rem;border-top:1px solid rgba(124,58,255,0.1);border-bottom:1px solid rgba(0,212,255,0.07)}
-  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;max-width:860px;margin:0 auto;text-align:center}
-  .stat-number{font-size:3rem;font-weight:900;background:linear-gradient(135deg,#fff,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
-  .stat-label{color:var(--muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:2.5px;margin-top:0.35rem}
+  /* MARQUEE TEMPLATE — 2 kolom zigzag naik dalam monitor */
+  .tmpl-marquee-wrap{
+    flex:1;
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    gap:10px;
+    padding:10px;
+    pointer-events:none;
+  }
+  .tmpl-marquee-wrap::before,.tmpl-marquee-wrap::after{
+    content:'';position:absolute;left:0;right:0;z-index:2;pointer-events:none
+  }
+  .tmpl-marquee-wrap::before{top:0;height:36px;background:linear-gradient(180deg,#06081c,transparent)}
+  .tmpl-marquee-wrap::after{bottom:0;height:48px;background:linear-gradient(0deg,#06081c,transparent)}
+  .tmpl-col{flex:1;display:flex;flex-direction:column;gap:10px;will-change:transform}
+  /* Kolom kiri: naik normal */
+  .tmpl-col-a{animation:scrollUpA 34s linear infinite}
+  /* Kolom kanan: offset lebih bawah (zigzag), speed beda */
+  .tmpl-col-b{animation:scrollUpB 40s linear infinite;margin-top:80px}
+  .tmpl-col-a:hover,.tmpl-col-b:hover{animation-play-state:paused}
+  @keyframes scrollUpA{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
+  @keyframes scrollUpB{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
 
-  #work{position:relative;z-index:10;padding:8rem 4rem}
-  .work-header{text-align:center;margin-bottom:4rem}
-  .work-header h2{font-size:clamp(2rem,4vw,3rem);font-weight:900;color:#fff;letter-spacing:-1px;text-transform:uppercase}
-  .work-header h2 em{font-style:normal;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,0.32)}
-  .portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1200px;margin:0 auto}
-  .portfolio-card{border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,0.05);background:var(--card);position:relative;cursor:pointer;transition:transform 0.4s,box-shadow 0.4s;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center}
-  .portfolio-card:hover{transform:scale(1.03) translateY(-6px);box-shadow:0 30px 60px rgba(0,0,0,0.5),0 0 30px var(--pc,rgba(124,58,255,0.2))}
-  .portfolio-visual{width:100%;height:100%;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3.5rem}
-  .portfolio-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,0.96));display:flex;flex-direction:column;justify-content:flex-end;padding:1.5rem;opacity:0;transition:opacity 0.3s}
-  .portfolio-card:hover .portfolio-overlay{opacity:1}
-  .portfolio-overlay h4{font-size:0.88rem;font-weight:700;margin-bottom:0.25rem;text-transform:uppercase;letter-spacing:1px}
-  .portfolio-overlay p{font-size:0.73rem;color:var(--muted)}
-  .bg-grad-1{background:linear-gradient(135deg,#12004a,#030330,#001840)}
-  .bg-grad-2{background:linear-gradient(135deg,#3a0010,#180030,#001030)}
-  .bg-grad-3{background:linear-gradient(135deg,#001830,#00083a,#001200)}
-  .bg-grad-4{background:linear-gradient(135deg,#380018,#360000,#0c0038)}
-  .bg-grad-5{background:linear-gradient(135deg,#001638,#000e38,#000036)}
-  .bg-grad-6{background:linear-gradient(135deg,#080038,#1c0038,#380018)}
+  .tmpl-card{border-radius:7px;overflow:hidden;border:1px solid rgba(124,58,255,0.2);background:#09091f;flex-shrink:0;pointer-events:auto;transition:border-color 0.3s,box-shadow 0.3s}
+  .tmpl-card:hover{border-color:rgba(0,212,255,0.45);box-shadow:0 0 16px rgba(0,212,255,0.1);animation-play-state:paused}
+  .tmpl-bar{height:20px;display:flex;align-items:center;padding:0 7px;gap:4px;background:#0c0e26;border-bottom:1px solid rgba(124,58,255,0.15)}
+  .tmpl-dot{width:6px;height:6px;border-radius:50%}
+  .tmpl-url{flex:1;text-align:center;font-size:7px;font-family:monospace;color:rgba(255,255,255,0.22)}
+  .tmpl-label{font-size:6px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:2px 5px;border-radius:2px;display:inline-block;margin-bottom:5px}
+  .tmpl-body{padding:10px 12px}
 
-  #contact{position:relative;z-index:10;padding:10rem 2rem;text-align:center;overflow:hidden;width:100%;min-height:60vh;display:flex;align-items:center;justify-content:center}
+  /* Template 1: Restoran */
+  .tmpl-resto .tmpl-hero{background:linear-gradient(135deg,#1a0800,#2d0e00);padding:14px 12px;text-align:center;border-bottom:1px solid rgba(255,140,0,0.12)}
+  .tmpl-resto .tmpl-hero h3{font-size:11px;font-weight:900;color:#fff;letter-spacing:0.5px;margin-bottom:3px}
+  .tmpl-resto .tmpl-hero p{font-size:8px;color:rgba(255,140,0,0.65)}
+  .tmpl-resto .tmpl-cta{display:inline-block;margin-top:6px;padding:3px 10px;background:#ff8c00;color:#000;font-size:7px;font-weight:700;border-radius:2px;letter-spacing:1px}
+  .tmpl-resto .tmpl-menu{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;padding:8px 0}
+  .tmpl-resto .tmpl-item{background:rgba(255,140,0,0.06);border:1px solid rgba(255,140,0,0.12);border-radius:3px;padding:6px;text-align:center}
+  .tmpl-resto .tmpl-ikon{font-size:13px;margin-bottom:2px}
+  .tmpl-resto .tmpl-iname{font-size:7px;color:#fff;font-weight:700}
+  .tmpl-resto .tmpl-iprice{font-size:6px;color:#ff8c00}
+  /* Template 2: Agency */
+  .tmpl-agency .tmpl-hero{background:linear-gradient(135deg,#06001a,#120038);padding:14px 12px;border-bottom:1px solid rgba(124,58,255,0.15);display:flex;gap:9px;align-items:center}
+  .tmpl-agency .tmpl-hero-text h3{font-size:10px;font-weight:900;color:#fff;margin-bottom:2px;text-transform:uppercase}
+  .tmpl-agency .tmpl-hero-text p{font-size:7px;color:rgba(255,255,255,0.38);line-height:1.5}
+  .tmpl-agency .tmpl-badge{font-size:6px;padding:2px 7px;border:1px solid rgba(0,212,255,0.35);border-radius:20px;color:#00d4ff;display:inline-block;margin-top:4px}
+  .tmpl-agency .tmpl-graphic{width:40px;height:40px;border-radius:5px;background:linear-gradient(135deg,#7c3aff,#00d4ff);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px}
+  .tmpl-agency .tmpl-services-row{display:flex;gap:5px;padding:8px 0}
+  .tmpl-agency .tmpl-svc{flex:1;background:rgba(124,58,255,0.07);border:1px solid rgba(124,58,255,0.18);border-radius:3px;padding:5px 4px;text-align:center}
+  .tmpl-agency .tmpl-svc-ico{font-size:10px;margin-bottom:2px}
+  .tmpl-agency .tmpl-svc-name{font-size:6px;color:#fff;font-weight:700;text-transform:uppercase}
+  /* Template 3: Toko Online */
+  .tmpl-toko .tmpl-hero{background:linear-gradient(135deg,#001a12,#002b1a);padding:12px;border-bottom:1px solid rgba(0,212,100,0.12);display:flex;align-items:center;gap:8px}
+  .tmpl-toko .tmpl-logo-box{width:30px;height:30px;border-radius:5px;background:#00c864;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+  .tmpl-toko .tmpl-hero h3{font-size:9px;font-weight:900;color:#fff}
+  .tmpl-toko .tmpl-hero p{font-size:7px;color:rgba(0,200,100,0.6);margin-top:1px}
+  .tmpl-toko .tmpl-products{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:8px 0}
+  .tmpl-toko .tmpl-prod{background:rgba(0,100,50,0.07);border:1px solid rgba(0,200,100,0.12);border-radius:3px;padding:5px;text-align:center}
+  .tmpl-toko .tmpl-prod-img{font-size:14px;margin-bottom:2px}
+  .tmpl-toko .tmpl-prod-name{font-size:6px;color:#fff;font-weight:700}
+  .tmpl-toko .tmpl-prod-price{font-size:6px;color:#00c864;margin-top:1px}
+  .tmpl-toko .tmpl-prod-btn{margin-top:3px;font-size:5px;padding:2px 5px;background:#00c864;color:#000;border-radius:2px;font-weight:700;display:inline-block}
+  /* Template 4: Klinik */
+  .tmpl-klinik .tmpl-hero{background:linear-gradient(135deg,#00081a,#001030);padding:13px 12px;border-bottom:1px solid rgba(0,150,255,0.12);text-align:center}
+  .tmpl-klinik .tmpl-hero h3{font-size:10px;font-weight:900;color:#fff;margin-bottom:2px}
+  .tmpl-klinik .tmpl-hero p{font-size:7px;color:rgba(100,180,255,0.6)}
+  .tmpl-klinik .tmpl-services2{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:8px 0}
+  .tmpl-klinik .tmpl-svc2{background:rgba(0,150,255,0.05);border:1px solid rgba(0,150,255,0.14);border-radius:3px;padding:6px;display:flex;gap:5px;align-items:flex-start}
+  .tmpl-klinik .tmpl-svc2-ico{font-size:12px;flex-shrink:0}
+  .tmpl-klinik .tmpl-svc2-name{font-size:7px;color:#fff;font-weight:700}
+  .tmpl-klinik .tmpl-svc2-desc{font-size:6px;color:rgba(255,255,255,0.32);margin-top:1px;line-height:1.4}
+  /* Template 5: Hotel */
+  .tmpl-hotel .tmpl-hero{background:linear-gradient(135deg,#1a1000,#2a1800);padding:13px 12px;border-bottom:1px solid rgba(255,200,0,0.1);text-align:center}
+  .tmpl-hotel .tmpl-hero h3{font-size:10px;font-weight:900;color:#fff;letter-spacing:1.5px;margin-bottom:2px;text-transform:uppercase}
+  .tmpl-hotel .tmpl-hero p{font-size:7px;color:rgba(255,200,0,0.52)}
+  .tmpl-hotel .tmpl-rooms{display:flex;gap:5px;padding:8px 0}
+  .tmpl-hotel .tmpl-room{flex:1;background:rgba(255,200,0,0.04);border:1px solid rgba(255,200,0,0.1);border-radius:3px;padding:6px;text-align:center}
+  .tmpl-hotel .tmpl-room-ico{font-size:14px;margin-bottom:2px}
+  .tmpl-hotel .tmpl-room-name{font-size:6px;color:#fff;font-weight:700}
+  .tmpl-hotel .tmpl-room-price{font-size:6px;color:rgba(255,200,0,0.65);margin-top:1px}
+  .tmpl-hotel .tmpl-room-btn{margin-top:3px;font-size:5px;padding:2px 5px;border:1px solid rgba(255,200,0,0.4);color:#ffc800;border-radius:2px;display:inline-block}
+  /* Template 6: Properti */
+  .tmpl-prop .tmpl-hero{background:linear-gradient(135deg,#180028,#0c001e);padding:13px 12px;border-bottom:1px solid rgba(180,0,255,0.12);display:flex;gap:8px;align-items:center}
+  .tmpl-prop .tmpl-hero-ico{font-size:20px;flex-shrink:0}
+  .tmpl-prop .tmpl-hero h3{font-size:9px;font-weight:900;color:#fff;text-transform:uppercase}
+  .tmpl-prop .tmpl-hero p{font-size:7px;color:rgba(200,100,255,0.6);margin-top:1px}
+  .tmpl-prop .tmpl-listings{display:flex;flex-direction:column;gap:5px;padding:8px 0}
+  .tmpl-prop .tmpl-listing{background:rgba(150,0,255,0.05);border:1px solid rgba(150,0,255,0.14);border-radius:3px;padding:6px;display:flex;justify-content:space-between;align-items:center}
+  .tmpl-prop .tmpl-listing-info{font-size:7px;color:#fff;font-weight:700}
+  .tmpl-prop .tmpl-listing-sub{font-size:6px;color:rgba(255,255,255,0.3);margin-top:1px}
+  .tmpl-prop .tmpl-listing-price{font-size:7px;color:#cc66ff;font-weight:900;text-align:right}
+
   .cta-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(124,58,255,0.07) 0%,transparent 70%);pointer-events:none}
-  #contact h2{font-size:clamp(2.8rem,6vw,5rem);font-weight:900;color:#fff;letter-spacing:-2px;text-transform:uppercase;line-height:1.05;position:relative}
-  #contact h2 em{font-style:normal;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,0.32)}
-  #contact p{color:var(--muted);font-size:0.92rem;max-width:480px;margin:1.5rem auto 2.5rem;line-height:1.75;position:relative}
   .cta-btns{display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;position:relative}
   footer{position:relative;z-index:10;border-top:1px solid rgba(124,58,255,0.12);padding:3rem 5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:rgba(5,5,8,0.95)}
   footer p{color:var(--muted);font-size:0.78rem}
   .footer-links{display:flex;gap:2rem}
   .footer-links a{color:var(--muted);text-decoration:none;font-size:0.78rem;transition:color 0.3s}
   .footer-links a:hover{color:#fff}
-  @keyframes arrowBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeInDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
   @keyframes termBlink{0%,49%{opacity:1}50%,100%{opacity:0.25}}
   #btn-lanjutkan{animation:termBlink 1.2s ease-in-out infinite}
   #btn-lanjutkan:hover{opacity:1!important;animation:none;text-shadow:0 0 10px #00ff88;}
-  @keyframes fadeInUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes fadeInDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
   .reveal{opacity:0;transform:translateY(32px);transition:opacity 0.7s ease,transform 0.7s ease}
   .reveal.visible{opacity:1;transform:translateY(0)}
   ::-webkit-scrollbar{width:5px}
   ::-webkit-scrollbar-track{background:var(--bg)}
   ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--accent1),var(--accent2));border-radius:3px}
-  /* ── TABLET (≤ 900px) ── */
+  .ld-spinner{position:relative;width:120px;height:120px}
+  .ld-spinner-ring{width:100%;height:100%;border-radius:50%;position:relative}
+  .ld-tick{position:absolute;width:4px;height:10px;background:#00d4ff;border-radius:2px;transform-origin:50% 60px;opacity:0.15;box-shadow:0 0 4px #00d4ff}
+  .ld-tick.active-tick{opacity:1;box-shadow:0 0 8px #00d4ff,0 0 16px rgba(0,212,255,0.4)}
+  .ld-bar-wrap{width:200px}
+  .ld-bar-track{width:100%;height:18px;border:1.5px solid rgba(0,212,255,0.4);border-radius:3px;padding:2px;display:flex;gap:3px;box-shadow:0 0 10px rgba(0,212,255,0.1)}
+  .ld-bar-seg{flex:1;border-radius:2px;background:rgba(0,212,255,0.12);transition:background 0.2s,box-shadow 0.2s}
+  .ld-bar-seg.lit{background:#00d4ff;box-shadow:0 0 6px rgba(0,212,255,0.7)}
+  .ld-status{font-size:10px;color:rgba(0,212,255,0.6);letter-spacing:2px;text-transform:uppercase;font-family:monospace;text-align:center;margin-top:4px}
+  .ld-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(0,212,255,0.35);font-family:monospace}
+
   @media(max-width:900px){
-    nav{padding:1rem 2rem}
-    nav.scrolled{padding:0.8rem 2rem}
+    nav{padding:1rem 2rem}nav.scrolled{padding:0.8rem 2rem}
     .deck-wrap{height:500px;padding-right:32px;padding-bottom:14px}
-    .deck-card.front{right:32px}
-    .deck-card.back{left:32px}
-    .stats-grid{grid-template-columns:repeat(2,1fr);gap:1.5rem}
-    .portfolio-grid{grid-template-columns:1fr 1fr}
-    #work{padding:5rem 2rem}
+    .deck-card.front{right:32px}.deck-card.back{left:32px}
     footer{padding:2.5rem 2rem}
   }
-
-  /* ── MOBILE (≤ 600px) ── */
   @media(max-width:600px){
-    /* NAV */
-    nav{padding:0.9rem 1.2rem}
-    nav.scrolled{padding:0.7rem 1.2rem}
-    nav ul{display:none}
-    .logo{font-size:1.1rem;letter-spacing:2px}
-
-    /* HERO — laptop SVG jadi single-column stack di HP */
+    nav{padding:0.9rem 1.2rem}nav.scrolled{padding:0.7rem 1.2rem}
+    nav ul{display:none}.logo{font-size:1.1rem;letter-spacing:2px}
     .hero{height:auto;min-height:100svh;padding:80px 0 40px}
     .laptop-scene{width:100%;margin-top:0}
-    /* SVG laptop: layar dibuat portrait-friendly dengan viewBox lebih compact */
-    .laptop-float{animation:none} /* matikan float di HP supaya tidak memakan ruang */
-
-    /* Loading panel di HP: sembunyikan panel kanan, typing full width */
+    .laptop-float{animation:none}
     #loading-panel{display:none !important}
-    /* typing area full lebar */
-    .laptop-scene foreignObject > div > div:first-child{
-      border-right:none !important;
-      padding-right:0 !important;
-    }
-
-    /* SECTION 2 overlay */
     #alur-harga{padding:5rem 1rem 3rem}
-
-    /* DECK — tidak pakai efek perspektif, stack vertikal */
-    .deck-wrap{
-      height:auto;
-      padding-right:0;
-      padding-bottom:0;
-      display:flex;
-      flex-direction:column;
-      gap:1rem;
-      max-width:100%;
-    }
-    .deck-card{
-      position:relative !important;
-      top:auto !important;left:auto !important;right:auto !important;bottom:auto !important;
-      transform:none !important;
-      opacity:1 !important;
-      width:100%;
-      border-radius:8px;
-    }
-    .deck-card.back{display:none} /* HP: tampilkan satu kartu saja, swap dengan tombol */
+    .deck-wrap{height:auto;padding-right:0;padding-bottom:0;display:flex;flex-direction:column;gap:1rem;max-width:100%}
+    .deck-card{position:relative !important;top:auto !important;left:auto !important;right:auto !important;bottom:auto !important;transform:none !important;opacity:1 !important;width:100%;border-radius:8px}
+    .deck-card.back{display:none}
     .deck-card.front{display:block}
-    .deck-card.back.show-mobile{display:block}
-
-    /* Screen frame dalam deck */
     .screen-frame{min-height:auto}
     .sf-split{grid-template-columns:1fr}
     .sf-pane-left{border-right:none;border-bottom:1px solid rgba(124,58,255,0.15)}
     .sf-pane{padding:18px 16px}
-
-    /* CARD 2: template marquee */
     .monitor-screen-only{min-height:340px}
-    .screen-inner{height:340px !important}
-    .tmpl-marquee-wrap{height:340px}
-
-    /* STATS */
-    .stats-section{padding:3rem 1.5rem}
-    .stats-grid{grid-template-columns:repeat(2,1fr);gap:1.2rem}
-    .stat-number{font-size:2.2rem}
-
-    /* WORK/PORTFOLIO */
-    #work{padding:4rem 1rem}
-    .portfolio-grid{grid-template-columns:1fr}
-
-    /* CTA BUTTONS */
-    .cta-btns{flex-direction:column;align-items:center;gap:0.8rem}
-    .btn-primary,.btn-outline{width:100%;max-width:320px;text-align:center;padding:0.9rem 1.5rem}
-
-    /* KONTAK section */
-    #contact{padding:6rem 1.5rem}
-    #contact h2{font-size:clamp(2rem,10vw,3rem);letter-spacing:-1px}
-
-    /* FOOTER */
+    .tmpl-marquee-wrap{height:300px}
     footer{flex-direction:column;text-align:center;padding:2rem 1.2rem;gap:1rem}
     .footer-links{gap:1.2rem;flex-wrap:wrap;justify-content:center}
-
-    /* POPUP */
     .popup-box{padding:1.5rem 1.2rem;max-height:90vh;border-radius:12px}
     .popup-h2{font-size:1.2rem}
-
-    /* DECK HINT & NAV */
     .deck-hint{font-size:0.65rem}
     .deck-nav{margin-top:0.8rem;gap:0.7rem}
     .deck-swap-btn{font-size:0.65rem;padding:0.4rem 1rem}
-
-    /* SECTION 2 CTA */
     #alur-harga > div:last-child h2{font-size:clamp(1.8rem,8vw,2.8rem) !important;letter-spacing:-1px !important}
-    #alur-harga > div:last-child p{font-size:0.85rem !important;margin:1rem auto 1.8rem !important}
-
-    /* AH HEADER */
-    .ah-header{margin-bottom:2rem}
-    .ah-header h2{font-size:clamp(1.6rem,7vw,2.4rem)}
+    .cta-btns{flex-direction:column;align-items:center;gap:0.8rem}
+    .btn-primary,.btn-outline{width:100%;max-width:320px;text-align:center;padding:0.9rem 1.5rem}
+    #contact{padding:6rem 1.5rem}
   }
-
-  /* ── VERY SMALL (≤ 380px) ── */
   @media(max-width:380px){
-    nav{padding:0.8rem 1rem}
-    .logo{font-size:1rem;letter-spacing:1.5px}
-    .stats-grid{grid-template-columns:1fr 1fr;gap:1rem}
-    .stat-number{font-size:1.8rem}
+    nav{padding:0.8rem 1rem}.logo{font-size:1rem;letter-spacing:1.5px}
     .popup-box{padding:1.2rem 1rem}
     .sf-pane{padding:14px 12px}
-    .sf-stitle{font-size:10px}
-    .sf-sdesc{font-size:9px}
-    .sf-pkg{padding:10px}
   }
 </style>
 </head>
@@ -348,155 +322,47 @@
 <nav id="main-nav">
   <a href="#" class="logo">WEBLAB</a>
   <ul></ul>
-
 </nav>
 
 <section class="hero">
-  <div class="hero-text-top">
-
-  </div>
+  <div class="hero-text-top"></div>
   <div class="laptop-scene">
-    
-<svg class="laptop-float" viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
-<rect x="40" y="40" width="1120" height="620" rx="12" fill="#06081c" stroke="rgba(124,58,255,0.4)"/>
-<rect x="40" y="40" width="1120" height="32" fill="rgba(0,0,0,0.5)"/>
-<circle cx="65" cy="56" r="5" fill="#ff5f56"/>
-<circle cx="85" cy="56" r="5" fill="#ffbd2e"/>
-<circle cx="105" cy="56" r="5" fill="#27c93f"/>
-
-
-<rect x="70" y="100" width="1060" height="520" fill="#050818"/>
-<foreignObject x="90" y="120" width="1020" height="480">
-<div xmlns="http://www.w3.org/1999/xhtml" style="font-family:monospace;color:#00ff88;font-size:18px;line-height:1.8;height:100%;display:flex;flex-direction:row;overflow:hidden;gap:0">
-
-  <!-- KIRI: typing code -->
-  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid rgba(0,255,136,0.1);padding-right:20px">
-    <pre id="typing-code" style="flex:1;margin:0;white-space:pre-wrap;word-break:break-word;overflow:hidden"></pre>
-    <div id="btn-lanjutkan-wrap" style="display:none;padding:0.6rem 0 0.3rem">
-      <span id="btn-lanjutkan" onclick="openSection2()" style="font-family:monospace;color:#00ff88;font-size:18px;cursor:pointer;display:inline-block;border-bottom:1px solid #00ff88;padding-bottom:2px;user-select:none">// ▶ klik untuk lanjutkan</span>
-    </div>
-  </div>
-
-  <!-- KANAN: loading animation -->
-  <div id="loading-panel" style="width:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:20px;flex-shrink:0">
-    <style>
-      /* Spinner lingkaran */
-      .ld-spinner{position:relative;width:120px;height:120px}
-      .ld-spinner-ring{width:100%;height:100%;border-radius:50%;position:relative}
-      .ld-tick{position:absolute;width:4px;height:10px;background:#00d4ff;border-radius:2px;transform-origin:50% 60px;opacity:0.15;box-shadow:0 0 4px #00d4ff}
-      .ld-tick.active-tick{opacity:1;box-shadow:0 0 8px #00d4ff,0 0 16px rgba(0,212,255,0.4)}
-      /* Bar loading */
-      .ld-bar-wrap{width:200px}
-      .ld-bar-track{width:100%;height:18px;border:1.5px solid rgba(0,212,255,0.4);border-radius:3px;padding:2px;display:flex;gap:3px;box-shadow:0 0 10px rgba(0,212,255,0.1)}
-      .ld-bar-seg{flex:1;border-radius:2px;background:rgba(0,212,255,0.12);transition:background 0.2s,box-shadow 0.2s}
-      .ld-bar-seg.lit{background:#00d4ff;box-shadow:0 0 6px rgba(0,212,255,0.7)}
-      .ld-status{font-size:10px;color:rgba(0,212,255,0.6);letter-spacing:2px;text-transform:uppercase;font-family:monospace;text-align:center;margin-top:4px}
-      .ld-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(0,212,255,0.35);font-family:monospace}
-    </style>
-
-    <div class="ld-label">PROCESSING</div>
-
-    <!-- Lingkaran tick -->
-    <div class="ld-spinner">
-      <div class="ld-spinner-ring" id="ldRing"></div>
-    </div>
-
-    <!-- Bar -->
-    <div class="ld-bar-wrap">
-      <div class="ld-bar-track" id="ldBar"></div>
-      <div class="ld-status" id="ldStatus">LOADING... 0%</div>
-    </div>
-
-    <script>
-    (function(){
-      // Build ticks
-      var ring = document.getElementById('ldRing');
-      var totalTicks = 36;
-      for(var i=0;i<totalTicks;i++){
-        var tick = document.createElement('div');
-        tick.className = 'ld-tick';
-        var angle = (i/totalTicks)*360;
-        tick.style.transform = 'rotate('+angle+'deg) translateX(-50%)';
-        tick.style.left = '50%';
-        tick.style.top = '0';
-        ring.appendChild(tick);
-      }
-
-      // Build bar segments
-      var bar = document.getElementById('ldBar');
-      var totalSegs = 12;
-      for(var j=0;j<totalSegs;j++){
-        var seg = document.createElement('div');
-        seg.className = 'ld-bar-seg';
-        bar.appendChild(seg);
-      }
-
-      var ticks = ring.querySelectorAll('.ld-tick');
-      var segs = bar.querySelectorAll('.ld-bar-seg');
-      var head = 0;
-      var barProgress = 0;
-      var pct = 0;
-      var active = true;
-      var statusEl = document.getElementById('ldStatus');
-
-      // Spinner animation
-      function spinStep(){
-        if(!active) return;
-        ticks.forEach(function(t,idx){
-          var dist = (head - idx + totalTicks) % totalTicks;
-          if(dist < 6){
-            t.classList.add('active-tick');
-            t.style.opacity = (1 - dist/6).toFixed(2);
-          } else {
-            t.classList.remove('active-tick');
-            t.style.opacity = '0.1';
-          }
-        });
-        head = (head + 1) % totalTicks;
-      }
-
-      // Bar animation — sinkron dengan typing progress
-      function updateBar(progress){
-        // progress 0–1
-        var lit = Math.round(progress * totalSegs);
-        segs.forEach(function(s,idx){
-          if(idx < lit){ s.classList.add('lit'); }
-          else { s.classList.remove('lit'); }
-        });
-        var p = Math.round(progress * 100);
-        statusEl.textContent = 'LOADING... ' + p + '%';
-      }
-
-      // Expose to typeCode
-      window.ldSetProgress = function(p){ updateBar(p); };
-      window.ldStop = function(){
-        active = false;
-        ticks.forEach(function(t){ t.style.opacity='0.08'; t.classList.remove('active-tick'); });
-        updateBar(1);
-        statusEl.textContent = 'COMPLETE ✓';
-        statusEl.style.color = 'rgba(0,255,136,0.7)';
-      };
-
-      setInterval(spinStep, 50);
-    })();
-    </script>
-  </div>
-
-</div>
-</foreignObject>
-
-</svg>
-
+    <svg class="laptop-float" viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+      <rect x="40" y="40" width="1120" height="620" rx="12" fill="#06081c" stroke="rgba(124,58,255,0.4)"/>
+      <rect x="40" y="40" width="1120" height="32" fill="rgba(0,0,0,0.5)"/>
+      <circle cx="65" cy="56" r="5" fill="#ff5f56"/>
+      <circle cx="85" cy="56" r="5" fill="#ffbd2e"/>
+      <circle cx="105" cy="56" r="5" fill="#27c93f"/>
+      <rect x="70" y="100" width="1060" height="520" fill="#050818"/>
+      <foreignObject x="90" y="120" width="1020" height="480">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="font-family:monospace;color:#00ff88;font-size:18px;line-height:1.8;height:100%;display:flex;flex-direction:row;overflow:hidden;gap:0">
+          <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid rgba(0,255,136,0.1);padding-right:20px">
+            <pre id="typing-code" style="flex:1;margin:0;white-space:pre-wrap;word-break:break-word;overflow:hidden"></pre>
+            <div id="btn-lanjutkan-wrap" style="display:none;padding:0.6rem 0 0.3rem">
+              <span id="btn-lanjutkan" onclick="openSection2()" style="font-family:monospace;color:#00ff88;font-size:18px;cursor:pointer;display:inline-block;border-bottom:1px solid #00ff88;padding-bottom:2px;user-select:none">// ▶ klik untuk lanjutkan</span>
+            </div>
+          </div>
+          <div id="loading-panel" style="width:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:20px;flex-shrink:0">
+            <div class="ld-label">PROCESSING</div>
+            <div class="ld-spinner"><div class="ld-spinner-ring" id="ldRing"></div></div>
+            <div class="ld-bar-wrap">
+              <div class="ld-bar-track" id="ldBar"></div>
+              <div class="ld-status" id="ldStatus">LOADING... 0%</div>
+            </div>
+          </div>
+        </div>
+      </foreignObject>
+    </svg>
   </div>
 </section>
 
-<!-- SECTION 2: DECK STACK — tersembunyi, muncul sebagai overlay -->
+<!-- SECTION 2: OVERLAY FULL SCREEN -->
 <section id="alur-harga" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(5,5,8,0.97);backdrop-filter:blur(16px);overflow-y:auto;padding:4rem 2rem 5rem">
 
-  <!-- Tombol X untuk tutup -->
   <button onclick="closeSection2()" style="position:fixed;top:1.4rem;right:1.6rem;z-index:510;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.18);color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;font-family:Arial" onmouseover="this.style.background='rgba(255,255,255,0.16)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">&#10005;</button>
 
-  <div class="deck-hint">&#8592;&nbsp; geser layar untuk berganti &nbsp;&#8594;</div>
+  <div class="deck-hint">&#8592;&nbsp; klik kartu belakang untuk berganti &nbsp;&#8594;</div>
+
   <div class="deck-wrap reveal" id="deckWrap">
 
     <!-- CARD 1 (FRONT): Alur Kerja & Harga -->
@@ -522,8 +388,16 @@
               <div class="sf-plabel">UMKM</div>
               <div class="sf-pname">Landing Page UMKM</div>
               <div class="sf-price-row"><span class="sf-old">Rp 1.500.000</span></div>
-              <div class="sf-price-row"><span class="sf-price"><sup>Rp </sup>449.999</span><span class="sf-period">/ tahun pertama</span></div>
-              <ul class="sf-feats"><li>Domain .com + Shared Hosting</li><li>1 halaman, hingga 4 section</li><li>Copywriting Bahasa Indonesia</li><li>Tombol WhatsApp langsung</li><li>Desain responsif HP &amp; desktop</li><li>1x Revisi</li></ul>
+              <div class="sf-price-row"><span class="sf-price"><sup>Rp </sup>449.999</span></div>
+              <!-- PERBAIKAN 1: Hapus "1 tahun" dari teks hosting -->
+              <ul class="sf-feats">
+                <li>Domain .com + Shared Hosting</li>
+                <li>1 halaman, hingga 4 section</li>
+                <li>Copywriting Bahasa Indonesia</li>
+                <li>Tombol WhatsApp langsung</li>
+                <li>Desain responsif HP &amp; desktop</li>
+                <li>1x Revisi</li>
+              </ul>
             </div>
             <div class="sf-click-hint">&#8599; Klik untuk detail lengkap</div>
           </div>
@@ -531,307 +405,191 @@
       </div>
     </div>
 
-    <!-- CARD 2 (BACK): Layanan Kami -->
+    <!-- CARD 2 (BACK): Template Website — 2 kolom zigzag naik dalam layar monitor -->
     <div class="deck-card back" id="card2" onclick="swapDeck()">
-      <div class="monitor-screen-only" style="height:100%;min-height:unset">
+      <div class="monitor-screen-only">
         <div class="os-bar">
           <div class="os-dot r"></div><div class="os-dot y"></div><div class="os-dot g"></div>
-          <div class="os-url"><span class="os-urlbar">weblab.id/layanan</span></div>
+          <div class="os-url"><span class="os-urlbar">weblab.id/template</span></div>
         </div>
-        <div class="screen-inner" style="padding:0;overflow:hidden;position:relative;height:100%">
-          <!-- Marquee scroll: template website naik dari bawah ke atas -->
-          <style>
-            .tmpl-marquee-wrap{width:100%;height:100%;overflow:hidden;position:relative}
-            .tmpl-marquee-wrap::before,.tmpl-marquee-wrap::after{content:'';position:absolute;left:0;right:0;z-index:2;pointer-events:none}
-            .tmpl-marquee-wrap::before{top:0;height:40px;background:linear-gradient(180deg,#06081c,transparent)}
-            .tmpl-marquee-wrap::after{bottom:0;height:60px;background:linear-gradient(0deg,#06081c,transparent)}
-            .tmpl-track{display:flex;flex-direction:column;gap:16px;padding:16px;animation:scrollUp 38s linear infinite}
-            .tmpl-track:hover{animation-play-state:paused}
-            @keyframes scrollUp{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
-            .tmpl-card{border-radius:8px;overflow:hidden;border:1px solid rgba(124,58,255,0.22);background:#09091f;flex-shrink:0;transition:border-color 0.3s,box-shadow 0.3s}
-            .tmpl-card:hover{border-color:rgba(0,212,255,0.5);box-shadow:0 0 20px rgba(0,212,255,0.1)}
-            .tmpl-bar{height:22px;display:flex;align-items:center;padding:0 8px;gap:4px;background:#0c0e26;border-bottom:1px solid rgba(124,58,255,0.15)}
-            .tmpl-dot{width:7px;height:7px;border-radius:50%}
-            .tmpl-url{flex:1;text-align:center;font-size:8px;font-family:monospace;color:rgba(255,255,255,0.25)}
-            .tmpl-label{font-size:7px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:2px 6px;border-radius:2px;display:inline-block;margin-bottom:6px}
-            .tmpl-body{padding:12px 14px}
-            /* Template 1: Restoran */
-            .tmpl-resto .tmpl-hero{background:linear-gradient(135deg,#1a0800,#2d0e00);padding:18px 14px;text-align:center;border-bottom:1px solid rgba(255,140,0,0.15)}
-            .tmpl-resto .tmpl-hero h3{font-size:13px;font-weight:900;color:#fff;letter-spacing:1px;margin-bottom:4px}
-            .tmpl-resto .tmpl-hero p{font-size:9px;color:rgba(255,140,0,0.7)}
-            .tmpl-resto .tmpl-cta{display:inline-block;margin-top:8px;padding:4px 12px;background:#ff8c00;color:#000;font-size:8px;font-weight:700;border-radius:2px;letter-spacing:1px}
-            .tmpl-resto .tmpl-menu{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:10px 0}
-            .tmpl-resto .tmpl-item{background:rgba(255,140,0,0.06);border:1px solid rgba(255,140,0,0.12);border-radius:4px;padding:7px;text-align:center}
-            .tmpl-resto .tmpl-ikon{font-size:16px;margin-bottom:3px}
-            .tmpl-resto .tmpl-iname{font-size:8px;color:#fff;font-weight:700}
-            .tmpl-resto .tmpl-iprice{font-size:7px;color:#ff8c00}
-            /* Template 2: Agency / Jasa */
-            .tmpl-agency .tmpl-hero{background:linear-gradient(135deg,#06001a,#120038);padding:18px 14px;border-bottom:1px solid rgba(124,58,255,0.15);display:flex;gap:10px;align-items:center}
-            .tmpl-agency .tmpl-hero-text h3{font-size:12px;font-weight:900;color:#fff;margin-bottom:3px;text-transform:uppercase}
-            .tmpl-agency .tmpl-hero-text p{font-size:8px;color:rgba(255,255,255,0.4);line-height:1.5}
-            .tmpl-agency .tmpl-badge{font-size:7px;padding:2px 8px;border:1px solid rgba(0,212,255,0.4);border-radius:20px;color:#00d4ff;display:inline-block;margin-top:5px}
-            .tmpl-agency .tmpl-graphic{width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#7c3aff,#00d4ff);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px}
-            .tmpl-agency .tmpl-services-row{display:flex;gap:6px;padding:10px 0}
-            .tmpl-agency .tmpl-svc{flex:1;background:rgba(124,58,255,0.07);border:1px solid rgba(124,58,255,0.18);border-radius:4px;padding:6px 5px;text-align:center}
-            .tmpl-agency .tmpl-svc-ico{font-size:12px;margin-bottom:2px}
-            .tmpl-agency .tmpl-svc-name{font-size:7px;color:#fff;font-weight:700;text-transform:uppercase}
-            /* Template 3: Toko Online */
-            .tmpl-toko .tmpl-hero{background:linear-gradient(135deg,#001a12,#002b1a);padding:14px;border-bottom:1px solid rgba(0,212,100,0.15);display:flex;align-items:center;gap:10px}
-            .tmpl-toko .tmpl-logo-box{width:36px;height:36px;border-radius:6px;background:#00c864;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-            .tmpl-toko .tmpl-hero h3{font-size:11px;font-weight:900;color:#fff}
-            .tmpl-toko .tmpl-hero p{font-size:8px;color:rgba(0,200,100,0.6);margin-top:2px}
-            .tmpl-toko .tmpl-products{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:10px 0}
-            .tmpl-toko .tmpl-prod{background:rgba(0,100,50,0.07);border:1px solid rgba(0,200,100,0.12);border-radius:4px;padding:6px;text-align:center}
-            .tmpl-toko .tmpl-prod-img{font-size:18px;margin-bottom:3px}
-            .tmpl-toko .tmpl-prod-name{font-size:7px;color:#fff;font-weight:700}
-            .tmpl-toko .tmpl-prod-price{font-size:7px;color:#00c864;margin-top:2px}
-            .tmpl-toko .tmpl-prod-btn{margin-top:4px;font-size:6px;padding:2px 6px;background:#00c864;color:#000;border-radius:2px;font-weight:700;display:inline-block}
-            /* Template 4: Klinik / Kesehatan */
-            .tmpl-klinik .tmpl-hero{background:linear-gradient(135deg,#00081a,#001030);padding:16px 14px;border-bottom:1px solid rgba(0,150,255,0.15);text-align:center}
-            .tmpl-klinik .tmpl-hero h3{font-size:12px;font-weight:900;color:#fff;margin-bottom:3px}
-            .tmpl-klinik .tmpl-hero p{font-size:8px;color:rgba(100,180,255,0.6)}
-            .tmpl-klinik .tmpl-services2{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px 0}
-            .tmpl-klinik .tmpl-svc2{background:rgba(0,150,255,0.05);border:1px solid rgba(0,150,255,0.15);border-radius:4px;padding:8px;display:flex;gap:6px;align-items:flex-start}
-            .tmpl-klinik .tmpl-svc2-ico{font-size:14px;flex-shrink:0}
-            .tmpl-klinik .tmpl-svc2-name{font-size:8px;color:#fff;font-weight:700}
-            .tmpl-klinik .tmpl-svc2-desc{font-size:7px;color:rgba(255,255,255,0.35);margin-top:2px;line-height:1.4}
-            /* Template 5: Hotel / Penginapan */
-            .tmpl-hotel .tmpl-hero{background:linear-gradient(135deg,#1a1000,#2a1800);padding:16px 14px;border-bottom:1px solid rgba(255,200,0,0.12);text-align:center}
-            .tmpl-hotel .tmpl-hero h3{font-size:12px;font-weight:900;color:#fff;letter-spacing:2px;margin-bottom:3px;text-transform:uppercase}
-            .tmpl-hotel .tmpl-hero p{font-size:8px;color:rgba(255,200,0,0.55)}
-            .tmpl-hotel .tmpl-rooms{display:flex;gap:6px;padding:10px 0}
-            .tmpl-hotel .tmpl-room{flex:1;background:rgba(255,200,0,0.04);border:1px solid rgba(255,200,0,0.1);border-radius:4px;padding:7px;text-align:center}
-            .tmpl-hotel .tmpl-room-ico{font-size:16px;margin-bottom:3px}
-            .tmpl-hotel .tmpl-room-name{font-size:7px;color:#fff;font-weight:700}
-            .tmpl-hotel .tmpl-room-price{font-size:7px;color:rgba(255,200,0,0.7);margin-top:2px}
-            .tmpl-hotel .tmpl-room-btn{margin-top:4px;font-size:6px;padding:2px 6px;border:1px solid rgba(255,200,0,0.4);color:#ffc800;border-radius:2px;display:inline-block}
-            /* Template 6: Properti */
-            .tmpl-prop .tmpl-hero{background:linear-gradient(135deg,#180028,#0c001e);padding:16px 14px;border-bottom:1px solid rgba(180,0,255,0.15);display:flex;gap:10px;align-items:center}
-            .tmpl-prop .tmpl-hero-ico{font-size:24px;flex-shrink:0}
-            .tmpl-prop .tmpl-hero h3{font-size:11px;font-weight:900;color:#fff;text-transform:uppercase}
-            .tmpl-prop .tmpl-hero p{font-size:8px;color:rgba(200,100,255,0.6);margin-top:2px}
-            .tmpl-prop .tmpl-listings{display:flex;flex-direction:column;gap:6px;padding:10px 0}
-            .tmpl-prop .tmpl-listing{background:rgba(150,0,255,0.05);border:1px solid rgba(150,0,255,0.15);border-radius:4px;padding:7px;display:flex;justify-content:space-between;align-items:center}
-            .tmpl-prop .tmpl-listing-info{font-size:8px;color:#fff;font-weight:700}
-            .tmpl-prop .tmpl-listing-sub{font-size:7px;color:rgba(255,255,255,0.35);margin-top:1px}
-            .tmpl-prop .tmpl-listing-price{font-size:8px;color:#cc66ff;font-weight:900;text-align:right}
-          </style>
 
-          <div class="tmpl-marquee-wrap">
-            <div class="tmpl-track" id="tmplTrack">
+        <!-- MARQUEE: 2 kolom zigzag naik dari bawah ke atas, di dalam layar -->
+        <div class="tmpl-marquee-wrap">
 
-              <!-- TEMPLATE 1: Restoran -->
-              <div class="tmpl-card tmpl-resto">
-                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">warungbunda.id</div></div>
-                <div class="tmpl-body">
-                  <span class="tmpl-label" style="background:rgba(255,140,0,0.1);color:#ff8c00;border:1px solid rgba(255,140,0,0.25)">TEMPLATE — RESTORAN / KULINER</span>
-                  <div class="tmpl-hero">
-                    <h3>🍜 Warung Bunda</h3>
-                    <p>Masakan rumahan yang bikin kangen</p>
-                    <span class="tmpl-cta">Pesan Sekarang</span>
-                  </div>
-                  <div class="tmpl-menu">
-                    <div class="tmpl-item"><div class="tmpl-ikon">🍛</div><div class="tmpl-iname">Nasi Goreng</div><div class="tmpl-iprice">Rp 18.000</div></div>
-                    <div class="tmpl-item"><div class="tmpl-ikon">🥩</div><div class="tmpl-iname">Soto Ayam</div><div class="tmpl-iprice">Rp 22.000</div></div>
-                    <div class="tmpl-item"><div class="tmpl-ikon">🍢</div><div class="tmpl-iname">Sate Kombo</div><div class="tmpl-iprice">Rp 35.000</div></div>
-                  </div>
+          <!-- KOLOM KIRI (A) — naik normal -->
+          <div class="tmpl-col tmpl-col-a">
+            <!-- set 1 -->
+            <div class="tmpl-card tmpl-resto">
+              <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">warungbunda.id</div></div>
+              <div class="tmpl-body">
+                <span class="tmpl-label" style="background:rgba(255,140,0,0.1);color:#ff8c00;border:1px solid rgba(255,140,0,0.25)">RESTORAN / KULINER</span>
+                <div class="tmpl-hero"><h3>🍜 Warung Bunda</h3><p>Masakan rumahan yang bikin kangen</p><span class="tmpl-cta">Pesan Sekarang</span></div>
+                <div class="tmpl-menu">
+                  <div class="tmpl-item"><div class="tmpl-ikon">🍛</div><div class="tmpl-iname">Nasi Goreng</div><div class="tmpl-iprice">Rp 18.000</div></div>
+                  <div class="tmpl-item"><div class="tmpl-ikon">🥩</div><div class="tmpl-iname">Soto Ayam</div><div class="tmpl-iprice">Rp 22.000</div></div>
+                  <div class="tmpl-item"><div class="tmpl-ikon">🍢</div><div class="tmpl-iname">Sate Kombo</div><div class="tmpl-iprice">Rp 35.000</div></div>
                 </div>
               </div>
-
-              <!-- TEMPLATE 2: Agency -->
-              <div class="tmpl-card tmpl-agency">
-                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">nexadigital.id</div></div>
-                <div class="tmpl-body">
-                  <span class="tmpl-label" style="background:rgba(124,58,255,0.1);color:#a374ff;border:1px solid rgba(124,58,255,0.25)">TEMPLATE — AGENCY / JASA DIGITAL</span>
-                  <div class="tmpl-hero">
-                    <div class="tmpl-graphic">🚀</div>
-                    <div class="tmpl-hero-text">
-                      <h3>Nexa Digital</h3>
-                      <p>Kami bantu bisnis Anda tumbuh lewat strategi digital yang tepat sasaran</p>
-                      <span class="tmpl-badge">Konsultasi Gratis →</span>
-                    </div>
-                  </div>
-                  <div class="tmpl-services-row">
-                    <div class="tmpl-svc"><div class="tmpl-svc-ico">🎨</div><div class="tmpl-svc-name">Desain</div></div>
-                    <div class="tmpl-svc"><div class="tmpl-svc-ico">📈</div><div class="tmpl-svc-name">SEO</div></div>
-                    <div class="tmpl-svc"><div class="tmpl-svc-ico">📱</div><div class="tmpl-svc-name">Ads</div></div>
-                    <div class="tmpl-svc"><div class="tmpl-svc-ico">💻</div><div class="tmpl-svc-name">Web Dev</div></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- TEMPLATE 3: Toko Online -->
-              <div class="tmpl-card tmpl-toko">
-                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">tokosegar.id</div></div>
-                <div class="tmpl-body">
-                  <span class="tmpl-label" style="background:rgba(0,200,100,0.08);color:#00c864;border:1px solid rgba(0,200,100,0.2)">TEMPLATE — TOKO ONLINE / E-COMMERCE</span>
-                  <div class="tmpl-hero">
-                    <div class="tmpl-logo-box">🛒</div>
-                    <div>
-                      <h3>TokoSegar</h3>
-                      <p>Produk segar langsung dari petani</p>
-                    </div>
-                  </div>
-                  <div class="tmpl-products">
-                    <div class="tmpl-prod"><div class="tmpl-prod-img">🥦</div><div class="tmpl-prod-name">Brokoli Segar</div><div class="tmpl-prod-price">Rp 12.000/kg</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
-                    <div class="tmpl-prod"><div class="tmpl-prod-img">🍎</div><div class="tmpl-prod-name">Apel Malang</div><div class="tmpl-prod-price">Rp 25.000/kg</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
-                    <div class="tmpl-prod"><div class="tmpl-prod-img">🌽</div><div class="tmpl-prod-name">Jagung Manis</div><div class="tmpl-prod-price">Rp 8.000/bh</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- TEMPLATE 4: Klinik -->
-              <div class="tmpl-card tmpl-klinik">
-                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">klinikkasih.id</div></div>
-                <div class="tmpl-body">
-                  <span class="tmpl-label" style="background:rgba(0,150,255,0.08);color:#4db8ff;border:1px solid rgba(0,150,255,0.2)">TEMPLATE — KLINIK / KESEHATAN</span>
-                  <div class="tmpl-hero">
-                    <h3>🏥 Klinik Kasih Sehat</h3>
-                    <p>Pelayanan kesehatan terpercaya sejak 2010</p>
-                  </div>
-                  <div class="tmpl-services2">
-                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🩺</div><div><div class="tmpl-svc2-name">Dokter Umum</div><div class="tmpl-svc2-desc">Senin–Sabtu 08.00–20.00</div></div></div>
-                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🦷</div><div><div class="tmpl-svc2-name">Dokter Gigi</div><div class="tmpl-svc2-desc">Selasa, Kamis, Sabtu</div></div></div>
-                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">💉</div><div><div class="tmpl-svc2-name">Imunisasi</div><div class="tmpl-svc2-desc">Setiap hari, daftar online</div></div></div>
-                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🔬</div><div><div class="tmpl-svc2-name">Lab Darah</div><div class="tmpl-svc2-desc">Hasil cepat 2–4 jam</div></div></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- TEMPLATE 5: Hotel -->
-              <div class="tmpl-card tmpl-hotel">
-                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">villamutiara.id</div></div>
-                <div class="tmpl-body">
-                  <span class="tmpl-label" style="background:rgba(255,200,0,0.07);color:#ffc800;border:1px solid rgba(255,200,0,0.2)">TEMPLATE — HOTEL / PENGINAPAN</span>
-                  <div class="tmpl-hero">
-                    <h3>Villa Mutiara</h3>
-                    <p>Ketenangan di atas bukit dengan pemandangan tak terlupakan</p>
-                  </div>
-                  <div class="tmpl-rooms">
-                    <div class="tmpl-room"><div class="tmpl-room-ico">🛏️</div><div class="tmpl-room-name">Deluxe Room</div><div class="tmpl-room-price">Rp 450.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
-                    <div class="tmpl-room"><div class="tmpl-room-ico">🌅</div><div class="tmpl-room-name">Suite View</div><div class="tmpl-room-price">Rp 750.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
-                    <div class="tmpl-room"><div class="tmpl-room-ico">🏡</div><div class="tmpl-room-name">Villa Private</div><div class="tmpl-room-price">Rp 1.200.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- TEMPLATE 6: Properti -->
-              <div class="tmpl-card tmpl-prop">
-                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">rumahpro.id</div></div>
-                <div class="tmpl-body">
-                  <span class="tmpl-label" style="background:rgba(150,0,255,0.08);color:#cc66ff;border:1px solid rgba(150,0,255,0.2)">TEMPLATE — PROPERTI / REAL ESTATE</span>
-                  <div class="tmpl-hero">
-                    <div class="tmpl-hero-ico">🏠</div>
-                    <div>
-                      <h3>RumahPro Realty</h3>
-                      <p>Temukan properti impian Anda bersama kami</p>
-                    </div>
-                  </div>
-                  <div class="tmpl-listings">
-                    <div class="tmpl-listing"><div><div class="tmpl-listing-info">Rumah 3KT — Bekasi Timur</div><div class="tmpl-listing-sub">LB 90m² · LT 120m² · SHM</div></div><div class="tmpl-listing-price">Rp 650 Jt</div></div>
-                    <div class="tmpl-listing"><div><div class="tmpl-listing-info">Kos Eksklusif — Depok</div><div class="tmpl-listing-sub">12 kamar · Full AC · WiFi</div></div><div class="tmpl-listing-price">Rp 1,2 M</div></div>
-                    <div class="tmpl-listing"><div><div class="tmpl-listing-info">Ruko 2 Lantai — Bogor</div><div class="tmpl-listing-sub">LB 120m² · Pinggir jalan</div></div><div class="tmpl-listing-price">Rp 900 Jt</div></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- DUPLIKAT untuk seamless loop -->
-              <div class="tmpl-card tmpl-resto">
-                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">warungbunda.id</div></div>
-                <div class="tmpl-body">
-                  <span class="tmpl-label" style="background:rgba(255,140,0,0.1);color:#ff8c00;border:1px solid rgba(255,140,0,0.25)">TEMPLATE — RESTORAN / KULINER</span>
-                  <div class="tmpl-hero"><h3>🍜 Warung Bunda</h3><p>Masakan rumahan yang bikin kangen</p><span class="tmpl-cta">Pesan Sekarang</span></div>
-                  <div class="tmpl-menu">
-                    <div class="tmpl-item"><div class="tmpl-ikon">🍛</div><div class="tmpl-iname">Nasi Goreng</div><div class="tmpl-iprice">Rp 18.000</div></div>
-                    <div class="tmpl-item"><div class="tmpl-ikon">🥩</div><div class="tmpl-iname">Soto Ayam</div><div class="tmpl-iprice">Rp 22.000</div></div>
-                    <div class="tmpl-item"><div class="tmpl-ikon">🍢</div><div class="tmpl-iname">Sate Kombo</div><div class="tmpl-iprice">Rp 35.000</div></div>
-                  </div>
-                </div>
-              </div>
-              <div class="tmpl-card tmpl-agency">
-                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">nexadigital.id</div></div>
-                <div class="tmpl-body">
-                  <span class="tmpl-label" style="background:rgba(124,58,255,0.1);color:#a374ff;border:1px solid rgba(124,58,255,0.25)">TEMPLATE — AGENCY / JASA DIGITAL</span>
-                  <div class="tmpl-hero"><div class="tmpl-graphic">🚀</div><div class="tmpl-hero-text"><h3>Nexa Digital</h3><p>Kami bantu bisnis Anda tumbuh lewat strategi digital yang tepat sasaran</p><span class="tmpl-badge">Konsultasi Gratis →</span></div></div>
-                  <div class="tmpl-services-row">
-                    <div class="tmpl-svc"><div class="tmpl-svc-ico">🎨</div><div class="tmpl-svc-name">Desain</div></div>
-                    <div class="tmpl-svc"><div class="tmpl-svc-ico">📈</div><div class="tmpl-svc-name">SEO</div></div>
-                    <div class="tmpl-svc"><div class="tmpl-svc-ico">📱</div><div class="tmpl-svc-name">Ads</div></div>
-                    <div class="tmpl-svc"><div class="tmpl-svc-ico">💻</div><div class="tmpl-svc-name">Web Dev</div></div>
-                  </div>
-                </div>
-              </div>
-              <div class="tmpl-card tmpl-toko">
-                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">tokosegar.id</div></div>
-                <div class="tmpl-body">
-                  <span class="tmpl-label" style="background:rgba(0,200,100,0.08);color:#00c864;border:1px solid rgba(0,200,100,0.2)">TEMPLATE — TOKO ONLINE / E-COMMERCE</span>
-                  <div class="tmpl-hero"><div class="tmpl-logo-box">🛒</div><div><h3>TokoSegar</h3><p>Produk segar langsung dari petani</p></div></div>
-                  <div class="tmpl-products">
-                    <div class="tmpl-prod"><div class="tmpl-prod-img">🥦</div><div class="tmpl-prod-name">Brokoli Segar</div><div class="tmpl-prod-price">Rp 12.000/kg</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
-                    <div class="tmpl-prod"><div class="tmpl-prod-img">🍎</div><div class="tmpl-prod-name">Apel Malang</div><div class="tmpl-prod-price">Rp 25.000/kg</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
-                    <div class="tmpl-prod"><div class="tmpl-prod-img">🌽</div><div class="tmpl-prod-name">Jagung Manis</div><div class="tmpl-prod-price">Rp 8.000/bh</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
-                  </div>
-                </div>
-              </div>
-              <div class="tmpl-card tmpl-klinik">
-                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">klinikkasih.id</div></div>
-                <div class="tmpl-body">
-                  <span class="tmpl-label" style="background:rgba(0,150,255,0.08);color:#4db8ff;border:1px solid rgba(0,150,255,0.2)">TEMPLATE — KLINIK / KESEHATAN</span>
-                  <div class="tmpl-hero"><h3>🏥 Klinik Kasih Sehat</h3><p>Pelayanan kesehatan terpercaya sejak 2010</p></div>
-                  <div class="tmpl-services2">
-                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🩺</div><div><div class="tmpl-svc2-name">Dokter Umum</div><div class="tmpl-svc2-desc">Senin–Sabtu 08.00–20.00</div></div></div>
-                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🦷</div><div><div class="tmpl-svc2-name">Dokter Gigi</div><div class="tmpl-svc2-desc">Selasa, Kamis, Sabtu</div></div></div>
-                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">💉</div><div><div class="tmpl-svc2-name">Imunisasi</div><div class="tmpl-svc2-desc">Setiap hari, daftar online</div></div></div>
-                    <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🔬</div><div><div class="tmpl-svc2-name">Lab Darah</div><div class="tmpl-svc2-desc">Hasil cepat 2–4 jam</div></div></div>
-                  </div>
-                </div>
-              </div>
-              <div class="tmpl-card tmpl-hotel">
-                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">villamutiara.id</div></div>
-                <div class="tmpl-body">
-                  <span class="tmpl-label" style="background:rgba(255,200,0,0.07);color:#ffc800;border:1px solid rgba(255,200,0,0.2)">TEMPLATE — HOTEL / PENGINAPAN</span>
-                  <div class="tmpl-hero"><h3>Villa Mutiara</h3><p>Ketenangan di atas bukit dengan pemandangan tak terlupakan</p></div>
-                  <div class="tmpl-rooms">
-                    <div class="tmpl-room"><div class="tmpl-room-ico">🛏️</div><div class="tmpl-room-name">Deluxe Room</div><div class="tmpl-room-price">Rp 450.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
-                    <div class="tmpl-room"><div class="tmpl-room-ico">🌅</div><div class="tmpl-room-name">Suite View</div><div class="tmpl-room-price">Rp 750.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
-                    <div class="tmpl-room"><div class="tmpl-room-ico">🏡</div><div class="tmpl-room-name">Villa Private</div><div class="tmpl-room-price">Rp 1.200.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
-                  </div>
-                </div>
-              </div>
-              <div class="tmpl-card tmpl-prop">
-                <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">rumahpro.id</div></div>
-                <div class="tmpl-body">
-                  <span class="tmpl-label" style="background:rgba(150,0,255,0.08);color:#cc66ff;border:1px solid rgba(150,0,255,0.2)">TEMPLATE — PROPERTI / REAL ESTATE</span>
-                  <div class="tmpl-hero"><div class="tmpl-hero-ico">🏠</div><div><h3>RumahPro Realty</h3><p>Temukan properti impian Anda bersama kami</p></div></div>
-                  <div class="tmpl-listings">
-                    <div class="tmpl-listing"><div><div class="tmpl-listing-info">Rumah 3KT — Bekasi Timur</div><div class="tmpl-listing-sub">LB 90m² · LT 120m² · SHM</div></div><div class="tmpl-listing-price">Rp 650 Jt</div></div>
-                    <div class="tmpl-listing"><div><div class="tmpl-listing-info">Kos Eksklusif — Depok</div><div class="tmpl-listing-sub">12 kamar · Full AC · WiFi</div></div><div class="tmpl-listing-price">Rp 1,2 M</div></div>
-                    <div class="tmpl-listing"><div><div class="tmpl-listing-info">Ruko 2 Lantai — Bogor</div><div class="tmpl-listing-sub">LB 120m² · Pinggir jalan</div></div><div class="tmpl-listing-price">Rp 900 Jt</div></div>
-                  </div>
-                </div>
-              </div>
-
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            <div class="tmpl-card tmpl-toko">
+              <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">tokosegar.id</div></div>
+              <div class="tmpl-body">
+                <span class="tmpl-label" style="background:rgba(0,200,100,0.08);color:#00c864;border:1px solid rgba(0,200,100,0.2)">TOKO ONLINE / E-COMMERCE</span>
+                <div class="tmpl-hero"><div class="tmpl-logo-box">🛒</div><div><h3>TokoSegar</h3><p>Produk segar langsung dari petani</p></div></div>
+                <div class="tmpl-products">
+                  <div class="tmpl-prod"><div class="tmpl-prod-img">🥦</div><div class="tmpl-prod-name">Brokoli</div><div class="tmpl-prod-price">Rp 12.000/kg</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
+                  <div class="tmpl-prod"><div class="tmpl-prod-img">🍎</div><div class="tmpl-prod-name">Apel</div><div class="tmpl-prod-price">Rp 25.000/kg</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
+                  <div class="tmpl-prod"><div class="tmpl-prod-img">🌽</div><div class="tmpl-prod-name">Jagung</div><div class="tmpl-prod-price">Rp 8.000/bh</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="tmpl-card tmpl-hotel">
+              <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">villamutiara.id</div></div>
+              <div class="tmpl-body">
+                <span class="tmpl-label" style="background:rgba(255,200,0,0.07);color:#ffc800;border:1px solid rgba(255,200,0,0.2)">HOTEL / PENGINAPAN</span>
+                <div class="tmpl-hero"><h3>Villa Mutiara</h3><p>Ketenangan di atas bukit pemandangan tak terlupakan</p></div>
+                <div class="tmpl-rooms">
+                  <div class="tmpl-room"><div class="tmpl-room-ico">🛏️</div><div class="tmpl-room-name">Deluxe Room</div><div class="tmpl-room-price">Rp 450.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
+                  <div class="tmpl-room"><div class="tmpl-room-ico">🌅</div><div class="tmpl-room-name">Suite View</div><div class="tmpl-room-price">Rp 750.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
+                </div>
+              </div>
+            </div>
+            <!-- set 2 duplikat seamless -->
+            <div class="tmpl-card tmpl-resto">
+              <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">warungbunda.id</div></div>
+              <div class="tmpl-body">
+                <span class="tmpl-label" style="background:rgba(255,140,0,0.1);color:#ff8c00;border:1px solid rgba(255,140,0,0.25)">RESTORAN / KULINER</span>
+                <div class="tmpl-hero"><h3>🍜 Warung Bunda</h3><p>Masakan rumahan yang bikin kangen</p><span class="tmpl-cta">Pesan Sekarang</span></div>
+                <div class="tmpl-menu">
+                  <div class="tmpl-item"><div class="tmpl-ikon">🍛</div><div class="tmpl-iname">Nasi Goreng</div><div class="tmpl-iprice">Rp 18.000</div></div>
+                  <div class="tmpl-item"><div class="tmpl-ikon">🥩</div><div class="tmpl-iname">Soto Ayam</div><div class="tmpl-iprice">Rp 22.000</div></div>
+                  <div class="tmpl-item"><div class="tmpl-ikon">🍢</div><div class="tmpl-iname">Sate Kombo</div><div class="tmpl-iprice">Rp 35.000</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="tmpl-card tmpl-toko">
+              <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">tokosegar.id</div></div>
+              <div class="tmpl-body">
+                <span class="tmpl-label" style="background:rgba(0,200,100,0.08);color:#00c864;border:1px solid rgba(0,200,100,0.2)">TOKO ONLINE / E-COMMERCE</span>
+                <div class="tmpl-hero"><div class="tmpl-logo-box">🛒</div><div><h3>TokoSegar</h3><p>Produk segar langsung dari petani</p></div></div>
+                <div class="tmpl-products">
+                  <div class="tmpl-prod"><div class="tmpl-prod-img">🥦</div><div class="tmpl-prod-name">Brokoli</div><div class="tmpl-prod-price">Rp 12.000/kg</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
+                  <div class="tmpl-prod"><div class="tmpl-prod-img">🍎</div><div class="tmpl-prod-name">Apel</div><div class="tmpl-prod-price">Rp 25.000/kg</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
+                  <div class="tmpl-prod"><div class="tmpl-prod-img">🌽</div><div class="tmpl-prod-name">Jagung</div><div class="tmpl-prod-price">Rp 8.000/bh</div><span class="tmpl-prod-btn">+ Keranjang</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="tmpl-card tmpl-hotel">
+              <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">villamutiara.id</div></div>
+              <div class="tmpl-body">
+                <span class="tmpl-label" style="background:rgba(255,200,0,0.07);color:#ffc800;border:1px solid rgba(255,200,0,0.2)">HOTEL / PENGINAPAN</span>
+                <div class="tmpl-hero"><h3>Villa Mutiara</h3><p>Ketenangan di atas bukit pemandangan tak terlupakan</p></div>
+                <div class="tmpl-rooms">
+                  <div class="tmpl-room"><div class="tmpl-room-ico">🛏️</div><div class="tmpl-room-name">Deluxe Room</div><div class="tmpl-room-price">Rp 450.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
+                  <div class="tmpl-room"><div class="tmpl-room-ico">🌅</div><div class="tmpl-room-name">Suite View</div><div class="tmpl-room-price">Rp 750.000/mlm</div><span class="tmpl-room-btn">Booking</span></div>
+                </div>
+              </div>
+            </div>
+          </div><!-- /tmpl-col-a -->
 
-  </div>
+          <!-- KOLOM KANAN (B) — offset margin-top 80px untuk efek zigzag, speed beda -->
+          <div class="tmpl-col tmpl-col-b">
+            <!-- set 1 -->
+            <div class="tmpl-card tmpl-agency">
+              <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">nexadigital.id</div></div>
+              <div class="tmpl-body">
+                <span class="tmpl-label" style="background:rgba(124,58,255,0.1);color:#a374ff;border:1px solid rgba(124,58,255,0.25)">AGENCY / JASA DIGITAL</span>
+                <div class="tmpl-hero"><div class="tmpl-graphic">🚀</div><div class="tmpl-hero-text"><h3>Nexa Digital</h3><p>Kami bantu bisnis Anda tumbuh lewat strategi digital yang tepat sasaran</p><span class="tmpl-badge">Konsultasi Gratis →</span></div></div>
+                <div class="tmpl-services-row">
+                  <div class="tmpl-svc"><div class="tmpl-svc-ico">🎨</div><div class="tmpl-svc-name">Desain</div></div>
+                  <div class="tmpl-svc"><div class="tmpl-svc-ico">📈</div><div class="tmpl-svc-name">SEO</div></div>
+                  <div class="tmpl-svc"><div class="tmpl-svc-ico">📱</div><div class="tmpl-svc-name">Ads</div></div>
+                  <div class="tmpl-svc"><div class="tmpl-svc-ico">💻</div><div class="tmpl-svc-name">Web Dev</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="tmpl-card tmpl-klinik">
+              <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">klinikkasih.id</div></div>
+              <div class="tmpl-body">
+                <span class="tmpl-label" style="background:rgba(0,150,255,0.08);color:#4db8ff;border:1px solid rgba(0,150,255,0.2)">KLINIK / KESEHATAN</span>
+                <div class="tmpl-hero"><h3>🏥 Klinik Kasih Sehat</h3><p>Pelayanan kesehatan terpercaya sejak 2010</p></div>
+                <div class="tmpl-services2">
+                  <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🩺</div><div><div class="tmpl-svc2-name">Dokter Umum</div><div class="tmpl-svc2-desc">Senin–Sabtu 08.00–20.00</div></div></div>
+                  <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🦷</div><div><div class="tmpl-svc2-name">Dokter Gigi</div><div class="tmpl-svc2-desc">Selasa, Kamis, Sabtu</div></div></div>
+                  <div class="tmpl-svc2"><div class="tmpl-svc2-ico">💉</div><div><div class="tmpl-svc2-name">Imunisasi</div><div class="tmpl-svc2-desc">Setiap hari, daftar online</div></div></div>
+                  <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🔬</div><div><div class="tmpl-svc2-name">Lab Darah</div><div class="tmpl-svc2-desc">Hasil cepat 2–4 jam</div></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="tmpl-card tmpl-prop">
+              <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">rumahpro.id</div></div>
+              <div class="tmpl-body">
+                <span class="tmpl-label" style="background:rgba(150,0,255,0.08);color:#cc66ff;border:1px solid rgba(150,0,255,0.2)">PROPERTI / REAL ESTATE</span>
+                <div class="tmpl-hero"><div class="tmpl-hero-ico">🏠</div><div><h3>RumahPro Realty</h3><p>Temukan properti impian Anda bersama kami</p></div></div>
+                <div class="tmpl-listings">
+                  <div class="tmpl-listing"><div><div class="tmpl-listing-info">Rumah 3KT — Bekasi Timur</div><div class="tmpl-listing-sub">LB 90m² · LT 120m² · SHM</div></div><div class="tmpl-listing-price">Rp 650 Jt</div></div>
+                  <div class="tmpl-listing"><div><div class="tmpl-listing-info">Kos Eksklusif — Depok</div><div class="tmpl-listing-sub">12 kamar · Full AC · WiFi</div></div><div class="tmpl-listing-price">Rp 1,2 M</div></div>
+                </div>
+              </div>
+            </div>
+            <!-- set 2 duplikat seamless -->
+            <div class="tmpl-card tmpl-agency">
+              <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">nexadigital.id</div></div>
+              <div class="tmpl-body">
+                <span class="tmpl-label" style="background:rgba(124,58,255,0.1);color:#a374ff;border:1px solid rgba(124,58,255,0.25)">AGENCY / JASA DIGITAL</span>
+                <div class="tmpl-hero"><div class="tmpl-graphic">🚀</div><div class="tmpl-hero-text"><h3>Nexa Digital</h3><p>Kami bantu bisnis Anda tumbuh lewat strategi digital yang tepat sasaran</p><span class="tmpl-badge">Konsultasi Gratis →</span></div></div>
+                <div class="tmpl-services-row">
+                  <div class="tmpl-svc"><div class="tmpl-svc-ico">🎨</div><div class="tmpl-svc-name">Desain</div></div>
+                  <div class="tmpl-svc"><div class="tmpl-svc-ico">📈</div><div class="tmpl-svc-name">SEO</div></div>
+                  <div class="tmpl-svc"><div class="tmpl-svc-ico">📱</div><div class="tmpl-svc-name">Ads</div></div>
+                  <div class="tmpl-svc"><div class="tmpl-svc-ico">💻</div><div class="tmpl-svc-name">Web Dev</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="tmpl-card tmpl-klinik">
+              <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">klinikkasih.id</div></div>
+              <div class="tmpl-body">
+                <span class="tmpl-label" style="background:rgba(0,150,255,0.08);color:#4db8ff;border:1px solid rgba(0,150,255,0.2)">KLINIK / KESEHATAN</span>
+                <div class="tmpl-hero"><h3>🏥 Klinik Kasih Sehat</h3><p>Pelayanan kesehatan terpercaya sejak 2010</p></div>
+                <div class="tmpl-services2">
+                  <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🩺</div><div><div class="tmpl-svc2-name">Dokter Umum</div><div class="tmpl-svc2-desc">Senin–Sabtu 08.00–20.00</div></div></div>
+                  <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🦷</div><div><div class="tmpl-svc2-name">Dokter Gigi</div><div class="tmpl-svc2-desc">Selasa, Kamis, Sabtu</div></div></div>
+                  <div class="tmpl-svc2"><div class="tmpl-svc2-ico">💉</div><div><div class="tmpl-svc2-name">Imunisasi</div><div class="tmpl-svc2-desc">Setiap hari, daftar online</div></div></div>
+                  <div class="tmpl-svc2"><div class="tmpl-svc2-ico">🔬</div><div><div class="tmpl-svc2-name">Lab Darah</div><div class="tmpl-svc2-desc">Hasil cepat 2–4 jam</div></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="tmpl-card tmpl-prop">
+              <div class="tmpl-bar"><div class="tmpl-dot" style="background:#ff5f56"></div><div class="tmpl-dot" style="background:#ffbd2e"></div><div class="tmpl-dot" style="background:#27c93f"></div><div class="tmpl-url">rumahpro.id</div></div>
+              <div class="tmpl-body">
+                <span class="tmpl-label" style="background:rgba(150,0,255,0.08);color:#cc66ff;border:1px solid rgba(150,0,255,0.2)">PROPERTI / REAL ESTATE</span>
+                <div class="tmpl-hero"><div class="tmpl-hero-ico">🏠</div><div><h3>RumahPro Realty</h3><p>Temukan properti impian Anda bersama kami</p></div></div>
+                <div class="tmpl-listings">
+                  <div class="tmpl-listing"><div><div class="tmpl-listing-info">Rumah 3KT — Bekasi Timur</div><div class="tmpl-listing-sub">LB 90m² · LT 120m² · SHM</div></div><div class="tmpl-listing-price">Rp 650 Jt</div></div>
+                  <div class="tmpl-listing"><div><div class="tmpl-listing-info">Kos Eksklusif — Depok</div><div class="tmpl-listing-sub">12 kamar · Full AC · WiFi</div></div><div class="tmpl-listing-price">Rp 1,2 M</div></div>
+                </div>
+              </div>
+            </div>
+          </div><!-- /tmpl-col-b -->
+
+        </div><!-- /tmpl-marquee-wrap -->
+      </div><!-- /monitor-screen-only -->
+    </div><!-- /card2 -->
+
+  </div><!-- /deck-wrap -->
+
   <div class="deck-nav">
     <div class="deck-dot active" id="dot1" onclick="setFront(0)"></div>
     <div class="deck-dot" id="dot2" onclick="setFront(1)"></div>
     <button class="deck-swap-btn" onclick="swapDeck()">&#8646; Geser Layar</button>
   </div>
 
-  <!-- KONTAK: gabung di section 3 -->
+  <!-- CTA KONTAK -->
   <div style="width:100%;margin-top:5rem;text-align:center;position:relative;z-index:10">
     <div class="cta-bg"></div>
     <h2 style="font-size:clamp(2.8rem,6vw,5rem);font-weight:900;color:#fff;letter-spacing:-2px;text-transform:uppercase;line-height:1.05;position:relative">SIAP MULAI<br><em style="font-style:normal;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,0.32)">PROYEK</em> ANDA?</h2>
-    <p style="color:var(--muted);font-size:0.92rem;max-width:480px;margin:1.5rem auto 2.5rem;line-height:1.75;position:relative">Konsultasi gratis, tidak ada biaya tersembunyi. Ceritakan bisnis Anda — kami bantu wujudkan website yang langsung bisa terima pelanggan.</p>
     <div class="cta-btns">
-      <a href="https://wa.me/6285117031202?text=Hallo%2C%20mau%20pesan%20jasa%20desain%20website" class="btn-primary">&#128172; Chat WhatsApp Gratis</a>
-
+      <a href="https://wa.me/6285117031202?text=Hallo%2C%20mau%20pesan%20jasa%20desain%20website" class="btn-primary" style="background:#25D366;color:#fff;display:inline-flex;align-items:center;gap:0.6rem;border-radius:4px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20" style="flex-shrink:0"><circle cx="24" cy="24" r="24" fill="#25D366"/><path fill="#fff" d="M24 8C15.163 8 8 15.163 8 24c0 2.836.744 5.494 2.04 7.8L8 40l8.476-2.008A15.93 15.93 0 0024 40c8.837 0 16-7.163 16-16S32.837 8 24 8zm0 29.333a13.27 13.27 0 01-6.77-1.846l-.486-.29-5.028 1.19 1.21-4.896-.317-.503A13.267 13.267 0 0110.667 24C10.667 16.636 16.636 10.667 24 10.667S37.333 16.636 37.333 24 31.364 37.333 24 37.333zm7.27-9.908c-.398-.2-2.355-1.162-2.72-1.295-.365-.133-.63-.2-.896.2-.265.398-1.03 1.295-1.262 1.56-.232.266-.465.3-.863.1-.398-.2-1.68-.619-3.2-1.974-1.183-1.054-1.98-2.356-2.213-2.754-.232-.398-.025-.613.175-.812.18-.178.398-.465.597-.697.2-.232.266-.398.398-.664.133-.266.067-.498-.033-.697-.1-.2-.896-2.16-1.228-2.957-.323-.776-.65-.671-.896-.683l-.763-.013c-.266 0-.697.1-1.062.498-.365.398-1.394 1.362-1.394 3.322s1.428 3.854 1.627 4.12c.2.265 2.81 4.29 6.808 6.016.951.411 1.694.656 2.272.84.954.303 1.823.26 2.51.158.765-.114 2.355-.963 2.688-1.893.332-.93.332-1.727.232-1.893-.099-.166-.365-.266-.763-.465z"/></svg><span style="font-family:'Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:0.85rem;letter-spacing:0.3px">Chat WhatsApp Gratis</span></a>
     </div>
   </div>
 </section>
@@ -845,8 +603,8 @@
     <div class="pop-step"><div class="pop-step-vline"></div><div class="pop-num">1</div><div><div class="pop-stitle">Konsultasi Gratis</div><div class="pop-sdesc">Kami mulai dengan ngobrol santai via WhatsApp atau tatap muka. Ceritakan bisnis Anda — produk, target pembeli, dan apa yang ingin dicapai. Gratis, tanpa komitmen apapun.</div></div></div>
     <div class="pop-step"><div class="pop-step-vline"></div><div class="pop-num">2</div><div><div class="pop-stitle">Desain &amp; Mockup</div><div class="pop-sdesc">Tim desainer kami merancang tampilan website yang sesuai brand Anda. Anda akan melihat preview desain sebelum pengembangan dimulai. Revisi desain gratis hingga Anda puas.</div></div></div>
     <div class="pop-step"><div class="pop-step-vline"></div><div class="pop-num">3</div><div><div class="pop-stitle">Development</div><div class="pop-sdesc">Setelah desain disetujui, kami langsung bangun websitenya. Dicek tampilan dan fungsinya di HP, tablet, dan desktop — biar hasilnya rapi di semua layar.</div></div></div>
-    <div class="pop-step"><div class="pop-step-vline"></div><div class="pop-num">4</div><div><div class="pop-stitle">Review &amp; Revisi</div><div class="pop-sdesc">Anda mendapat akses preview website sebelum tayang. Sampaikan masukan, dan tim kami lakukan penyesuaian sesuai paket yang dipilih. Kepuasan Anda prioritas kami.</div></div></div>
-    <div class="pop-step"><div class="pop-num">5</div><div><div class="pop-stitle">Launch &amp; Dukungan Jangka Panjang</div><div class="pop-sdesc">Website live! Kami dampingi pas pertama tayang biar semuanya berjalan lancar. Kalau ada kendala teknis setelahnya, tinggal hubungi kami — kami siap bantu.</div></div></div>
+    <div class="pop-step"><div class="pop-step-vline"></div><div class="pop-num">4</div><div><div class="pop-stitle">Review &amp; Revisi</div><div class="pop-sdesc">Anda mendapat akses preview website sebelum tayang. Sampaikan masukan, dan tim kami lakukan penyesuaian sesuai paket yang dipilih.</div></div></div>
+    <div class="pop-step"><div class="pop-num">5</div><div><div class="pop-stitle">Launch &amp; Dukungan Jangka Panjang</div><div class="pop-sdesc">Website live! Kami dampingi pas pertama tayang biar semuanya berjalan lancar. Kalau ada kendala teknis setelahnya, tinggal hubungi kami.</div></div></div>
   </div>
 </div>
 
@@ -860,12 +618,21 @@
       <div class="pop-plabel">UMKM</div>
       <div class="pop-pname">Landing Page UMKM</div>
       <div class="pop-price-row"><span class="pop-old">Rp 1.500.000</span></div>
-      <div class="pop-price-row"><span class="pop-price"><sup>Rp </sup>449.999</span><span class="pop-period">/ tahun pertama</span></div>
-      <ul class="pop-feats"><li>Domain .com + Shared Hosting 1 tahun</li><li>1 halaman, hingga 4 section</li><li>Copywriting Bahasa Indonesia</li><li>Tombol WhatsApp langsung (CTA)</li><li>Desain responsif HP &amp; desktop</li><li>Optimasi kecepatan dasar</li><li>Revisi 1x minor</li><li>Selesai maksimal 7 hari kerja</li></ul>
+      <div class="pop-price-row"><span class="pop-price"><sup>Rp </sup>449.999</span></div>
+      <!-- PERBAIKAN 1: Hapus "1 tahun" -->
+      <ul class="pop-feats">
+        <li>Domain .com + Shared Hosting</li>
+        <li>1 halaman, hingga 4 section</li>
+        <li>Copywriting Bahasa Indonesia</li>
+        <li>Tombol WhatsApp langsung (CTA)</li>
+        <li>Desain responsif HP &amp; desktop</li>
+        <li>Optimasi kecepatan dasar</li>
+        <li>Revisi 1x minor</li>
+        <li>Selesai maksimal 7 hari kerja</li>
+      </ul>
     </div>
-    </div>
+  </div>
 </div>
-
 
 <footer>
   <a href="#" class="logo">WEBLAB</a>
@@ -874,14 +641,37 @@
 </footer>
 
 <script>
+/* ── LOADING PANEL ── */
+window.addEventListener('load',function(){
+  var ring=document.getElementById('ldRing');
+  if(!ring)return;
+  var totalTicks=36;
+  for(var i=0;i<totalTicks;i++){var tick=document.createElement('div');tick.className='ld-tick';var angle=(i/totalTicks)*360;tick.style.transform='rotate('+angle+'deg) translateX(-50%)';tick.style.left='50%';tick.style.top='0';ring.appendChild(tick);}
+  var bar=document.getElementById('ldBar');
+  var totalSegs=12;
+  for(var j=0;j<totalSegs;j++){var seg=document.createElement('div');seg.className='ld-bar-seg';bar.appendChild(seg);}
+  var ticks=ring.querySelectorAll('.ld-tick');
+  var segs=bar.querySelectorAll('.ld-bar-seg');
+  var head=0;var active=true;
+  var statusEl=document.getElementById('ldStatus');
+  function spinStep(){if(!active)return;ticks.forEach(function(t,idx){var dist=(head-idx+totalTicks)%totalTicks;if(dist<6){t.classList.add('active-tick');t.style.opacity=(1-dist/6).toFixed(2);}else{t.classList.remove('active-tick');t.style.opacity='0.1';}});head=(head+1)%totalTicks;}
+  function updateBar(progress){var lit=Math.round(progress*totalSegs);segs.forEach(function(s,idx){if(idx<lit){s.classList.add('lit');}else{s.classList.remove('lit');}});var p=Math.round(progress*100);statusEl.textContent='LOADING... '+p+'%';}
+  window.ldSetProgress=function(p){updateBar(p);};
+  window.ldStop=function(){active=false;ticks.forEach(function(t){t.style.opacity='0.08';t.classList.remove('active-tick');});updateBar(1);statusEl.textContent='COMPLETE ✓';statusEl.style.color='rgba(0,255,136,0.7)';};
+  setInterval(spinStep,50);
+});
+
+/* ── CURSOR ── */
 const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
 let mx=0,my=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
 (function loop(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop)})();
-document.querySelectorAll('a,button,.screen-card,.portfolio-card,.sf-pane').forEach(el=>{
+document.querySelectorAll('a,button,.sf-pane').forEach(el=>{
   el.addEventListener('mouseenter',()=>{cursor.style.width='20px';cursor.style.height='20px';ring.style.width='50px';ring.style.height='50px'});
   el.addEventListener('mouseleave',()=>{cursor.style.width='12px';cursor.style.height='12px';ring.style.width='36px';ring.style.height='36px'});
 });
+
+/* ── CANVAS BG ── */
 const canvas=document.getElementById('bg-canvas'),ctx=canvas.getContext('2d');
 function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
 resize();window.addEventListener('resize',resize);
@@ -889,20 +679,20 @@ class Star{constructor(){this.x=Math.random()*canvas.width;this.y=Math.random()*
 const stars=Array.from({length:120},()=>new Star());
 let t=0;
 (function anim(){ctx.clearRect(0,0,canvas.width,canvas.height);const t2=t*0.003;[{x:0.25,y:0.35,c:'rgba(124,58,255,0.05)',r:260},{x:0.75,y:0.65,c:'rgba(0,212,255,0.04)',r:300}].forEach(n=>{const gx=canvas.width*n.x+Math.sin(t2)*80,gy=canvas.height*n.y+Math.cos(t2*0.7)*60;const g=ctx.createRadialGradient(gx,gy,0,gx,gy,n.r);g.addColorStop(0,n.c);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fillRect(0,0,canvas.width,canvas.height)});stars.forEach(s=>{s.update();s.draw()});t++;requestAnimationFrame(anim)})();
+
+/* ── NAV SCROLL ── */
 window.addEventListener('scroll',()=>{document.getElementById('main-nav').classList.toggle('scrolled',window.scrollY>60)});
-const reveals=document.querySelectorAll('.reveal');
-new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:0.1}).observe=function(el){reveals.forEach(r=>new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:0.1}).observe(r))};
-reveals.forEach(el=>new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:0.1}).observe(el));
-function counter(el,target,suf,dur){let s=0;(function st(){s+=Math.ceil(target/(dur/16));if(s>=target){el.textContent=target+suf;return}el.textContent=s+suf;requestAnimationFrame(st)})()}
-new IntersectionObserver(entries=>{if(entries[0].isIntersecting){counter(document.getElementById('stat4'),100,'%',1000)}},{threshold:0.5}).observe(document.querySelector('.stats-section'));
-document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'})}})});
+
+/* ── REVEAL ── */
+document.querySelectorAll('.reveal').forEach(el=>new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:0.1}).observe(el));
+
+/* ── POPUP ── */
 function openPopup(id){document.getElementById('popup-'+id).classList.add('open');document.body.style.overflow='hidden'}
 function closePopup(id){document.getElementById('popup-'+id).classList.remove('open');document.body.style.overflow=''}
 document.querySelectorAll('.popup-overlay').forEach(o=>o.addEventListener('click',function(e){if(e.target===this){this.classList.remove('open');document.body.style.overflow=''}}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.popup-overlay.open').forEach(o=>{o.classList.remove('open');document.body.style.overflow=''})});
-</script>
 
-<script>
+/* ── TYPING CODE ── */
 const codeText=`<!DOCTYPE html>
 <html>
 <head>
@@ -918,106 +708,69 @@ const codeText=`<!DOCTYPE html>
 // ✓ Website bisnis profesional
 // ✓ Harga terjangkau
 // ✓ Selesai maksimal 7 hari kerja`;
-
-let i=0;
-let typingDone=false;
+let i=0,typingDone=false;
 function typeCode(){
- const el=document.getElementById('typing-code');
- if(!el) return;
- if(i<codeText.length){
-   el.textContent += codeText.charAt(i);
-   i++;
-   // update loading progress sinkron dengan typing
-   if(window.ldSetProgress) window.ldSetProgress(i/codeText.length);
-   setTimeout(typeCode,40);
- }else{
-   if(!typingDone){
-     typingDone=true;
-     // loading selesai
-     if(window.ldStop) window.ldStop();
-     var btnWrap=document.getElementById('btn-lanjutkan-wrap');
-     if(btnWrap){btnWrap.style.display='block';}
-   }
-   setTimeout(()=>{
-      el.textContent='';
-      i=0;
-      typingDone=false;
-      typeCode();
-   },3000);
- }
-}
-window.addEventListener('load', typeCode);
-
-// Sesuaikan font size typing sesuai lebar layar
-(function(){
-  function adjustTypingFont(){
-    var el = document.getElementById('typing-code');
-    if(!el) return;
-    var w = window.innerWidth;
-    var fs = w < 380 ? '9px' : w < 480 ? '11px' : w < 600 ? '13px' : w < 768 ? '14px' : '18px';
-    el.style.fontSize = fs;
-    // parent div juga
-    var parent = el.parentElement && el.parentElement.parentElement;
-    if(parent) parent.style.fontSize = fs;
+  const el=document.getElementById('typing-code');
+  if(!el)return;
+  if(i<codeText.length){
+    el.textContent+=codeText.charAt(i);i++;
+    if(window.ldSetProgress)window.ldSetProgress(i/codeText.length);
+    setTimeout(typeCode,40);
+  }else{
+    if(!typingDone){typingDone=true;if(window.ldStop)window.ldStop();var bw=document.getElementById('btn-lanjutkan-wrap');if(bw)bw.style.display='block';}
+    setTimeout(()=>{el.textContent='';i=0;typingDone=false;typeCode();},3000);
   }
-  adjustTypingFont();
-  window.addEventListener('resize', adjustTypingFont);
+}
+window.addEventListener('load',typeCode);
+
+/* font size adaptif */
+(function(){
+  function adj(){var el=document.getElementById('typing-code');if(!el)return;var w=window.innerWidth;el.style.fontSize=w<380?'9px':w<480?'11px':w<600?'13px':w<768?'14px':'18px';}
+  adj();window.addEventListener('resize',adj);
 })();
 
+/* ── SECTION 2 OPEN/CLOSE ── */
 function openSection2(){
   var s2=document.getElementById('alur-harga');
   s2.style.display='block';
   document.body.style.overflow='hidden';
-  setTimeout(()=>{s2.style.opacity='1';},10);
+  // trigger reveal
+  setTimeout(()=>{document.querySelectorAll('#alur-harga .reveal').forEach(el=>el.classList.add('visible'));},50);
 }
-
 function closeSection2(){
   var s2=document.getElementById('alur-harga');
   s2.style.display='none';
   document.body.style.overflow='';
 }
 
-// DECK SWAP
-var deckFront = 0;
-
-function swapDeck() {
-  setFront(deckFront === 0 ? 1 : 0);
-}
-
-function setFront(idx) {
-  var prev = deckFront;
-  if (prev === idx) return;
-  deckFront = idx;
-  var allCards = [document.getElementById('card1'), document.getElementById('card2')];
-  var allDots  = [document.getElementById('dot1'),  document.getElementById('dot2')];
-  var isMobile = window.innerWidth <= 600;
+/* ── DECK SWAP ── */
+var deckFront=0;
+function swapDeck(){setFront(deckFront===0?1:0);}
+function setFront(idx){
+  var prev=deckFront;
+  if(prev===idx)return;
+  deckFront=idx;
+  var allCards=[document.getElementById('card1'),document.getElementById('card2')];
+  var allDots=[document.getElementById('dot1'),document.getElementById('dot2')];
+  var isMobile=window.innerWidth<=600;
   if(isMobile){
-    // di mobile: sembunyikan kartu lama, tampilkan kartu baru
-    allCards[prev].style.display = 'none';
-    allCards[idx].style.display  = 'block';
-    allCards[idx].className = 'deck-card front';
-  } else {
-    allCards[prev].className = 'deck-card back';
-    allCards[idx].className  = 'deck-card front';
+    allCards[prev].style.display='none';
+    allCards[idx].style.display='block';
+    allCards[idx].className='deck-card front';
+  }else{
+    allCards[prev].className='deck-card back';
+    allCards[idx].className='deck-card front';
   }
   allDots[prev].classList.remove('active');
   allDots[idx].classList.add('active');
 }
-
-// Inisialisasi mobile: pastikan hanya card1 yg tampil
-window.addEventListener('load', function() {
-  if(window.innerWidth <= 600){
-    var c2 = document.getElementById('card2');
-    if(c2) c2.style.display = 'none';
-  }
-  var wrap = document.getElementById('deckWrap');
-  if (!wrap) return;
-  var sx = 0;
-  wrap.addEventListener('touchstart', function(e){ sx = e.touches[0].clientX; }, {passive:true});
-  wrap.addEventListener('touchend', function(e){
-    var dx = e.changedTouches[0].clientX - sx;
-    if (Math.abs(dx) > 40) swapDeck();
-  }, {passive:true});
+/* touch swipe pada deck */
+window.addEventListener('load',function(){
+  if(window.innerWidth<=600){var c2=document.getElementById('card2');if(c2)c2.style.display='none';}
+  var wrap=document.getElementById('deckWrap');if(!wrap)return;
+  var sx=0;
+  wrap.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;},{passive:true});
+  wrap.addEventListener('touchend',function(e){var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)swapDeck();},{passive:true});
 });
 </script>
 </body>
