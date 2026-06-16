@@ -215,6 +215,35 @@ body.sni-split .page-wrap{margin-left:50vw;width:50vw;height:100vh;overflow-y:au
   body.sni-split .page-wrap{margin-left:0;width:100vw;height:50vh;margin-top:50vh}
 }
 </style>
+
+<!-- ── PROTEKSI KONTEN © FusakoStudio ── -->
+<script>
+(function(){
+  // Disable right click
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+
+  // Disable keyboard shortcuts
+  document.addEventListener('keydown', function(e){
+    var k = e.key ? e.key.toLowerCase() : '';
+    if(e.ctrlKey && ['s','u','a','p'].includes(k)){ e.preventDefault(); return false; }
+    if(e.ctrlKey && e.shiftKey && ['i','j','c'].includes(k)){ e.preventDefault(); return false; }
+    if(k === 'f12'){ e.preventDefault(); return false; }
+  });
+
+  // Detect DevTools open
+  var devtools = { open: false };
+  setInterval(function(){
+    var t = new Date();
+    debugger;
+    if(new Date() - t > 100){
+      if(!devtools.open){
+        devtools.open = true;
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0a0c0f;color:#e8b84b;font-family:sans-serif;font-size:1.2rem;text-align:center;flex-direction:column;gap:1rem;"><span style="font-size:3rem">🔒</span><b>Konten dilindungi.</b><span style="color:#8a9ab0;font-size:.9rem">© FusakoStudio — fusakostudio.com</span></div>';
+      }
+    } else { devtools.open = false; }
+  }, 1000);
+})();
+</script>
 </head>
 <body>
 <div class="page-wrap" id="pageWrap">
