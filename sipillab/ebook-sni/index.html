@@ -427,15 +427,25 @@
     let allData = [];
 
     function init() {
-      fetch('ebooklink-sni-index.json')
-        .then(res => res.json())
+      const jsonPath = './ebooklink-sni-index.json';
+      fetch(jsonPath)
+        .then(res => {
+          if (!res.ok) throw new Error('HTTP ' + res.status + ' – ' + jsonPath);
+          return res.json();
+        })
         .then(data => {
           allData = data;
           document.getElementById('totalCount').textContent = allData.length;
           render(allData);
         })
         .catch(err => {
-          console.error('Gagal memuat data:', err);
+          document.getElementById('sniGrid').innerHTML =
+            '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#e85b4b;">' +
+            '<p style="font-size:14px;margin-bottom:8px;">⚠️ Gagal memuat data</p>' +
+            '<p style="font-size:12px;opacity:.7">' + err.message + '</p>' +
+            '<p style="font-size:12px;opacity:.5;margin-top:8px;">Pastikan file ebooklink-sni-index.json ada di folder yang sama.</p>' +
+            '</div>';
+          document.getElementById('totalCount').textContent = '0';
         });
     }
 
@@ -526,6 +536,8 @@
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') tutupModal();
     });
+
+    init();
 
   </script>
 </body>
