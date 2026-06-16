@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ebook Pondasi - SipilHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0c0f;
+      --surface: #12151a;
+      --card: #1e222c;
+      --border: #2a3040;
+      --accent: #cf8a4b;
+      --accent2: #cf8a4bcc;
+      --text: #f0f2f5;
+      --muted: #8a9ab0;
+      --green: #4bcf8a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .header-logo-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .header-logo-icon img {
+      width: 38px;
+      height: 38px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+    }
+    .header-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 2px;
+      color: var(--text);
+      line-height: 1;
+    }
+    .header-logo span { color: var(--accent); }
+    .header-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+    }
+    .header-title {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* HERO */
+    .hero {
+      padding: 40px 24px 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .hero h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    .stats-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .stat-chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .stat-chip strong { color: var(--accent2); margin-right: 4px; }
+
+    /* SEARCH */
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 12px 10px 38px;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: var(--muted); }
+
+    /* GRID */
+    .grid-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+    }
+    .results-info {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .results-info strong { color: var(--text); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(207,138,75,0.12);
+    }
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .card-badge {
+      background: rgba(207,138,75,0.15);
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+    .card-num {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .card-btn {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .card-btn svg { flex-shrink: 0; }
+
+    /* EMPTY & LOADING */
+    .empty, .loading-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .empty svg { margin-bottom: 16px; opacity: 0.4; }
+    .empty p, .loading-state p { font-size: 14px; }
+    .spinner-sm {
+      width: 28px;
+      height: 28px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.active { display: flex; align-items: center; justify-content: center; padding: 16px; }
+
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 900px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .modal-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .modal-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-close {
+      background: var(--card);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .btn-close:hover { color: var(--text); }
+    .modal-body-wrap {
+      flex: 1;
+      position: relative;
+      background: #000;
+    }
+    .modal-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #000;
+    }
+    .pdf-block {
+      position: absolute;
+      top: 0; right: 0;
+      width: 64px; height: 64px;
+      z-index: 5;
+    }
+    .modal-loading {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 22px; }
+      .grid { grid-template-columns: 1fr; }
+      .modal-box { height: 95vh; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="index.html" class="header-logo-wrap">
+      <div class="header-logo-icon">
+        <img src="images/logo.jpeg" alt="SipilHub Logo">
+      </div>
+      <div class="header-logo">Sipil<span>Hub</span></div>
+    </a>
+    <div class="header-divider"></div>
+    <div class="header-title">Ebook Pondasi</div>
+  </header>
+
+  <div class="hero">
+    <h1>Ebook <span>Pondasi</span></h1>
+    <p>Referensi buku khusus pondasi bangunan, tiang pancang, dan sistem pondasi cakar ayam</p>
+    <div class="stats-row">
+      <div class="stat-chip"><strong id="totalCount">—</strong> Buku</div>
+      <div class="stat-chip"><strong>PDF</strong> Viewer langsung</div>
+      <div class="stat-chip"><strong>Free</strong> Akses gratis</div>
+    </div>
+    <div class="controls">
+      <div class="search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Cari judul buku pondasi...">
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-wrap">
+    <div class="results-info" id="resultsInfo"></div>
+    <div class="grid" id="bookGrid">
+      <!-- loading state awal -->
+      <div class="loading-state" style="grid-column:1/-1">
+        <div class="spinner-sm"></div>
+        <p>Memuat data buku...</p>
+      </div>
+    </div>
+    <div class="empty" id="emptyState" style="display:none">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <p>Tidak ada buku yang cocok dengan pencarian kamu.</p>
+    </div>
+  </div>
+
+  <!-- Modal PDF Viewer -->
+  <div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">-</div>
+        <div class="modal-actions">
+          <button class="btn-close" onclick="tutupModal()">✕ Tutup</button>
+        </div>
+      </div>
+      <div class="modal-loading" id="modalLoading">
+        <div class="spinner"></div>
+        <span>Memuat dokumen...</span>
+      </div>
+      <div class="modal-body-wrap">
+        <iframe class="modal-iframe" id="modalIframe" src="" allowfullscreen style="display:none"
+          onload="iframeLoaded()"></iframe>
+        <div class="pdf-block"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── CONFIG ───────────────────────────────────────────────
+    // Ganti path ini sesuai lokasi file JSON kamu
+    const JSON_URL = 'Ebookpondasi-index .json';
+
+    // Kategori yang ditampilkan di halaman ini
+    const KATEGORI_FILTER = 'Pondasi';
+    // ─────────────────────────────────────────────────────────
+
+    let allData = [];
+
+    // Fetch data dari JSON, filter by kategori
+    async function loadData() {
+      try {
+        const res = await fetch(JSON_URL);
+        if (!res.ok) throw new Error('Gagal fetch: ' + res.status);
+        const json = await res.json();
+        allData = json.filter(item => item.kategori === KATEGORI_FILTER);
+        document.getElementById('totalCount').textContent = allData.length;
+        render(allData);
+      } catch (err) {
+        document.getElementById('bookGrid').innerHTML = `
+          <div class="loading-state" style="grid-column:1/-1; color:#e05555">
+            <p>⚠️ Gagal memuat data. Pastikan file <em>${JSON_URL}</em> tersedia.</p>
+          </div>`;
+        console.error(err);
+      }
+    }
+
+    function render(data) {
+      const grid = document.getElementById('bookGrid');
+      const empty = document.getElementById('emptyState');
+      const info = document.getElementById('resultsInfo');
+
+      if (data.length === 0) {
+        grid.innerHTML = '';
+        empty.style.display = 'block';
+        info.innerHTML = '';
+        return;
+      }
+
+      empty.style.display = 'none';
+      info.innerHTML = `Menampilkan <strong>${data.length}</strong> dari <strong>${allData.length}</strong> buku`;
+
+      grid.innerHTML = data.map(book => {
+        const nomor = allData.indexOf(book) + 1;
+        const judul = book.judul || book.kode;
+        return `
+          <div class="card" onclick="bukaPDF('${escHtml(book.fileId)}', '${escAttr(judul)}')">
+            <div class="card-top">
+              <span class="card-badge">${escHtml(book.kategori.toUpperCase())}</span>
+              <span class="card-num">#${String(nomor).padStart(2,'0')}</span>
+            </div>
+            <div class="card-title">${escHtml(judul)}</div>
+            <div class="card-btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              Lihat PDF
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function escHtml(str) {
+      return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function escAttr(str) {
+      return (str||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    }
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+      const q = this.value.toLowerCase().trim();
+      if (!q) { render(allData); return; }
+      const filtered = allData.filter(s =>
+        (s.kode||'').toLowerCase().includes(q) ||
+        (s.judul||'').toLowerCase().includes(q)
+      );
+      render(filtered);
+    });
+
+    function bukaPDF(fileId, judul) {
+      const url = `https://drive.google.com/file/d/${fileId}/preview`;
+      document.getElementById('modalTitle').textContent = judul;
+      document.getElementById('modalIframe').style.display = 'none';
+      document.getElementById('modalLoading').style.display = 'flex';
+      document.getElementById('modalIframe').src = url;
+      document.getElementById('modalOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function iframeLoaded() {
+      document.getElementById('modalLoading').style.display = 'none';
+      document.getElementById('modalIframe').style.display = 'block';
+    }
+
+    function tutupModal() {
+      document.getElementById('modalOverlay').classList.remove('active');
+      document.getElementById('modalIframe').src = '';
+      document.body.style.overflow = '';
+    }
+
+    function handleOverlayClick(e) {
+      if (e.target === document.getElementById('modalOverlay')) tutupModal();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') tutupModal();
+    });
+
+    loadData();
+  </script>
+</body>
+</html>

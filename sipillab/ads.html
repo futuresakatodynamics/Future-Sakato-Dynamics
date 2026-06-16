@@ -27,11 +27,10 @@
 }
 html,body{width:100%;height:100%;font-family:'Barlow',sans-serif}
 
-/* ── MOBILE-ONLY ELEMENTS ── */
-#mob-ads-overlay{display:none}
-#mob-ads-fab{display:none}
+/* ── HIDE MOBILE ELEMENTS ON DESKTOP ── */
+#mob-ads-panel-wrap{display:none}
 
-/* ── ADS PANEL KIRI ── */
+/* ── ADS PANEL KIRI (Desktop) ── */
 #ads-wrapper{
   position:fixed;
   left:0;top:0;bottom:0;
@@ -66,8 +65,6 @@ html,body{width:100%;height:100%;font-family:'Barlow',sans-serif}
   position:absolute;bottom:0;left:0;display:none;overflow:hidden;
 }
 #ads-countdown-fill{width:100%;background:var(--accent);height:100%;transform-origin:bottom;transition:none;}
-#ads-minimize-btn{display:none}
-.ads-label{display:none}
 .ad-card{
   width:110px;height:110px;border-radius:10px;overflow:hidden;
   background:var(--card);border:1px solid var(--border);
@@ -141,56 +138,142 @@ html,body{width:100%;height:100%;font-family:'Barlow',sans-serif}
 #fs-ad-countdown-label{font-size:0.75rem;font-weight:600;color:#8a9ab0;letter-spacing:0.5px;line-height:1.4;}
 #fs-ad-countdown-label strong{color:#f0f2f5}
 
-/* ── RESPONSIVE: HP ── */
+/* ── FULLSCREEN WEB AD OVERLAY ── */
+#fs-web-overlay{
+  visibility:hidden;pointer-events:none;
+  position:fixed;inset:0;z-index:9998;
+  background:rgba(10,12,15,0.45);backdrop-filter:blur(2px);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  opacity:0;transition:opacity .3s;
+}
+#fs-web-overlay.show{visibility:visible;pointer-events:auto;opacity:1;}
+#fs-web-box{
+  position:relative;max-width:min(520px,92vw);width:100%;
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 24px 80px rgba(0,0,0,0.8);border:1px solid rgba(232,184,75,0.25);cursor:pointer;
+}
+#fs-web-box img{width:100%;display:block;object-fit:contain;max-height:70vh;background:#12151a;}
+#fs-web-box .fs-web-fallback{
+  width:100%;height:280px;display:none;align-items:center;justify-content:center;
+  flex-direction:column;gap:10px;background:#1e222c;
+}
+#fs-web-box .fs-web-fallback svg{width:48px;height:48px;opacity:0.3;color:#e8b84b}
+#fs-web-box .fs-web-fallback span{font-size:0.85rem;color:#8a9ab0;font-weight:600}
+#fs-web-sponsored{
+  position:absolute;top:10px;left:10px;
+  background:rgba(10,12,15,0.85);backdrop-filter:blur(4px);
+  font-size:0.65rem;font-weight:800;letter-spacing:1.5px;
+  color:var(--accent);text-transform:uppercase;padding:4px 10px;border-radius:4px;
+  border:1px solid rgba(232,184,75,0.35);
+}
+#fs-web-countdown{margin-top:14px;display:flex;align-items:center;gap:10px;}
+#fs-web-countdown-wrap{position:relative;width:44px;height:44px;flex-shrink:0}
+#fs-web-countdown-circle{width:44px;height:44px;display:block}
+#fs-web-countdown-circle .bg-ring{fill:none;stroke:rgba(255,255,255,0.1);stroke-width:3.5}
+#fs-web-countdown-circle .prog-ring{fill:none;stroke:#e8b84b;stroke-width:3.5;stroke-linecap:round;transform-origin:50% 50%;transform:rotate(-90deg)}
+#fs-web-countdown-num{
+  position:absolute;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#e8b84b;
+  left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;line-height:1;
+}
+#fs-web-countdown-label{font-size:0.75rem;font-weight:600;color:#8a9ab0;letter-spacing:0.5px;line-height:1.4;}
+#fs-web-countdown-label strong{color:#f0f2f5}
+
+/* ══════════════════════════════════════════════
+   ── MOBILE BOTTOM ADS PANEL ──
+   Slide dari bawah, mirip desktop (kiri) tapi arah vertikal
+   ══════════════════════════════════════════════ */
 @media(max-width:768px){
   #ads-wrapper{display:none}
-  #mob-ads-fab{
-    display:flex;position:fixed;bottom:20px;right:16px;z-index:200;
-    width:52px;height:52px;border-radius:50%;background:var(--accent);color:#0a0c0f;
-    align-items:center;justify-content:center;cursor:pointer;border:none;
-    box-shadow:0 4px 18px rgba(232,184,75,0.45);transition:transform .2s, box-shadow .2s;
+
+  /*
+   * Struktur:
+   * #mob-ads-panel-wrap  → fixed bottom-0, flex-column dari bawah ke atas
+   *   #mob-ads-panel     → panel iklan horizontal (slide naik/turun)
+   *   #mob-ads-toggle-strip → strip tipis di atas panel (selalu kelihatan)
+   *
+   * Saat TAMPIL  : panel visible (height normal)
+   * Saat SEMBUNYI: panel height:0, tersembunyi ke bawah
+   */
+
+  #mob-ads-panel-wrap{
+    display:flex;
+    flex-direction:column;  /* toggle strip di atas, panel di bawah */
+    position:fixed;
+    bottom:0;left:0;right:0;
+    z-index:90;
   }
-  #mob-ads-fab:active{transform:scale(0.92)}
-  #mob-ads-fab svg{width:22px;height:22px}
-  #mob-ads-fab .fab-badge{
-    position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;
-    background:var(--red);border:2px solid var(--bg);
-    font-size:0.55rem;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;
+
+  /* ── Strip Toggle (selalu terlihat, di atas panel) ── */
+  #mob-ads-toggle-strip{
+    display:flex;flex-direction:row;align-items:center;justify-content:center;
+    height:18px;
+    background:var(--card2);
+    border-top:1px solid var(--border);
+    cursor:pointer;
+    position:relative;
+    transition:background .2s, border-color .2s;
   }
-  #mob-ads-overlay{
-    position:fixed;inset:0;z-index:199;
-    background:rgba(10,12,15,0.7);backdrop-filter:blur(4px);
-    align-items:flex-end;justify-content:center;
+  #mob-ads-toggle-strip:hover{background:var(--bg3);border-color:var(--accent)}
+  #mob-ads-toggle-strip:hover .mob-ads-toggle-icon{color:var(--accent)}
+
+  #mob-ads-strip-label{
+    font-size:0.48rem;font-weight:800;letter-spacing:2px;color:var(--muted2);
+    text-transform:uppercase;margin-right:6px;opacity:0.7;white-space:nowrap;user-select:none;
   }
-  #mob-ads-overlay.open{display:flex}
-  #mob-ads-sheet{
-    background:var(--card);border-radius:20px 20px 0 0;
-    border:1px solid var(--border);border-bottom:none;
-    width:100%;max-width:480px;padding:1rem 1rem 2rem;
-    transform:translateY(100%);transition:transform .4s cubic-bezier(.22,.68,0,1.1);
+  .mob-ads-toggle-icon{
+    width:12px;height:12px;flex-shrink:0;color:var(--muted2);transition:transform .3s, color .2s;
   }
-  #mob-ads-overlay.open #mob-ads-sheet{transform:translateY(0)}
-  .mob-sheet-handle{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 1rem;}
-  .mob-sheet-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.9rem;}
-  .mob-sheet-title{font-size:0.65rem;font-weight:800;letter-spacing:1.5px;color:var(--muted2);text-transform:uppercase;}
-  .mob-sheet-close{
-    background:var(--bg3);border:none;border-radius:6px;
-    padding:4px 10px;color:var(--muted);font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.5px;
+
+  /* Countdown bar horizontal di bawah strip */
+  #mob-ads-countdown-bar{
+    height:3px;width:100%;background:var(--border);border-radius:2px;
+    position:absolute;bottom:0;left:0;display:none;overflow:hidden;
   }
-  .mob-ads-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  #mob-ads-countdown-fill{
+    height:100%;background:var(--accent);width:100%;transform-origin:left;transition:none;
+  }
+
+  /* ── Panel iklan horizontal — slide naik/turun ── */
+  #mob-ads-panel{
+    display:flex;flex-direction:row;align-items:center;justify-content:center;
+    gap:8px;padding:8px 10px;
+    background:rgba(10,12,15,0.92);backdrop-filter:blur(8px);
+    border-top:1px solid var(--border);
+    overflow:hidden;
+    /* Tinggi normal saat tampil */
+    max-height:106px;
+    opacity:1;
+    transition:
+      max-height .45s cubic-bezier(.4,0,.2,1),
+      opacity .35s ease,
+      padding .45s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* Saat disembunyikan: slide ke bawah (tinggi jadi 0) */
+  #mob-ads-panel.minimized{
+    max-height:0;
+    opacity:0;
+    padding:0;
+    pointer-events:none;
+  }
+
+  /* Ad card mobile */
   .mob-ad-card{
-    border-radius:10px;overflow:hidden;background:var(--bg3);
-    border:1px solid var(--border);cursor:pointer;position:relative;aspect-ratio:1/1;
-    opacity:0;transform:translateY(30px);transition:transform .25s,box-shadow .2s,border-color .2s;
+    width:82px;height:82px;border-radius:10px;overflow:hidden;
+    background:var(--card);border:1px solid var(--border);
+    cursor:pointer;position:relative;flex-shrink:0;
     text-decoration:none;display:block;
+    opacity:0;transform:translateY(30px);
+    transition:transform .25s, box-shadow .2s, border-color .2s;
   }
-  .mob-ad-card.mob-ad-visible{animation:mobAdUp .45s cubic-bezier(.22,.68,0,1.2) forwards;}
+  .mob-ad-card.mob-ad-visible{animation:mobAdUp .5s cubic-bezier(.22,.68,0,1.2) forwards;}
+  .mob-ad-card:hover{transform:scale(1.04);box-shadow:0 8px 24px rgba(0,0,0,0.5);border-color:rgba(232,184,75,0.35);}
   @keyframes mobAdUp{
     0%{opacity:0;transform:translateY(30px)}
-    65%{opacity:1;transform:translateY(-4px)}
+    65%{opacity:1;transform:translateY(-3px)}
     100%{opacity:1;transform:translateY(0)}
   }
-  .mob-ad-card img{width:100%;height:100%;object-fit:cover;display:block}
+  .mob-ad-card img{width:100%;height:100%;object-fit:cover;display:block;}
   .mob-ad-card .ad-empty{height:100%}
   .mob-ad-card .ad-sponsored-tag{font-size:0.5rem}
 }
@@ -201,60 +284,44 @@ html,body{width:100%;height:100%;font-family:'Barlow',sans-serif}
 <!-- ── ADS PANEL KIRI (Desktop) ── -->
 <div id="ads-wrapper">
   <div id="ads-panel">
-    <!-- Ad Slot 1: Promoweb.png → WhatsApp -->
-    <a class="ad-card" id="ad1"
-       href="../weblab/"
-       target="_self" title="Jasa Pembuatan Website — WebLab">
+    <a class="ad-card" id="ad1" href="../weblab/" target="_self" title="Jasa Pembuatan Website — WebLab">
       <img loading="lazy" decoding="async" src="jasawebsite/Promoweb.webp" alt="Jasa Pembuatan Website"
            onerror="this.style.display='none';this.parentElement.querySelector('.ad-fallback').style.display='flex'">
       <div class="ad-fallback ad-empty" style="display:none;position:absolute;inset:0">
         <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M3 17 L9 11 L13 15 L16 12 L21 17"/></svg></div>
-        <div class="ad-empty-text">Jasa Website</div>
-        <div class="ad-empty-sub">Klik untuk info</div>
+        <div class="ad-empty-text">Jasa Website</div><div class="ad-empty-sub">Klik untuk info</div>
       </div>
       <div class="ad-sponsored-tag">Sponsor</div>
     </a>
-    <!-- Ad Slot 2: webfusako.png → fusakostudio.com -->
-    <a class="ad-card" id="ad2"
-       href="https://fusakostudio.com/"
-       target="_blank" rel="noopener" title="Fusako Studio">
+    <a class="ad-card" id="ad2" href="https://fusakostudio.com/" target="_blank" rel="noopener" title="Fusako Studio">
       <img loading="lazy" decoding="async" src="jasasipilfusako/webfusako.webp" alt="Fusako Studio"
            onerror="this.style.display='none';this.parentElement.querySelector('.ad-fallback2').style.display='flex'">
       <div class="ad-fallback2 ad-empty" style="display:none;position:absolute;inset:0">
         <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="14" rx="2"/></svg></div>
-        <div class="ad-empty-text">Fusako Studio</div>
-        <div class="ad-empty-sub">fusakostudio.com</div>
+        <div class="ad-empty-text">Fusako Studio</div><div class="ad-empty-sub">fusakostudio.com</div>
       </div>
       <div class="ad-sponsored-tag">Sponsor</div>
     </a>
-    <!-- Ad Slot 3: Huawei Tablet MatPad 12X -->
-    <a class="ad-card" id="ad3"
-       href="https://tk.tokopedia.com/ZSQ2UJcys/"
-       target="_blank" rel="noopener" title="Huawei MatPad 12X">
+    <a class="ad-card" id="ad3" href="https://tk.tokopedia.com/ZSQ2UJcys/" target="_blank" rel="noopener" title="Huawei MatPad 12X">
       <img loading="lazy" decoding="async" src="iklantablethuwai/huwaitabletmatpad12x.webp" alt="Huawei MatPad 12X"
            onerror="this.style.display='none';this.parentElement.querySelector('.ad-fallback3').style.display='flex'">
       <div class="ad-fallback3 ad-empty" style="display:none;position:absolute;inset:0">
         <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="7" y="2" width="10" height="20" rx="2"/></svg></div>
-        <div class="ad-empty-text">Huawei MatPad</div>
-        <div class="ad-empty-sub">Klik untuk beli</div>
+        <div class="ad-empty-text">Huawei MatPad</div><div class="ad-empty-sub">Klik untuk beli</div>
       </div>
       <div class="ad-sponsored-tag">Sponsor</div>
     </a>
-    <!-- Ad Slot 4: Xiaomi Tablet Pad 8 Pro -->
-    <a class="ad-card" id="ad4"
-       href="https://tk.tokopedia.com/ZSQ2Uvx4o/"
-       target="_blank" rel="noopener" title="Xiaomi Pad 8 Pro">
+    <a class="ad-card" id="ad4" href="https://tk.tokopedia.com/ZSQ2Uvx4o/" target="_blank" rel="noopener" title="Xiaomi Pad 8 Pro">
       <img loading="lazy" decoding="async" src="iklantabletxiomi/tabletxiomipad8pro.webp" alt="Xiaomi Pad 8 Pro"
            onerror="this.style.display='none';this.parentElement.querySelector('.ad-fallback4').style.display='flex'">
       <div class="ad-fallback4 ad-empty" style="display:none;position:absolute;inset:0">
         <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="7" y="2" width="10" height="20" rx="2"/></svg></div>
-        <div class="ad-empty-text">Xiaomi Pad 8</div>
-        <div class="ad-empty-sub">Klik untuk beli</div>
+        <div class="ad-empty-text">Xiaomi Pad 8</div><div class="ad-empty-sub">Klik untuk beli</div>
       </div>
       <div class="ad-sponsored-tag">Sponsor</div>
     </a>
   </div>
-  <!-- Strip Toggle -->
+  <!-- Strip Toggle Desktop -->
   <div id="ads-toggle-strip" onclick="toggleAds()" title="Tampilkan/sembunyikan iklan">
     <div id="ads-countdown-bar"><div id="ads-countdown-fill"></div></div>
     <span id="ads-strip-label">ADS</span>
@@ -264,80 +331,89 @@ html,body{width:100%;height:100%;font-family:'Barlow',sans-serif}
   </div>
 </div>
 
-<!-- ── MOBILE ADS FAB + POPUP ── -->
-<button id="mob-ads-fab" onclick="openMobAds()" style="display:none" aria-label="Lihat Iklan">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <rect x="2" y="3" width="20" height="14" rx="2"/>
-    <path d="M8 21h8M12 17v4"/>
-  </svg>
-  <div class="fab-badge">4</div>
-</button>
+<!-- ══════════════════════════════════════════════
+     ── MOBILE BOTTOM ADS PANEL ──
+     Toggle strip selalu terlihat, panel slide naik/turun
+     ══════════════════════════════════════════════ -->
+<div id="mob-ads-panel-wrap">
 
-<div id="mob-ads-overlay" onclick="handleOverlayClick(event)">
-  <div id="mob-ads-sheet">
-    <div class="mob-sheet-handle"></div>
-    <div class="mob-sheet-header">
-      <span class="mob-sheet-title">ADS · IKLAN</span>
-      <button class="mob-sheet-close" onclick="closeMobAds()">✕ Tutup</button>
-    </div>
-    <div class="mob-ads-grid">
-      <!-- Slot 1: Promoweb -->
-      <a class="mob-ad-card" id="mob-ad1"
-         href="../weblab/"
-         target="_self">
-        <img loading="lazy" decoding="async" src="jasawebsite/Promoweb.webp" alt="Jasa Website"
-             onerror="this.style.display='none';this.parentElement.querySelector('.ad-empty').style.display='flex'">
-        <div class="ad-empty" style="display:none;position:absolute;inset:0">
-          <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="14" rx="2"/></svg></div>
-          <div class="ad-empty-text">Jasa Website</div>
-          <div class="ad-empty-sub">Klik untuk info</div>
-        </div>
-        <div class="ad-sponsored-tag">Sponsor</div>
-      </a>
-      <!-- Slot 2: webfusako.png → fusakostudio.com -->
-      <a class="mob-ad-card" id="mob-ad2"
-         href="https://fusakostudio.com/"
-         target="_blank" rel="noopener">
-        <img loading="lazy" decoding="async" src="jasasipilfusako/webfusako.webp" alt="Fusako Studio"
-             onerror="this.style.display='none';this.parentElement.querySelector('.ad-empty').style.display='flex'">
-        <div class="ad-empty" style="display:none;position:absolute;inset:0">
-          <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="14" rx="2"/></svg></div>
-          <div class="ad-empty-text">Fusako Studio</div>
-          <div class="ad-empty-sub">fusakostudio.com</div>
-        </div>
-        <div class="ad-sponsored-tag">Sponsor</div>
-      </a>
-      <!-- Slot 3: Huawei Tablet MatPad 12X -->
-      <a class="mob-ad-card" id="mob-ad3"
-         href="https://tk.tokopedia.com/ZSQ2UJcys/"
-         target="_blank" rel="noopener">
-        <img loading="lazy" decoding="async" src="iklantablethuwai/huwaitabletmatpad12x.webp" alt="Huawei MatPad 12X"
-             onerror="this.style.display='none';this.parentElement.querySelector('.ad-empty').style.display='flex'">
-        <div class="ad-empty" style="display:none;position:absolute;inset:0">
-          <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="7" y="2" width="10" height="20" rx="2"/></svg></div>
-          <div class="ad-empty-text">Huawei MatPad</div>
-          <div class="ad-empty-sub">Klik untuk beli</div>
-        </div>
-        <div class="ad-sponsored-tag">Sponsor</div>
-      </a>
-      <!-- Slot 4: Xiaomi Tablet Pad 8 Pro -->
-      <a class="mob-ad-card" id="mob-ad4"
-         href="https://tk.tokopedia.com/ZSQ2Uvx4o/"
-         target="_blank" rel="noopener">
-        <img loading="lazy" decoding="async" src="iklantabletxiomi/tabletxiomipad8pro.webp" alt="Xiaomi Pad 8 Pro"
-             onerror="this.style.display='none';this.parentElement.querySelector('.ad-empty').style.display='flex'">
-        <div class="ad-empty" style="display:none;position:absolute;inset:0">
-          <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="7" y="2" width="10" height="20" rx="2"/></svg></div>
-          <div class="ad-empty-text">Xiaomi Pad 8</div>
-          <div class="ad-empty-sub">Klik untuk beli</div>
-        </div>
-        <div class="ad-sponsored-tag">Sponsor</div>
-      </a>
-    </div>
+  <!-- Strip Toggle Mobile (selalu terlihat, di atas panel) -->
+  <div id="mob-ads-toggle-strip" onclick="mobToggleAds()" title="Tampilkan/sembunyikan iklan">
+    <div id="mob-ads-countdown-bar"><div id="mob-ads-countdown-fill"></div></div>
+    <span id="mob-ads-strip-label">ADS</span>
+    <!-- Panah ke atas = panel sedang tampil (bisa disembunyikan) -->
+    <svg class="mob-ads-toggle-icon" id="mob-ads-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="18 15 12 9 6 15"/>
+    </svg>
+  </div>
+
+  <!-- Panel Iklan Horizontal — mulai tersembunyi (minimized) -->
+  <div id="mob-ads-panel" class="minimized">
+    <a class="mob-ad-card" id="mob-ad1" href="../weblab/" target="_self">
+      <img loading="lazy" decoding="async" src="jasawebsite/Promoweb.webp" alt="Jasa Website"
+           onerror="this.style.display='none';this.parentElement.querySelector('.ad-empty').style.display='flex'">
+      <div class="ad-empty" style="display:none;position:absolute;inset:0">
+        <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="14" rx="2"/></svg></div>
+        <div class="ad-empty-text">Jasa Website</div>
+      </div>
+      <div class="ad-sponsored-tag">Sponsor</div>
+    </a>
+    <a class="mob-ad-card" id="mob-ad2" href="https://fusakostudio.com/" target="_blank" rel="noopener">
+      <img loading="lazy" decoding="async" src="jasasipilfusako/webfusako.webp" alt="Fusako Studio"
+           onerror="this.style.display='none';this.parentElement.querySelector('.ad-empty').style.display='flex'">
+      <div class="ad-empty" style="display:none;position:absolute;inset:0">
+        <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="14" rx="2"/></svg></div>
+        <div class="ad-empty-text">Fusako Studio</div>
+      </div>
+      <div class="ad-sponsored-tag">Sponsor</div>
+    </a>
+    <a class="mob-ad-card" id="mob-ad3" href="https://tk.tokopedia.com/ZSQ2UJcys/" target="_blank" rel="noopener">
+      <img loading="lazy" decoding="async" src="iklantablethuwai/huwaitabletmatpad12x.webp" alt="Huawei MatPad 12X"
+           onerror="this.style.display='none';this.parentElement.querySelector('.ad-empty').style.display='flex'">
+      <div class="ad-empty" style="display:none;position:absolute;inset:0">
+        <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="7" y="2" width="10" height="20" rx="2"/></svg></div>
+        <div class="ad-empty-text">Huawei MatPad</div>
+      </div>
+      <div class="ad-sponsored-tag">Sponsor</div>
+    </a>
+    <a class="mob-ad-card" id="mob-ad4" href="https://tk.tokopedia.com/ZSQ2Uvx4o/" target="_blank" rel="noopener">
+      <img loading="lazy" decoding="async" src="iklantabletxiomi/tabletxiomipad8pro.webp" alt="Xiaomi Pad 8 Pro"
+           onerror="this.style.display='none';this.parentElement.querySelector('.ad-empty').style.display='flex'">
+      <div class="ad-empty" style="display:none;position:absolute;inset:0">
+        <div class="ad-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="7" y="2" width="10" height="20" rx="2"/></svg></div>
+        <div class="ad-empty-text">Xiaomi Pad 8</div>
+      </div>
+      <div class="ad-sponsored-tag">Sponsor</div>
+    </a>
   </div>
 </div>
 
-<!-- ── FULLSCREEN AD OVERLAY (muncul setelah 2 menit) ── -->
+<!-- ── FULLSCREEN WEB AD OVERLAY ── -->
+<div id="fs-web-overlay">
+  <a id="fs-web-link" href="../weblab/" target="_self" style="display:contents">
+    <div id="fs-web-box">
+      <img loading="lazy" decoding="async" src="jasawebsite/Promoweb.webp" alt="Jasa Pembuatan Website"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="fs-web-fallback">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M3 17 L9 11 L13 15 L16 12 L21 17"/></svg>
+        <span>Jasa Pembuatan Website</span>
+      </div>
+      <div id="fs-web-sponsored">ADS · IKLAN</div>
+    </div>
+  </a>
+  <div id="fs-web-countdown">
+    <div id="fs-web-countdown-wrap">
+      <svg id="fs-web-countdown-circle" viewBox="0 0 44 44">
+        <circle class="bg-ring" cx="22" cy="22" r="18"/>
+        <circle class="prog-ring" id="fs-web-prog" cx="22" cy="22" r="18" stroke-dasharray="113.1" stroke-dashoffset="0"/>
+      </svg>
+      <div id="fs-web-countdown-num">15</div>
+    </div>
+    <div id="fs-web-countdown-label">Iklan akan hilang dalam<br><strong id="fs-web-sec-text">15 detik</strong></div>
+  </div>
+</div>
+
+<!-- ── FULLSCREEN AD OVERLAY ── -->
 <div id="fs-ad-overlay">
   <a id="fs-ad-link" href="https://fusakostudio.com/" target="_blank" rel="noopener" style="display:contents">
     <div id="fs-ad-box">
@@ -363,11 +439,13 @@ html,body{width:100%;height:100%;font-family:'Barlow',sans-serif}
 </div>
 
 <script>
-// ── ADS ANIMATE ON LOAD ──
+// ═══════════════════════════════════════════════
+// DESKTOP ADS
+// ═══════════════════════════════════════════════
 (function(){
   var cards = ['ad1','ad2','ad3','ad4'];
-  var delays = [120, 280, 440, 600];
-  cards.forEach(function(id, i){
+  var delays = [120,280,440,600];
+  cards.forEach(function(id,i){
     setTimeout(function(){
       var el = document.getElementById(id);
       if(el) el.classList.add('ad-visible');
@@ -375,7 +453,6 @@ html,body{width:100%;height:100%;font-family:'Barlow',sans-serif}
   });
 })();
 
-// ── MINIMIZE / RESTORE ──
 var adsMinimized = false;
 var adsCountdownTimer = null;
 var adsCountdownInterval = null;
@@ -443,47 +520,180 @@ function doMinimize(){
   strip.style.borderColor = '';
 }
 
-function minimizeAds(){
-  cancelMinimize();
-  doMinimize();
-}
-
 function restoreAds(){
   cancelMinimize();
   adsMinimized = false;
   var panel = document.getElementById('ads-panel');
   var icon  = document.getElementById('ads-toggle-icon');
-  var bar   = document.getElementById('ads-countdown-bar');
-  var fill  = document.getElementById('ads-countdown-fill');
-  var label = document.getElementById('ads-strip-label');
   panel.classList.remove('minimized');
   icon.innerHTML = '<polyline points="15 18 9 12 15 6"/>';
-  label.textContent = 'ADS';
-  bar.style.display = 'none';
-  fill.style.transition = 'none';
-  fill.style.transform  = 'scaleY(1)';
+  document.getElementById('ads-strip-label').textContent = 'ADS';
   var cards = ['ad1','ad2','ad3','ad4'];
   var delays = [60,160,260,360];
-  cards.forEach(function(id, i){
+  cards.forEach(function(id,i){
     var el = document.getElementById(id);
     if(!el) return;
     el.classList.remove('ad-visible');
-    el.style.opacity = '0';
-    el.style.transform = 'translateX(-40px)';
+    el.style.opacity='0';
+    el.style.transform='translateX(-40px)';
     setTimeout(function(){
-      el.style.opacity = '';
-      el.style.transform = '';
+      el.style.opacity='';
+      el.style.transform='';
       el.classList.add('ad-visible');
     }, delays[i]);
   });
 }
 
-// ── LAPTOP: restore setiap 4 menit ──
 setInterval(function(){
   if(window.innerWidth > 768){ restoreAds(); }
 }, 4 * 60 * 1000);
 
-// ── FULLSCREEN AD ──
+// ═══════════════════════════════════════════════
+// MOBILE BOTTOM PANEL ADS
+// Perlakuan sama dengan desktop:
+//   - Awal load: langsung muncul (dengan animasi naik)
+//   - Klik strip: countdown 15 detik → hilang ke bawah (minimized)
+//     → klik lagi countdown saat countdown berjalan = BATAL countdown
+//   - Saat minimized, klik strip = langsung tampil lagi
+//   - Jadwal otomatis: +2 menit dari load, lalu tiap 7 menit
+// ═══════════════════════════════════════════════
+var mobAdsMinimized = false;
+var mobAdsCountdownTimer = null;
+var mobAdsCountdownInterval = null;
+
+/* Animasi kartu saat panel muncul */
+function mobAnimateCards(){
+  var ids = ['mob-ad1','mob-ad2','mob-ad3','mob-ad4'];
+  var delays = [80,180,280,380];
+  ids.forEach(function(id,i){
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.classList.remove('mob-ad-visible');
+    el.style.opacity='0';
+    el.style.transform='translateY(30px)';
+    setTimeout(function(){
+      el.style.opacity='';
+      el.style.transform='';
+      el.classList.add('mob-ad-visible');
+    }, delays[i]);
+  });
+}
+
+/* Tampilkan panel (slide naik) */
+function mobRestoreAds(){
+  if(window.innerWidth > 768) return;
+  mobCancelCountdown();
+  mobAdsMinimized = false;
+  var panel = document.getElementById('mob-ads-panel');
+  var icon  = document.getElementById('mob-ads-toggle-icon');
+  var label = document.getElementById('mob-ads-strip-label');
+  panel.classList.remove('minimized');
+  /* Panah ke atas = panel tampil, bisa disembunyikan */
+  icon.innerHTML = '<polyline points="18 15 12 9 6 15"/>';
+  label.textContent = 'ADS';
+  mobAnimateCards();
+}
+
+/* Sembunyikan panel (slide turun) */
+function mobDoMinimize(){
+  mobAdsMinimized = true;
+  var panel = document.getElementById('mob-ads-panel');
+  var icon  = document.getElementById('mob-ads-toggle-icon');
+  var bar   = document.getElementById('mob-ads-countdown-bar');
+  var label = document.getElementById('mob-ads-strip-label');
+  var strip = document.getElementById('mob-ads-toggle-strip');
+  panel.classList.add('minimized');
+  /* Panah ke bawah = panel tersembunyi, bisa dibuka lagi */
+  icon.innerHTML = '<polyline points="6 9 12 15 18 9"/>';
+  label.textContent = 'ADS';
+  bar.style.display = 'none';
+  strip.style.borderColor = '';
+}
+
+/* Mulai countdown 15 detik sebelum disembunyikan */
+function mobStartCountdown(){
+  /* Jika countdown sedang berjalan → BATAL (sama seperti desktop) */
+  if(mobAdsCountdownTimer){ mobCancelCountdown(); return; }
+
+  var strip = document.getElementById('mob-ads-toggle-strip');
+  var label = document.getElementById('mob-ads-strip-label');
+  var icon  = document.getElementById('mob-ads-toggle-icon');
+  var bar   = document.getElementById('mob-ads-countdown-bar');
+  var fill  = document.getElementById('mob-ads-countdown-fill');
+  var remaining = 15;
+
+  label.textContent = remaining;
+  /* Panah ke atas tetap (panel masih tampil saat countdown) */
+  icon.innerHTML = '<polyline points="18 15 12 9 6 15"/>';
+  bar.style.display = 'block';
+  fill.style.transition = 'none';
+  fill.style.transform  = 'scaleX(1)';
+  fill.getBoundingClientRect(); /* force reflow */
+  fill.style.transition = 'transform 15s linear';
+  fill.style.transform  = 'scaleX(0)';
+  strip.style.borderColor = 'var(--accent)';
+
+  mobAdsCountdownInterval = setInterval(function(){
+    remaining--;
+    label.textContent = remaining > 0 ? remaining : '';
+    if(remaining <= 0){
+      clearInterval(mobAdsCountdownInterval);
+      mobAdsCountdownInterval = null;
+      mobAdsCountdownTimer = null;
+      mobDoMinimize();
+    }
+  }, 1000);
+  mobAdsCountdownTimer = true;
+}
+
+/* Batalkan countdown, kembalikan ke normal */
+function mobCancelCountdown(){
+  clearInterval(mobAdsCountdownInterval);
+  mobAdsCountdownInterval = null;
+  mobAdsCountdownTimer = null;
+  var label = document.getElementById('mob-ads-strip-label');
+  var bar   = document.getElementById('mob-ads-countdown-bar');
+  var fill  = document.getElementById('mob-ads-countdown-fill');
+  var strip = document.getElementById('mob-ads-toggle-strip');
+  label.textContent = 'ADS';
+  bar.style.display = 'none';
+  fill.style.transition = 'none';
+  fill.style.transform  = 'scaleX(1)';
+  strip.style.borderColor = '';
+}
+
+/* Handler klik strip mobile */
+function mobToggleAds(){
+  if(!mobAdsMinimized){
+    /* Panel tampil → mulai countdown (atau batalkan jika sudah jalan) */
+    mobStartCountdown();
+  } else {
+    /* Panel tersembunyi → tampilkan langsung */
+    mobRestoreAds();
+  }
+}
+
+/* ── Jadwal otomatis mobile ── */
+(function(){
+  if(window.innerWidth > 768) return;
+
+  /* Muncul langsung saat halaman dibuka */
+  setTimeout(function(){
+    mobRestoreAds();
+  }, 800);
+
+  /* +2 menit: muncul lagi, lalu kelipatan 7 menit setelahnya */
+  setTimeout(function(){
+    mobRestoreAds();
+    setInterval(function(){
+      mobRestoreAds();
+    }, 7 * 60 * 1000);
+  }, 2 * 60 * 1000);
+})();
+
+// ═══════════════════════════════════════════════
+// FULLSCREEN ADS (Desktop & Mobile)
+// ═══════════════════════════════════════════════
 (function(){
   var TOTAL = 15;
   var circ = 2 * Math.PI * 18;
@@ -515,55 +725,48 @@ setInterval(function(){
     }, 1000);
   }
 
-  // Pertama muncul setelah 2 menit, lalu setiap 10 menit
   setTimeout(function(){
     showFsAd();
     setInterval(showFsAd, 10 * 60 * 1000);
   }, 2 * 60 * 1000);
 })();
 
-// ── SHOW FAB ONLY ON MOBILE ──
 (function(){
-  var fab = document.getElementById('mob-ads-fab');
-  function checkMobile(){
-    fab.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+  var TOTAL = 15;
+  var circ = 2 * Math.PI * 18;
+  var prog = document.getElementById('fs-web-prog');
+  prog.setAttribute('stroke-dasharray', circ);
+  prog.setAttribute('stroke-dashoffset', '0');
+
+  function showFsWebAd(){
+    var overlay = document.getElementById('fs-web-overlay');
+    overlay.classList.add('show');
+    var numEl = document.getElementById('fs-web-countdown-num');
+    var labelEl = document.getElementById('fs-web-sec-text');
+    var remaining = TOTAL;
+    numEl.textContent = remaining;
+    labelEl.textContent = remaining + ' detik';
+    prog.setAttribute('stroke-dashoffset', '0');
+    prog.style.transition = 'none';
+    var tick = setInterval(function(){
+      remaining--;
+      numEl.textContent = remaining;
+      labelEl.textContent = remaining + ' detik';
+      var offset = circ * (1 - remaining / TOTAL);
+      prog.style.transition = 'stroke-dashoffset 0.95s linear';
+      prog.setAttribute('stroke-dashoffset', offset);
+      if(remaining <= 0){
+        clearInterval(tick);
+        overlay.classList.remove('show');
+      }
+    }, 1000);
   }
-  checkMobile();
-  window.addEventListener('resize', checkMobile);
+
+  setTimeout(function(){
+    showFsWebAd();
+    setInterval(showFsWebAd, 8 * 60 * 1000);
+  }, 3 * 60 * 1000);
 })();
-
-// ── HP: popup setiap 7 menit ──
-setInterval(function(){
-  if(window.innerWidth <= 768){ openMobAds(); }
-}, 7 * 60 * 1000);
-
-function openMobAds(){
-  if(window.innerWidth > 768) return;
-  var overlay = document.getElementById('mob-ads-overlay');
-  overlay.classList.add('open');
-  var ids = ['mob-ad1','mob-ad2','mob-ad3','mob-ad4'];
-  var delays = [80,180,280,380];
-  ids.forEach(function(id,i){
-    var el = document.getElementById(id);
-    if(!el) return;
-    el.classList.remove('mob-ad-visible');
-    el.style.opacity='0';
-    el.style.transform='translateY(30px)';
-    setTimeout(function(){
-      el.style.opacity='';
-      el.style.transform='';
-      el.classList.add('mob-ad-visible');
-    }, delays[i]);
-  });
-}
-
-function closeMobAds(){
-  document.getElementById('mob-ads-overlay').classList.remove('open');
-}
-
-function handleOverlayClick(e){
-  if(e.target === document.getElementById('mob-ads-overlay')) closeMobAds();
-}
 </script>
 </body>
 </html>
