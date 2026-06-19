@@ -238,6 +238,7 @@ section.row-section{margin-bottom:0.5rem}
 .kat-modal-body::-webkit-scrollbar{width:4px}
 .kat-modal-body::-webkit-scrollbar-track{background:transparent}
 .kat-modal-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.kat-modal-body.kat-modal-body-cards{display:flex;flex-wrap:wrap;gap:1rem;justify-content:flex-start}
 
 
 .ticker{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.55rem 0;overflow:hidden;margin-bottom:2rem}
@@ -658,7 +659,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 <section class="row-section" style="margin-top:2.5rem">
   <div class="section-header">
     <div class="section-title">Rumus Terpopuler</div>
-    <a href="404.html" class="section-more">Semua Rumus →</a>
+    <a href="#" class="section-more" onclick="openRowModal(this,'Semua Rumus');return false;">Semua Rumus →</a>
   </div>
   <div class="scroll-row">
 
@@ -794,7 +795,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 <section class="row-section" style="margin-top:2rem">
   <div class="section-header">
     <div class="section-title">Topik Pilihan Editor</div>
-    <a href="404.html" class="section-more">Lihat Semua →</a>
+    <a href="#" class="section-more" onclick="openRowModal(this,'Semua Topik Pilihan Editor');return false;">Lihat Semua →</a>
   </div>
   <div class="scroll-row">
     <div class="card card-lg" onclick="location.href='404.html'">
@@ -838,7 +839,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 <section class="row-section">
   <div class="section-header">
     <div class="section-title">Seri: Struktur Beton</div>
-    <a href="404.html" class="section-more">Semua Seri →</a>
+    <a href="#" class="section-more" onclick="openRowModal(this,'Semua Seri: Struktur Beton');return false;">Semua Seri →</a>
   </div>
   <div class="scroll-row">
     <div class="card card-md" onclick="location.href='404.html'">
@@ -868,7 +869,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 <section class="row-section" style="margin-top:2rem">
   <div class="section-header">
     <div class="section-title">Konten Unggulan</div>
-    <a href="404.html" class="section-more">Semua →</a>
+    <a href="#" class="section-more" onclick="openRowModal(this,'Semua Konten Unggulan');return false;">Semua →</a>
   </div>
   <div class="featured-row">
     <div class="feat-card" onclick="location.href='404.html'">
@@ -902,7 +903,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 <section class="row-section" style="margin-top:2rem">
   <div class="section-header">
     <div class="section-title">Topik Ringkas</div>
-    <a href="404.html" class="section-more">Lihat Semua →</a>
+    <a href="#" class="section-more" onclick="openRowModal(this,'Semua Topik Ringkas');return false;">Lihat Semua →</a>
   </div>
   <div class="scroll-row">
     <div class="card card-sm" onclick="location.href='404.html'">
@@ -1214,7 +1215,7 @@ document.addEventListener('keydown', e => {
 <div class="kat-modal-overlay" id="katModalOverlay" onclick="closeKategoriModal(event)">
   <div class="kat-modal">
     <div class="kat-modal-head">
-      <h3>Semua Kategori</h3>
+      <h3 id="katModalTitle">Semua Kategori</h3>
       <button class="kat-modal-close" onclick="closeKategoriModal(null)">✕</button>
     </div>
     <div class="kat-modal-body" id="katModalBody">
@@ -1265,6 +1266,46 @@ function closeKategoriModal(e){
   if(e && e.target !== document.getElementById('katModalOverlay')) return;
   document.getElementById('katModalOverlay').classList.remove('open');
   document.body.style.overflow = '';
+}
+
+// ── MODAL GENERIK UNTUK SEMUA SECTION (Rumus, Topik, Seri, Rumus Singkat, dll) ──
+function openRowModal(linkEl, title){
+  const section = linkEl.closest('section.row-section');
+  let items = [];
+
+  if(section){
+    // Cari wrap marquee (overflow:hidden) yang menggantikan .scroll-row asli
+    const wrap = Array.from(section.children).find(ch => ch.style && ch.style.overflow === 'hidden');
+    if(wrap){
+      const inner = wrap.firstElementChild;
+      if(inner){
+        const origDiv = Array.from(inner.children).find(d => !d.hasAttribute('aria-hidden'));
+        if(origDiv) items = Array.from(origDiv.children);
+      }
+    }
+  }
+  // Fallback: ambil langsung dari section bila marquee belum/ tidak terbentuk
+  if(!items.length && section){
+    items = Array.from(section.querySelectorAll('.card, .cat-card, .feat-card'));
+  }
+
+  const modal = document.getElementById('katModalOverlay');
+  const body  = document.getElementById('katModalBody');
+  const titleEl = document.getElementById('katModalTitle');
+
+  titleEl.textContent = title || 'Lihat Semua';
+  body.innerHTML = '';
+  const isCardContent = items.length && (items[0].classList.contains('card') || items[0].classList.contains('feat-card'));
+  body.className = 'kat-modal-body' + (isCardContent ? ' kat-modal-body-cards' : '');
+
+  items.forEach(it => {
+    const clone = it.cloneNode(true);
+    clone.style.width = isCardContent ? '' : '';
+    body.appendChild(clone);
+  });
+
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
 document.addEventListener('keydown', e => {
