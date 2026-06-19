@@ -239,6 +239,8 @@ section.row-section{margin-bottom:0.5rem}
 .kat-modal-body::-webkit-scrollbar-track{background:transparent}
 .kat-modal-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
 .kat-modal-body.kat-modal-body-cards{display:flex;flex-wrap:wrap;gap:1rem;justify-content:flex-start}
+.kat-modal-body.kat-modal-body-list{display:flex;flex-direction:column;gap:0.9rem}
+.kat-modal-body.kat-modal-body-list>*{width:100%!important;flex-shrink:1!important}
 
 
 .ticker{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.55rem 0;overflow:hidden;margin-bottom:2rem}
@@ -449,11 +451,11 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
   </a>
   <div class="nav-links">
     <a href="https://fusakostudio.com/" class="active">Beranda</a>
-    <a href="404.html">Rumus</a>
-    <a href="404.html">Material</a>
-    <a href="404.html">Struktur</a>
-    <a href="404.html">Geoteknik</a>
-    <a href="404.html">Hidro</a>
+    <a href="#rumus-terpopuler">Rumus</a>
+    <a href="ebook-material/">Material</a>
+    <a href="ebook-struktur/">Struktur</a>
+    <a href="ebook-geoteknik/">Geoteknik</a>
+    <a href="ebook-hidrolika/">Hidro</a>
     <a href="kalkulatorvolume/">Kalkulator</a>
   </div>
   <div class="nav-right">
@@ -465,11 +467,11 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 </nav>
 <div class="nav-mobile-menu" id="navMobileMenu">
   <a href="https://fusakostudio.com/">Beranda</a>
-  <a href="404.html">Rumus</a>
-  <a href="404.html">Material</a>
-  <a href="404.html">Struktur</a>
-  <a href="404.html">Geoteknik</a>
-  <a href="404.html">Hidro</a>
+  <a href="#rumus-terpopuler">Rumus</a>
+  <a href="ebook-material/">Material</a>
+  <a href="ebook-struktur/">Struktur</a>
+  <a href="ebook-geoteknik/">Geoteknik</a>
+  <a href="ebook-hidrolika/">Hidro</a>
   <a href="kalkulatorvolume/">Kalkulator</a>
 </div>
 <!-- ── HERO ── -->
@@ -656,14 +658,14 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
 </section>
 
 <!-- ── RUMUS TERPOPULER ── -->
-<section class="row-section" style="margin-top:2.5rem">
+<section id="rumus-terpopuler" class="row-section" style="margin-top:2.5rem">
   <div class="section-header">
     <div class="section-title">Rumus Terpopuler</div>
     <a href="#" class="section-more" onclick="openRowModal(this,'Semua Rumus');return false;">Semua Rumus →</a>
   </div>
   <div class="scroll-row">
 
-    <div class="rumus-card" onclick="location.href='404.html'">
+    <div class="rumus-card" onclick="window.open('https://docs.google.com/document/d/1ZkaVSwjzTw3Bt4BVTMGP0daisJVIKpog/preview','_blank')">
       <div class="rumus-header">
         <div class="rumus-icon" style="background:rgba(75,141,232,0.15)">
           <svg viewBox="0 0 24 24" fill="none" stroke="#4b8de8" stroke-width="2"><path d="M3 21 L3 10 L12 3 L21 10 L21 21"/></svg>
@@ -684,7 +686,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
       </div>
     </div>
 
-    <div class="rumus-card" onclick="location.href='404.html'">
+    <div class="rumus-card" onclick="window.open('https://docs.google.com/document/d/1kQ0oW5KKe03aWMFt_FqeQLsLPIvcnrYD/preview','_blank')">
       <div class="rumus-header">
         <div class="rumus-icon" style="background:rgba(75,207,138,0.15)">
           <svg viewBox="0 0 24 24" fill="none" stroke="#4bcf8a" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="12"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -705,7 +707,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
       </div>
     </div>
 
-    <div class="rumus-card" onclick="location.href='404.html'">
+    <div class="rumus-card" onclick="window.open('https://docs.google.com/document/d/13mriNAh29ICyTgpgC1NSX5-1mnfhgVsw/preview','_blank')">
       <div class="rumus-header">
         <div class="rumus-icon" style="background:rgba(75,191,232,0.15)">
           <svg viewBox="0 0 24 24" fill="none" stroke="#4bbfe8" stroke-width="2"><path d="M2 14 Q8 6 14 14 Q18 20 22 14"/></svg>
@@ -726,7 +728,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
       </div>
     </div>
 
-    <div class="rumus-card" onclick="location.href='404.html'">
+    <div class="rumus-card" onclick="window.open('https://docs.google.com/document/d/1auGyqOl0nVv8bt_hBWHDemuVQRUoe5DQ/preview','_blank')">
       <div class="rumus-header">
         <div class="rumus-icon" style="background:rgba(232,75,75,0.15)">
           <svg viewBox="0 0 24 24" fill="none" stroke="#e84b4b" stroke-width="2"><path d="M3 21 L12 5 L21 21"/><line x1="7" y1="15" x2="17" y2="15"/></svg>
@@ -746,7 +748,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
       </div>
     </div>
 
-    <div class="rumus-card" onclick="location.href='404.html'">
+    <div class="rumus-card" onclick="window.open('https://docs.google.com/document/d/181HORiqvBon9iwYi5pV_1JONXoAEBhHQ/preview','_blank')">
       <div class="rumus-header">
         <div class="rumus-icon" style="background:rgba(232,184,75,0.15)">
           <svg viewBox="0 0 24 24" fill="none" stroke="#e8b84b" stroke-width="2"><rect x="2" y="8" width="20" height="12" rx="2"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="8" x2="12" y2="20"/></svg>
@@ -767,7 +769,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem 3
       </div>
     </div>
 
-    <div class="rumus-card" onclick="location.href='404.html'">
+    <div class="rumus-card" onclick="window.open('https://docs.google.com/document/d/1Q_uc5dmZr51NyMHEHGvOY3Iu2KtmfYVy/preview','_blank')">
       <div class="rumus-header">
         <div class="rumus-icon" style="background:rgba(130,75,232,0.15)">
           <svg viewBox="0 0 24 24" fill="none" stroke="#9b6be8" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2 Q17 8 17 12 Q17 16 12 22"/></svg>
@@ -1296,11 +1298,12 @@ function openRowModal(linkEl, title){
   titleEl.textContent = title || 'Lihat Semua';
   body.innerHTML = '';
   const isCardContent = items.length && (items[0].classList.contains('card') || items[0].classList.contains('feat-card'));
-  body.className = 'kat-modal-body' + (isCardContent ? ' kat-modal-body-cards' : '');
+  const isListContent = items.length && !isCardContent && (items[0].classList.contains('rumus-card') || items[0].classList.contains('cat-card'));
+  body.className = 'kat-modal-body' + (isCardContent ? ' kat-modal-body-cards' : (isListContent ? ' kat-modal-body-list' : ''));
 
   items.forEach(it => {
     const clone = it.cloneNode(true);
-    clone.style.width = isCardContent ? '' : '';
+    if(isListContent){ clone.style.width = '100%'; }
     body.appendChild(clone);
   });
 
